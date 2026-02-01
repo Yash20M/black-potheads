@@ -1,19 +1,20 @@
 import { motion } from 'framer-motion';
 import { ShoppingBag, Menu, X, Search, User } from 'lucide-react';
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useCartStore } from '@/store/cartStore';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
-  { label: 'Shop', href: '#products' },
-  { label: 'Collections', href: '#collections' },
-  { label: 'About', href: '#about' },
+  { label: 'Shop', href: '/shop' },
+  { label: 'Collections', href: '/collections' },
 ];
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { toggleCart, getTotalItems } = useCartStore();
   const totalItems = getTotalItems();
+  const location = useLocation();
 
   return (
     <motion.header
@@ -24,27 +25,34 @@ export const Navbar = () => {
     >
       <nav className="container mx-auto px-6 h-20 flex items-center justify-between">
         {/* Logo */}
-        <motion.a
-          href="/"
-          className="font-display text-3xl tracking-wider"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          STRĒET
-        </motion.a>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Link to="/" className="font-display text-3xl tracking-wider">
+            STRĒET
+          </Link>
+        </motion.div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-10">
           {navLinks.map((link) => (
-            <motion.a
-              key={link.label}
-              href={link.href}
-              className="text-sm uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors relative group"
-              whileHover={{ y: -2 }}
-            >
-              {link.label}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
-            </motion.a>
+            <motion.div key={link.label} whileHover={{ y: -2 }}>
+              <Link
+                to={link.href}
+                className={cn(
+                  'text-sm uppercase tracking-widest transition-colors relative group',
+                  location.pathname === link.href
+                    ? 'text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {link.label}
+                <span
+                  className={cn(
+                    'absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300',
+                    location.pathname === link.href ? 'w-full' : 'w-0 group-hover:w-full'
+                  )}
+                />
+              </Link>
+            </motion.div>
           ))}
         </div>
 
@@ -115,17 +123,20 @@ export const Navbar = () => {
       >
         <div className="container mx-auto px-6 py-6 flex flex-col gap-4">
           {navLinks.map((link, index) => (
-            <motion.a
+            <motion.div
               key={link.label}
-              href={link.href}
               initial={{ x: -20, opacity: 0 }}
               animate={isMenuOpen ? { x: 0, opacity: 1 } : {}}
               transition={{ delay: index * 0.1 }}
-              onClick={() => setIsMenuOpen(false)}
-              className="text-2xl font-display uppercase tracking-wider py-2 border-b border-border"
             >
-              {link.label}
-            </motion.a>
+              <Link
+                to={link.href}
+                onClick={() => setIsMenuOpen(false)}
+                className="text-2xl font-display uppercase tracking-wider py-2 border-b border-border block"
+              >
+                {link.label}
+              </Link>
+            </motion.div>
           ))}
         </div>
       </motion.div>
