@@ -6,6 +6,13 @@ import heroImage from '@/assets/hero-model.jpg';
 import { ProductCard } from '@/components/products/ProductCard';
 import { products } from '@/data/products';
 import collectionBanner from '@/assets/collection-banner.jpg';
+import { BrandMarquee } from '@/components/sections/BrandMarquee';
+import { StatsSection } from '@/components/sections/StatsSection';
+import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
+import { FeaturesSection } from '@/components/sections/FeaturesSection';
+import { NewsletterSection } from '@/components/sections/NewsletterSection';
+import { InstagramSection } from '@/components/sections/InstagramSection';
+import { LookbookSection } from '@/components/sections/LookbookSection';
 
 const featuredProducts = products.slice(0, 3);
 
@@ -106,6 +113,9 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Brand Marquee */}
+      <BrandMarquee />
+
       {/* Featured Products */}
       <section className="py-24 bg-background">
         <div className="container mx-auto px-6">
@@ -136,6 +146,12 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Lookbook Section */}
+      <LookbookSection />
+
+      {/* Features Section */}
+      <FeaturesSection />
 
       {/* Featured Collection Banner */}
       <section className="py-24 bg-card">
@@ -174,6 +190,18 @@ const Index = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* Stats Section */}
+      <StatsSection />
+
+      {/* Testimonials */}
+      <TestimonialsSection />
+
+      {/* Instagram Feed */}
+      <InstagramSection />
+
+      {/* Newsletter */}
+      <NewsletterSection />
     </div>
   );
 };
