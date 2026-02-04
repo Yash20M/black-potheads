@@ -13,6 +13,13 @@ import { FeaturesSection } from '@/components/sections/FeaturesSection';
 import { NewsletterSection } from '@/components/sections/NewsletterSection';
 import { InstagramSection } from '@/components/sections/InstagramSection';
 import { LookbookSection } from '@/components/sections/LookbookSection';
+import { AboutBrandSection } from '@/components/sections/AboutBrandSection';
+import { CategoriesShowcase } from '@/components/sections/CategoriesShowcase';
+import { TrendingSection } from '@/components/sections/TrendingSection';
+import { ProcessSection } from '@/components/sections/ProcessSection';
+import { VideoSection } from '@/components/sections/VideoSection';
+import { ScrollingText } from '@/components/sections/ScrollingText';
+import { UpcomingDrop } from '@/components/sections/UpcomingDrop';
 
 const featuredProducts = products.slice(0, 3);
 
@@ -116,6 +123,9 @@ const Index = () => {
       {/* Brand Marquee */}
       <BrandMarquee />
 
+      {/* Categories Showcase */}
+      <CategoriesShowcase />
+
       {/* Featured Products */}
       <section className="py-24 bg-background">
         <div className="container mx-auto px-6">
@@ -126,6 +136,12 @@ const Index = () => {
             className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6"
           >
             <div>
+              <motion.div
+                initial={{ width: 0 }}
+                whileInView={{ width: 60 }}
+                viewport={{ once: true }}
+                className="h-1 bg-primary mb-6"
+              />
               <span className="text-sm uppercase tracking-widest text-muted-foreground mb-4 block">
                 Just Dropped
               </span>
@@ -147,8 +163,23 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Scrolling Text */}
+      <ScrollingText />
+
+      {/* Trending Products */}
+      <TrendingSection />
+
+      {/* Video / Campaign Section */}
+      <VideoSection />
+
+      {/* About Brand Section */}
+      <AboutBrandSection />
+
       {/* Lookbook Section */}
       <LookbookSection />
+
+      {/* Process Section */}
+      <ProcessSection />
 
       {/* Features Section */}
       <FeaturesSection />
@@ -173,23 +204,52 @@ const Index = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/40 to-transparent" />
               <div className="absolute inset-0 flex items-center">
                 <div className="container mx-auto px-6">
-                  <span className="text-primary text-sm uppercase tracking-widest mb-4 block">
+                  <motion.span
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    className="text-primary text-sm uppercase tracking-widest mb-4 block"
+                  >
                     Featured Collection
-                  </span>
-                  <h3 className="font-display text-5xl md:text-7xl mb-4">WINTER 2025</h3>
-                  <p className="text-muted-foreground text-lg mb-6 max-w-md">
+                  </motion.span>
+                  <motion.h3
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.1 }}
+                    className="font-display text-5xl md:text-7xl mb-4"
+                  >
+                    WINTER 2025
+                  </motion.h3>
+                  <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 }}
+                    className="text-muted-foreground text-lg mb-6 max-w-md"
+                  >
                     32 exclusive pieces designed for the urban explorer.
-                  </p>
-                  <Button variant="hero" size="lg">
-                    Explore Collection
-                    <ArrowRight size={18} />
-                  </Button>
+                  </motion.p>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <Button variant="hero" size="lg">
+                      Explore Collection
+                      <ArrowRight size={18} />
+                    </Button>
+                  </motion.div>
                 </div>
               </div>
             </Link>
           </motion.div>
         </div>
       </section>
+
+      {/* Upcoming Drop */}
+      <UpcomingDrop />
 
       {/* Stats Section */}
       <StatsSection />

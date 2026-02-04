@@ -9,6 +9,7 @@ export interface Product {
   isSale?: boolean;
   sizes: string[];
   description?: string;
+  badge?: string;
 }
 
 export interface CartItem extends Product {
