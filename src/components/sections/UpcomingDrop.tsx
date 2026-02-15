@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Bell, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import collectionBanner from '@/assets/collection-banner.jpg';
+import collectionDark from '@/assets/collection-dark.jpg';
 
 const calculateTimeLeft = () => {
   const dropDate = new Date();
@@ -35,25 +35,15 @@ export const UpcomingDrop = () => {
     <section className="py-32 bg-secondary overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Image Side */}
           <motion.div
             initial={{ opacity: 0, x: -60 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             className="relative"
           >
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="relative h-[500px] overflow-hidden"
-            >
-              <img
-                src={collectionBanner}
-                alt="Upcoming Drop"
-                className="w-full h-full object-cover"
-              />
+            <motion.div whileHover={{ scale: 1.02 }} className="relative h-[500px] overflow-hidden">
+              <img src={collectionDark} alt="Upcoming Drop" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-r from-secondary/80 to-transparent" />
-              
-              {/* Floating Badge */}
               <motion.div
                 initial={{ rotate: -12, scale: 0 }}
                 whileInView={{ rotate: -12, scale: 1 }}
@@ -64,8 +54,6 @@ export const UpcomingDrop = () => {
                 <span className="font-display text-2xl text-primary-foreground">SOON</span>
               </motion.div>
             </motion.div>
-
-            {/* Decorative Element */}
             <motion.div
               initial={{ width: 0 }}
               whileInView={{ width: '80%' }}
@@ -75,30 +63,22 @@ export const UpcomingDrop = () => {
             />
           </motion.div>
 
-          {/* Content Side */}
           <div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
               <div className="flex items-center gap-3 mb-4">
                 <Calendar size={18} className="text-primary" />
-                <span className="text-sm uppercase tracking-widest text-primary">
-                  Dropping Soon
-                </span>
+                <span className="text-sm uppercase tracking-widest text-primary">Dropping Soon</span>
               </div>
               <h2 className="font-display text-5xl md:text-7xl leading-none mb-6">
-                SPRING<br />
+                DEATH<br />
                 <span className="text-accent-gradient">COLLECTION</span>
               </h2>
               <p className="text-muted-foreground text-lg mb-10 max-w-md">
-                Our most anticipated release yet. 42 new pieces designed for 
-                the new season. Limited quantities, first come first served.
+                Our darkest drop yet. 12 new skull & gothic prints. Limited to 100 pieces each. 
+                First come, first served.
               </p>
             </motion.div>
 
-            {/* Countdown */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -125,14 +105,11 @@ export const UpcomingDrop = () => {
                       {String(value).padStart(2, '0')}
                     </motion.span>
                   </div>
-                  <span className="text-muted-foreground text-xs uppercase tracking-wider">
-                    {unit}
-                  </span>
+                  <span className="text-muted-foreground text-xs uppercase tracking-wider">{unit}</span>
                 </motion.div>
               ))}
             </motion.div>
 
-            {/* Notify Button */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -140,12 +117,7 @@ export const UpcomingDrop = () => {
               transition={{ delay: 0.4 }}
             >
               {!notified ? (
-                <Button
-                  variant="hero"
-                  size="xl"
-                  onClick={() => setNotified(true)}
-                  className="w-full sm:w-auto"
-                >
+                <Button variant="hero" size="xl" onClick={() => setNotified(true)} className="w-full sm:w-auto">
                   <Bell size={20} className="mr-2" />
                   Notify Me When It Drops
                 </Button>

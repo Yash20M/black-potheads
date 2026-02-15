@@ -7,24 +7,24 @@ const testimonials = [
     name: 'Marcus J.',
     location: 'Los Angeles, CA',
     rating: 5,
-    text: 'The quality is unmatched. Every piece feels premium and the fit is perfect for the streets.',
-    product: 'Midnight Hoodie',
+    text: 'The skull print is insane. Heavyweight cotton, no cheap feel. This is what real streetwear looks like.',
+    product: 'Death\'s Embrace Tee',
   },
   {
     id: 2,
-    name: 'Sarah K.',
-    location: 'New York, NY',
+    name: 'Raven K.',
+    location: 'Brooklyn, NY',
     rating: 5,
-    text: 'Finally found a brand that gets streetwear. Fast shipping and the packaging is fire.',
-    product: 'Urban Cargo Pants',
+    text: 'Finally a brand that gets dark aesthetics. The gothic rose tee is my new favorite. Quality is unmatched.',
+    product: 'Dark Rose Tee',
   },
   {
     id: 3,
     name: 'Tyler R.',
     location: 'Chicago, IL',
     rating: 5,
-    text: 'Been rocking STRTWEAR for 2 years now. The limited drops are always worth the wait.',
-    product: 'Essential Tee Pack',
+    text: 'Been rocking Black Potheads for a year now. The limited drops are always worth the wait. Pure fire.',
+    product: 'Venom Strike Tee',
   },
 ];
 
@@ -55,7 +55,6 @@ export const TestimonialsSection = () => {
               whileHover={{ y: -8, transition: { duration: 0.3 } }}
               className="bg-secondary p-8 relative group"
             >
-              {/* Quote Icon */}
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
                 whileInView={{ scale: 1, rotate: 0 }}
@@ -66,7 +65,6 @@ export const TestimonialsSection = () => {
                 <Quote size={20} className="text-primary-foreground" />
               </motion.div>
 
-              {/* Rating */}
               <div className="flex gap-1 mb-4">
                 {Array(testimonial.rating).fill(null).map((_, i) => (
                   <motion.div
@@ -81,19 +79,16 @@ export const TestimonialsSection = () => {
                 ))}
               </div>
 
-              {/* Text */}
               <p className="text-foreground mb-6 leading-relaxed">
                 "{testimonial.text}"
               </p>
 
-              {/* Author */}
               <div className="border-t border-border pt-4">
                 <p className="font-medium text-foreground">{testimonial.name}</p>
                 <p className="text-sm text-muted-foreground">{testimonial.location}</p>
                 <p className="text-xs text-primary mt-1">Purchased: {testimonial.product}</p>
               </div>
 
-              {/* Hover Border */}
               <div className="absolute inset-0 border border-transparent group-hover:border-primary transition-colors duration-300 pointer-events-none" />
             </motion.div>
           ))}

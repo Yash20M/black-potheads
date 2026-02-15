@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { Play, Volume2, VolumeX } from 'lucide-react';
-import heroImage from '@/assets/hero-model.jpg';
+import heroDark from '@/assets/hero-dark.jpg';
 
 export const VideoSection = () => {
   const containerRef = useRef(null);
@@ -19,24 +19,14 @@ export const VideoSection = () => {
 
   return (
     <section ref={containerRef} className="py-0 bg-background overflow-hidden">
-      <motion.div
-        style={{ scale, opacity }}
-        className="relative h-[80vh] lg:h-screen"
-      >
-        {/* Video/Image Background with Parallax */}
+      <motion.div style={{ scale, opacity }} className="relative h-[80vh] lg:h-screen">
         <motion.div style={{ y }} className="absolute inset-0">
-          <img
-            src={heroImage}
-            alt="Lifestyle"
-            className="w-full h-[120%] object-cover"
-          />
+          <img src={heroDark} alt="Campaign" className="w-full h-[120%] object-cover" />
           <div className="absolute inset-0 bg-background/60" />
         </motion.div>
 
-        {/* Content Overlay */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
-            {/* Play Button */}
             <motion.button
               initial={{ scale: 0 }}
               whileInView={{ scale: 1 }}
@@ -46,7 +36,6 @@ export const VideoSection = () => {
               onClick={() => setIsPlaying(!isPlaying)}
               className="w-32 h-32 rounded-full border-2 border-foreground/30 hover:border-primary hover:bg-primary/10 flex items-center justify-center mb-12 mx-auto relative group transition-all duration-300"
             >
-              {/* Pulse Ring */}
               <motion.div
                 animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -61,9 +50,9 @@ export const VideoSection = () => {
               viewport={{ once: true }}
               className="font-display text-5xl md:text-8xl lg:text-9xl leading-none mb-6"
             >
-              <span className="text-gradient">EXPERIENCE</span>
+              <span className="text-gradient">EMBRACE</span>
               <br />
-              <span className="text-accent-gradient">THE CULTURE</span>
+              <span className="text-accent-gradient">THE DARK</span>
             </motion.h2>
 
             <motion.p
@@ -73,10 +62,9 @@ export const VideoSection = () => {
               transition={{ delay: 0.2 }}
               className="text-muted-foreground text-lg md:text-xl max-w-md mx-auto"
             >
-              Watch our latest campaign film. See how our community defines style.
+              Watch our latest campaign. See the rebellion in action.
             </motion.p>
 
-            {/* Controls */}
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -92,14 +80,11 @@ export const VideoSection = () => {
                 {isMuted ? 'Unmute' : 'Mute'}
               </button>
               <span className="text-border">|</span>
-              <span className="text-sm uppercase tracking-wider text-muted-foreground">
-                2:34 min
-              </span>
+              <span className="text-sm uppercase tracking-wider text-muted-foreground">2:34 min</span>
             </motion.div>
           </div>
         </div>
 
-        {/* Side Text */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -107,7 +92,7 @@ export const VideoSection = () => {
           className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block"
         >
           <span className="text-sm uppercase tracking-widest text-muted-foreground vertical-text">
-            Campaign 2025
+            Campaign 2026
           </span>
         </motion.div>
 
@@ -118,7 +103,7 @@ export const VideoSection = () => {
           className="absolute right-8 top-1/2 -translate-y-1/2 hidden xl:block"
         >
           <span className="text-sm uppercase tracking-widest text-muted-foreground vertical-text">
-            Behind the Scenes
+            Behind the Ink
           </span>
         </motion.div>
       </motion.div>

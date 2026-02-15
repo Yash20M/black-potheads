@@ -1,11 +1,11 @@
-import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { ArrowRight, Skull } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import heroImage from '@/assets/hero-model.jpg';
+import heroImage from '@/assets/hero-dark.jpg';
 import { ProductCard } from '@/components/products/ProductCard';
 import { products } from '@/data/products';
-import collectionBanner from '@/assets/collection-banner.jpg';
+import collectionBanner from '@/assets/collection-dark.jpg';
 import { BrandMarquee } from '@/components/sections/BrandMarquee';
 import { StatsSection } from '@/components/sections/StatsSection';
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
@@ -20,36 +20,57 @@ import { ProcessSection } from '@/components/sections/ProcessSection';
 import { VideoSection } from '@/components/sections/VideoSection';
 import { ScrollingText } from '@/components/sections/ScrollingText';
 import { UpcomingDrop } from '@/components/sections/UpcomingDrop';
+import { useRef } from 'react';
 
 const featuredProducts = products.slice(0, 3);
 
 const Index = () => {
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+
+  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 1], [0, 100]);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <motion.div
-          initial={{ scale: 1.2, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.5, ease: 'easeOut' }}
+          style={{ scale: heroScale }}
           className="absolute inset-0"
         >
-          <img src={heroImage} alt="Streetwear model" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+          <motion.img
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.5 }}
+            src={heroImage}
+            alt="Black Potheads"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50" />
         </motion.div>
 
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-2xl">
+        <motion.div style={{ opacity: heroOpacity, y: textY }} className="container mx-auto px-6 relative z-10">
+          <div className="max-w-3xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="inline-flex items-center gap-2 mb-6"
+              className="inline-flex items-center gap-3 mb-6"
             >
-              <span className="w-2 h-2 bg-primary animate-pulse" />
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                <Skull size={24} className="text-primary" />
+              </motion.div>
               <span className="text-sm uppercase tracking-widest text-muted-foreground">
-                New Collection 2025
+                Premium Printed Streetwear
               </span>
             </motion.div>
 
@@ -59,9 +80,9 @@ const Index = () => {
               transition={{ duration: 0.8, delay: 0.5 }}
               className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-none mb-6"
             >
-              <span className="text-gradient">DEFINE</span>
+              <span className="text-gradient">BLACK</span>
               <br />
-              <span className="text-accent-gradient">YOUR STYLE</span>
+              <span className="text-accent-gradient">POTHEADS</span>
             </motion.h1>
 
             <motion.p
@@ -70,7 +91,7 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.7 }}
               className="text-lg md:text-xl text-muted-foreground max-w-md mb-8"
             >
-              Premium streetwear crafted for those who refuse to blend in.
+              Wear the rebellion. Premium printed tees for the unapologetically bold.
             </motion.p>
 
             <motion.div
@@ -90,7 +111,7 @@ const Index = () => {
               </Button>
             </motion.div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Scroll Indicator */}
         <motion.div
@@ -113,7 +134,7 @@ const Index = () => {
           <div className="animate-marquee whitespace-nowrap flex">
             {Array(10).fill(null).map((_, i) => (
               <span key={i} className="mx-8 text-primary-foreground font-display text-lg tracking-wider">
-                FREE SHIPPING ON ORDERS OVER $150 ✦ NEW ARRIVALS EVERY WEEK ✦
+                FREE SHIPPING ON ORDERS OVER $100 ✦ NEW DROPS EVERY FRIDAY ✦ BLACK POTHEADS ✦
               </span>
             ))}
           </div>
@@ -196,7 +217,7 @@ const Index = () => {
             <Link to="/collections">
               <motion.img
                 src={collectionBanner}
-                alt="Winter Collection"
+                alt="Dark Collection"
                 className="w-full h-full object-cover"
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.6 }}
@@ -219,7 +240,7 @@ const Index = () => {
                     transition={{ delay: 0.1 }}
                     className="font-display text-5xl md:text-7xl mb-4"
                   >
-                    WINTER 2025
+                    DARK EDITION 2026
                   </motion.h3>
                   <motion.p
                     initial={{ opacity: 0, y: 20 }}
@@ -228,7 +249,7 @@ const Index = () => {
                     transition={{ delay: 0.2 }}
                     className="text-muted-foreground text-lg mb-6 max-w-md"
                   >
-                    32 exclusive pieces designed for the urban explorer.
+                    12 exclusive printed tees. Limited run. Once gone, gone forever.
                   </motion.p>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}

@@ -1,19 +1,19 @@
 import { motion } from 'framer-motion';
 import { Instagram } from 'lucide-react';
-import heroImage from '@/assets/hero-model.jpg';
-import collectionBanner from '@/assets/collection-banner.jpg';
-import hoodie from '@/assets/products/hoodie-black.jpg';
-import cargo from '@/assets/products/cargo-olive.jpg';
-import tee from '@/assets/products/tee-white.jpg';
-import sneakers from '@/assets/products/sneakers-black.jpg';
+import skullTee from '@/assets/products/skull-tee.jpg';
+import gothicTee from '@/assets/products/gothic-tee.jpg';
+import tribalTee from '@/assets/products/tribal-tee.jpg';
+import graffitiTee from '@/assets/products/graffiti-tee.jpg';
+import snakeTee from '@/assets/products/snake-tee.jpg';
+import heroDark from '@/assets/hero-dark.jpg';
 
 const instagramPosts = [
-  { image: heroImage, likes: '2.4k' },
-  { image: hoodie, likes: '1.8k' },
-  { image: collectionBanner, likes: '3.2k' },
-  { image: cargo, likes: '1.5k' },
-  { image: tee, likes: '2.1k' },
-  { image: sneakers, likes: '2.8k' },
+  { image: skullTee, likes: '4.2k' },
+  { image: gothicTee, likes: '3.1k' },
+  { image: heroDark, likes: '5.8k' },
+  { image: tribalTee, likes: '2.9k' },
+  { image: graffitiTee, likes: '3.5k' },
+  { image: snakeTee, likes: '4.1k' },
 ];
 
 export const InstagramSection = () => {
@@ -27,9 +27,9 @@ export const InstagramSection = () => {
           className="text-center mb-12"
         >
           <span className="text-sm uppercase tracking-widest text-muted-foreground mb-4 block">
-            @strtwear
+            @blackpotheads
           </span>
-          <h2 className="font-display text-5xl md:text-6xl mb-4">FOLLOW THE CULTURE</h2>
+          <h2 className="font-display text-5xl md:text-6xl mb-4">FOLLOW THE DARKNESS</h2>
           <p className="text-muted-foreground max-w-md mx-auto">
             Tag us in your fits for a chance to be featured
           </p>
@@ -49,11 +49,7 @@ export const InstagramSection = () => {
               whileHover={{ scale: 1.05, zIndex: 10 }}
               className="relative aspect-square overflow-hidden group"
             >
-              <img
-                src={post.image}
-                alt="Instagram post"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
+              <img src={post.image} alt="Instagram post" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
               <motion.div
                 initial={{ opacity: 0 }}
                 whileHover={{ opacity: 1 }}

@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { ShoppingBag, Menu, X, Search, User } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { ShoppingBag, Menu, X, Search, User, Skull } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCartStore } from '@/store/cartStore';
@@ -8,6 +8,8 @@ import { cn } from '@/lib/utils';
 const navLinks = [
   { label: 'Shop', href: '/shop' },
   { label: 'Collections', href: '/collections' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/contact' },
 ];
 
 export const Navbar = () => {
@@ -16,18 +18,32 @@ export const Navbar = () => {
   const totalItems = getTotalItems();
   const location = useLocation();
 
+  const { scrollY } = useScroll();
+  const logoScale = useTransform(scrollY, [0, 200], [1, 0.85]);
+  const skullRotate = useTransform(scrollY, [0, 500], [0, 180]);
+  const glowOpacity = useTransform(scrollY, [0, 200, 400], [0.2, 1, 0.2]);
+
   return (
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
-      className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border"
+      className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border"
     >
       <nav className="container mx-auto px-6 h-20 flex items-center justify-between">
-        {/* Logo */}
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Link to="/" className="font-display text-3xl tracking-wider">
-            STRĒET
+        {/* Logo with skull */}
+        <motion.div style={{ scale: logoScale }}>
+          <Link to="/" className="flex items-center gap-2">
+            <motion.div style={{ rotate: skullRotate }} className="relative">
+              <motion.div
+                style={{ opacity: glowOpacity }}
+                className="absolute inset-0 blur-md"
+              >
+                <Skull size={28} className="text-primary" />
+              </motion.div>
+              <Skull size={28} className="text-foreground relative z-10" />
+            </motion.div>
+            <span className="font-display text-2xl tracking-wider">BLACK POTHEADS</span>
           </Link>
         </motion.div>
 
