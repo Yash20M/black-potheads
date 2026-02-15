@@ -60,25 +60,25 @@ const ShopPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 bg-white">
       {/* Page Header */}
-      <section className="py-16 bg-card border-b border-border">
+      <section className="py-20 bg-black border-b border-gray-800">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <span className="text-sm uppercase tracking-widest text-muted-foreground mb-4 block">
+            <span className="text-sm uppercase tracking-[0.3em] text-gray-400 mb-4 block">
               Browse Our
             </span>
-            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl">SHOP</h1>
+            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-white">SHOP</h1>
           </motion.div>
         </div>
       </section>
 
       {/* Products Section */}
-      <section className="py-16 bg-background">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-6">
           {/* Category Filter */}
           <motion.div
@@ -94,10 +94,10 @@ const ShopPage = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleCategoryChange(category.id as Category)}
                 className={cn(
-                  'px-6 py-3 text-sm uppercase tracking-wider transition-all duration-300 border',
+                  'px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 border-2',
                   activeCategory === category.id
-                    ? 'bg-foreground text-background border-foreground'
-                    : 'bg-transparent border-border text-muted-foreground hover:border-foreground hover:text-foreground'
+                    ? 'bg-black text-white border-black'
+                    : 'bg-white border-black text-black hover:bg-black hover:text-white'
                 )}
               >
                 {category.label}
@@ -109,7 +109,7 @@ const ShopPage = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-muted-foreground text-sm mb-8"
+            className="text-gray-600 text-sm mb-8 text-center"
           >
             {productsCountText}
           </motion.p>
@@ -117,11 +117,11 @@ const ShopPage = () => {
           {/* Products Grid */}
           <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {loading ? (
-              <div className="col-span-full text-center py-12 text-muted-foreground">
+              <div className="col-span-full text-center py-12 text-gray-600">
                 Loading products...
               </div>
             ) : products.length === 0 ? (
-              <div className="col-span-full text-center py-12 text-muted-foreground">
+              <div className="col-span-full text-center py-12 text-gray-600">
                 No products found in this category
               </div>
             ) : (

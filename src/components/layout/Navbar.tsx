@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ShoppingBag, Menu, X, Search, User, Skull, Heart } from 'lucide-react';
+import { ShoppingBag, Menu, X, Search, User, Heart } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCartStore } from '@/store/cartStore';
@@ -28,27 +28,51 @@ export const Navbar = () => {
   const skullRotate = useTransform(scrollY, [0, 500], [0, 180]);
   const glowOpacity = useTransform(scrollY, [0, 200, 400], [0.2, 1, 0.2]);
 
+  // Check if we're on the home page
+  const isHomePage = location.pathname === '/';
+
   return (
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
-      className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border"
+      className={cn(
+        'fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b',
+        isHomePage 
+          ? 'bg-black/90 border-gray-800' 
+          : 'bg-white/90 border-gray-200'
+      )}
     >
       <nav className="container mx-auto px-6 h-20 flex items-center justify-between">
-        {/* Logo with skull */}
+        {/* Logo with image */}
         <motion.div style={{ scale: logoScale }}>
-          <Link to="/" className="flex items-center gap-2">
-            <motion.div style={{ rotate: skullRotate }} className="relative">
+          <Link to="/" className="flex items-center gap-3">
+            <motion.div 
+              style={{ rotate: skullRotate }} 
+              className="relative w-16 h-16 flex items-center justify-center"
+            >
               <motion.div
                 style={{ opacity: glowOpacity }}
                 className="absolute inset-0 blur-md"
               >
-                <Skull size={28} className="text-primary" />
+                <img 
+                  src={isHomePage ? "/logo.png" : "/white_logo.png"}
+                  alt="Black Potheads Logo" 
+                  className="w-full h-full object-contain"
+                />
               </motion.div>
-              <Skull size={28} className="text-foreground relative z-10" />
+              <img 
+                src={isHomePage ? "/logo.png" : "/white_logo.png"}
+                alt="Black Potheads Logo" 
+                className="w-full h-full object-contain relative z-10"
+              />
             </motion.div>
-            <span className="font-display text-2xl tracking-wider">BLACK POTHEADS</span>
+            <span className={cn(
+              'font-display text-2xl tracking-wider',
+              isHomePage ? 'text-white' : 'text-black'
+            )}>
+              BLACK POTHEADS
+            </span>
           </Link>
         </motion.div>
 
@@ -61,14 +85,15 @@ export const Navbar = () => {
                 className={cn(
                   'text-sm uppercase tracking-widest transition-colors relative group',
                   location.pathname === link.href
-                    ? 'text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? isHomePage ? 'text-white' : 'text-black'
+                    : isHomePage ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'
                 )}
               >
                 {link.label}
                 <span
                   className={cn(
-                    'absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300',
+                    'absolute -bottom-1 left-0 h-0.5 transition-all duration-300',
+                    isHomePage ? 'bg-white' : 'bg-black',
                     location.pathname === link.href ? 'w-full' : 'w-0 group-hover:w-full'
                   )}
                 />
@@ -82,7 +107,10 @@ export const Navbar = () => {
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="p-2 hover:text-primary transition-colors"
+            className={cn(
+              'p-2 transition-colors',
+              isHomePage ? 'text-white hover:text-gray-300' : 'text-black hover:text-gray-600'
+            )}
             aria-label="Search"
           >
             <Search size={20} />
@@ -94,7 +122,10 @@ export const Navbar = () => {
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="p-2 hover:text-primary transition-colors relative"
+                  className={cn(
+                    'p-2 transition-colors relative',
+                    isHomePage ? 'text-white hover:text-gray-300' : 'text-black hover:text-gray-600'
+                  )}
                   aria-label="Wishlist"
                 >
                   <Heart size={20} />
@@ -102,7 +133,10 @@ export const Navbar = () => {
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold"
+                      className={cn(
+                        'absolute -top-1 -right-1 w-5 h-5 text-xs flex items-center justify-center font-bold',
+                        isHomePage ? 'bg-white text-black' : 'bg-black text-white'
+                      )}
                     >
                       {wishlistCount}
                     </motion.span>
@@ -113,7 +147,10 @@ export const Navbar = () => {
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="p-2 hover:text-primary transition-colors"
+                  className={cn(
+                    'p-2 transition-colors',
+                    isHomePage ? 'text-white hover:text-gray-300' : 'text-black hover:text-gray-600'
+                  )}
                   aria-label="Profile"
                 >
                   <User size={20} />
@@ -123,7 +160,12 @@ export const Navbar = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={logout}
-                className="text-xs uppercase tracking-wider px-3 py-1 border border-border hover:border-primary transition-colors"
+                className={cn(
+                  'text-xs uppercase tracking-wider px-3 py-1 border transition-colors',
+                  isHomePage 
+                    ? 'border-white text-white hover:bg-white hover:text-black' 
+                    : 'border-black text-black hover:bg-black hover:text-white'
+                )}
               >
                 Logout
               </motion.button>
@@ -134,7 +176,12 @@ export const Navbar = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="text-xs uppercase tracking-wider px-3 py-1 border border-border hover:border-primary transition-colors"
+                  className={cn(
+                    'text-xs uppercase tracking-wider px-3 py-1 border transition-colors',
+                    isHomePage 
+                      ? 'border-white text-white hover:bg-white hover:text-black' 
+                      : 'border-black text-black hover:bg-black hover:text-white'
+                  )}
                 >
                   Login
                 </motion.button>
@@ -143,7 +190,12 @@ export const Navbar = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="text-xs uppercase tracking-wider px-3 py-1 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  className={cn(
+                    'text-xs uppercase tracking-wider px-3 py-1 transition-colors',
+                    isHomePage 
+                      ? 'bg-white text-black hover:bg-gray-200' 
+                      : 'bg-black text-white hover:bg-gray-800'
+                  )}
                 >
                   Register
                 </motion.button>
@@ -155,7 +207,10 @@ export const Navbar = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={toggleCart}
-            className="p-2 hover:text-primary transition-colors relative"
+            className={cn(
+              'p-2 transition-colors relative',
+              isHomePage ? 'text-white hover:text-gray-300' : 'text-black hover:text-gray-600'
+            )}
             aria-label="Cart"
           >
             <ShoppingBag size={20} />
@@ -163,7 +218,10 @@ export const Navbar = () => {
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold"
+                className={cn(
+                  'absolute -top-1 -right-1 w-5 h-5 text-xs flex items-center justify-center font-bold',
+                  isHomePage ? 'bg-white text-black' : 'bg-black text-white'
+                )}
               >
                 {totalItems}
               </motion.span>
@@ -175,7 +233,10 @@ export const Navbar = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2 md:hidden"
+            className={cn(
+              'p-2 md:hidden',
+              isHomePage ? 'text-white' : 'text-black'
+            )}
             aria-label="Menu"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -192,7 +253,10 @@ export const Navbar = () => {
         }}
         transition={{ duration: 0.3 }}
         className={cn(
-          'md:hidden overflow-hidden bg-background border-b border-border',
+          'md:hidden overflow-hidden border-b',
+          isHomePage 
+            ? 'bg-black border-gray-800' 
+            : 'bg-white border-gray-200',
           !isMenuOpen && 'pointer-events-none'
         )}
       >
@@ -207,7 +271,12 @@ export const Navbar = () => {
               <Link
                 to={link.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="text-2xl font-display uppercase tracking-wider py-2 border-b border-border block"
+                className={cn(
+                  'text-2xl font-display uppercase tracking-wider py-2 border-b block',
+                  isHomePage 
+                    ? 'text-white border-gray-800' 
+                    : 'text-black border-gray-200'
+                )}
               >
                 {link.label}
               </Link>
@@ -217,17 +286,30 @@ export const Navbar = () => {
           {user ? (
             <>
               <Link to="/wishlist" onClick={() => setIsMenuOpen(false)}>
-                <div className="text-2xl font-display uppercase tracking-wider py-2 border-b border-border flex items-center justify-between">
+                <div className={cn(
+                  'text-2xl font-display uppercase tracking-wider py-2 border-b flex items-center justify-between',
+                  isHomePage 
+                    ? 'text-white border-gray-800' 
+                    : 'text-black border-gray-200'
+                )}>
                   Wishlist
                   {wishlistCount > 0 && (
-                    <span className="text-sm bg-primary text-primary-foreground px-2 py-1">
+                    <span className={cn(
+                      'text-sm px-2 py-1',
+                      isHomePage ? 'bg-white text-black' : 'bg-black text-white'
+                    )}>
                       {wishlistCount}
                     </span>
                   )}
                 </div>
               </Link>
               <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
-                <div className="text-2xl font-display uppercase tracking-wider py-2 border-b border-border">
+                <div className={cn(
+                  'text-2xl font-display uppercase tracking-wider py-2 border-b',
+                  isHomePage 
+                    ? 'text-white border-gray-800' 
+                    : 'text-black border-gray-200'
+                )}>
                   Profile
                 </div>
               </Link>
@@ -236,7 +318,12 @@ export const Navbar = () => {
                   logout();
                   setIsMenuOpen(false);
                 }}
-                className="text-2xl font-display uppercase tracking-wider py-2 border-b border-border text-left"
+                className={cn(
+                  'text-2xl font-display uppercase tracking-wider py-2 border-b text-left',
+                  isHomePage 
+                    ? 'text-white border-gray-800' 
+                    : 'text-black border-gray-200'
+                )}
               >
                 Logout
               </button>
@@ -244,12 +331,22 @@ export const Navbar = () => {
           ) : (
             <>
               <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                <div className="text-2xl font-display uppercase tracking-wider py-2 border-b border-border">
+                <div className={cn(
+                  'text-2xl font-display uppercase tracking-wider py-2 border-b',
+                  isHomePage 
+                    ? 'text-white border-gray-800' 
+                    : 'text-black border-gray-200'
+                )}>
                   Login
                 </div>
               </Link>
               <Link to="/register" onClick={() => setIsMenuOpen(false)}>
-                <div className="text-2xl font-display uppercase tracking-wider py-2 border-b border-border">
+                <div className={cn(
+                  'text-2xl font-display uppercase tracking-wider py-2 border-b',
+                  isHomePage 
+                    ? 'text-white border-gray-800' 
+                    : 'text-black border-gray-200'
+                )}>
                   Register
                 </div>
               </Link>

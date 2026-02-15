@@ -94,7 +94,7 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
               <motion.span
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                className="bg-primary text-primary-foreground px-3 py-1 text-xs uppercase tracking-wider font-bold"
+                className="bg-black text-white px-3 py-1 text-xs uppercase tracking-wider font-bold"
               >
                 New
               </motion.span>
@@ -103,7 +103,7 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
               <motion.span
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                className="bg-destructive text-destructive-foreground px-3 py-1 text-xs uppercase tracking-wider font-bold"
+                className="bg-white text-black border-2 border-black px-3 py-1 text-xs uppercase tracking-wider font-bold"
               >
                 Sale
               </motion.span>
@@ -114,7 +114,7 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
           <motion.div
             initial={false}
             animate={{ opacity: isHovered ? 1 : 0 }}
-            className="absolute inset-0 bg-background/60 backdrop-blur-sm flex flex-col items-center justify-center gap-4 p-4"
+            className="absolute inset-0 bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center gap-4 p-4"
           >
             {/* Size Selector */}
             <div className="flex flex-wrap gap-2 justify-center" onClick={(e) => e.preventDefault()}>
@@ -129,10 +129,10 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
                     setSelectedSize(size);
                   }}
                   className={cn(
-                    'w-10 h-10 border text-sm font-medium transition-all',
+                    'w-10 h-10 border-2 text-sm font-bold transition-all',
                     selectedSize === size
-                      ? 'bg-foreground text-background border-foreground'
-                      : 'bg-transparent border-foreground/50 hover:border-foreground'
+                      ? 'bg-white text-black border-white'
+                      : 'bg-transparent border-white text-white hover:bg-white hover:text-black'
                   )}
                 >
                   {size}
@@ -146,7 +146,7 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleAddToCart}
-                className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 uppercase text-sm tracking-wider font-bold"
+                className="flex items-center gap-2 bg-white text-black px-6 py-3 uppercase text-sm tracking-wider font-bold border-2 border-white hover:bg-transparent hover:text-white transition-colors"
               >
                 <Plus size={18} />
                 Add to Cart
@@ -159,8 +159,8 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
                 className={cn(
                   'flex items-center justify-center w-12 h-12 border-2 transition-colors',
                   inWishlist
-                    ? 'bg-primary border-primary text-primary-foreground'
-                    : 'border-foreground bg-transparent hover:bg-foreground hover:text-background'
+                    ? 'bg-white border-white text-black'
+                    : 'border-white bg-transparent text-white hover:bg-white hover:text-black'
                 )}
                 aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
               >
@@ -173,14 +173,14 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
         {/* Product Info */}
         <div className="space-y-1">
           <motion.h3
-            className="font-medium text-sm uppercase tracking-wider line-clamp-1 group-hover:text-primary transition-colors"
+            className="font-medium text-sm uppercase tracking-wider line-clamp-1 text-black group-hover:text-gray-700 transition-colors"
           >
             {product.name}
           </motion.h3>
           <div className="flex items-center gap-2">
-            <span className="font-display text-xl">${product.price}</span>
+            <span className="font-display text-xl text-black">${product.price}</span>
             {product.originalPrice && (
-              <span className="text-muted-foreground line-through text-sm">
+              <span className="text-gray-500 line-through text-sm">
                 ${product.originalPrice}
               </span>
             )}

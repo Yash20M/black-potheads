@@ -120,7 +120,7 @@ export const CartDrawer = () => {
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                           onClick={async () => await removeItem(item.id, item.selectedSize)}
-                          className="text-muted-foreground hover:text-destructive transition-colors self-start"
+                          className="text-gray-400 hover:text-gray-700 transition-colors self-start"
                           aria-label="Remove item"
                         >
                           <X size={18} />
