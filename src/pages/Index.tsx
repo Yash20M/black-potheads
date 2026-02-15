@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import heroImage from '@/assets/hero-dark.jpg';
 import { ProductCard } from '@/components/products/ProductCard';
-import { products } from '@/data/products';
 import collectionBanner from '@/assets/collection-dark.jpg';
 import { BrandMarquee } from '@/components/sections/BrandMarquee';
 import { StatsSection } from '@/components/sections/StatsSection';
@@ -20,12 +19,16 @@ import { ProcessSection } from '@/components/sections/ProcessSection';
 import { VideoSection } from '@/components/sections/VideoSection';
 import { ScrollingText } from '@/components/sections/ScrollingText';
 import { UpcomingDrop } from '@/components/sections/UpcomingDrop';
-import { useRef } from 'react';
-
-const featuredProducts = products.slice(0, 3);
+import { useRef, useEffect, useState } from 'react';
+import { productApi } from '@/lib/api';
+import { toast } from 'sonner';
+import { Product, normalizeProduct, ApiProduct } from '@/types/product';
 
 const Index = () => {
   const heroRef = useRef(null);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
@@ -34,6 +37,23 @@ const Index = () => {
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
   const textY = useTransform(scrollYProgress, [0, 1], [0, 100]);
+
+  useEffect(() => {
+    loadFeaturedProducts();
+  }, []);
+
+  const loadFeaturedProducts = async () => {
+    try {
+      const data: any = await productApi.getFeatured(3);
+      const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
+      setFeaturedProducts(normalized);
+    } catch (error: any) {
+      toast.error('Failed to load featured products');
+      console.error('Featured products error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -177,9 +197,19 @@ const Index = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
-            ))}
+            {loading ? (
+              <div className="col-span-full text-center py-12 text-muted-foreground">
+                Loading featured products...
+              </div>
+            ) : featuredProducts.length === 0 ? (
+              <div className="col-span-full text-center py-12 text-muted-foreground">
+                No featured products available
+              </div>
+            ) : (
+              featuredProducts.map((product, index) => (
+                <ProductCard key={product.id} product={product} index={index} />
+              ))
+            )}
           </div>
         </div>
       </section>

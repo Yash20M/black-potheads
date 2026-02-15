@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 export const CartDrawer = () => {
   const { isOpen, closeCart, items, removeItem, updateQuantity, getTotalPrice } = useCartStore();
@@ -91,8 +92,8 @@ export const CartDrawer = () => {
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
-                              onClick={() =>
-                                updateQuantity(item.id, item.selectedSize, item.quantity - 1)
+                              onClick={async () =>
+                                await updateQuantity(item.id, item.selectedSize, item.quantity - 1)
                               }
                               className="w-8 h-8 border border-border flex items-center justify-center hover:border-primary transition-colors"
                               aria-label="Decrease quantity"
@@ -103,8 +104,8 @@ export const CartDrawer = () => {
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
-                              onClick={() =>
-                                updateQuantity(item.id, item.selectedSize, item.quantity + 1)
+                              onClick={async () =>
+                                await updateQuantity(item.id, item.selectedSize, item.quantity + 1)
                               }
                               className="w-8 h-8 border border-border flex items-center justify-center hover:border-primary transition-colors"
                               aria-label="Increase quantity"
@@ -118,7 +119,7 @@ export const CartDrawer = () => {
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          onClick={() => removeItem(item.id, item.selectedSize)}
+                          onClick={async () => await removeItem(item.id, item.selectedSize)}
                           className="text-muted-foreground hover:text-destructive transition-colors self-start"
                           aria-label="Remove item"
                         >
@@ -144,9 +145,11 @@ export const CartDrawer = () => {
                   </span>
                   <span className="font-display text-2xl">${getTotalPrice().toFixed(2)}</span>
                 </div>
-                <Button variant="hero" size="lg" className="w-full">
-                  Checkout
-                </Button>
+                <Link to="/checkout" onClick={closeCart}>
+                  <Button variant="hero" size="lg" className="w-full">
+                    Checkout
+                  </Button>
+                </Link>
                 <p className="text-center text-muted-foreground text-xs">
                   Shipping & taxes calculated at checkout
                 </p>

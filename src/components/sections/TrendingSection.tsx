@@ -1,15 +1,18 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Eye, ShoppingBag } from 'lucide-react';
-import { products } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
-
-const trendingProducts = products.slice(0, 4);
+import { productApi } from '@/lib/api';
+import { Product, normalizeProduct, ApiProduct } from '@/types/product';
+import { toast } from 'sonner';
 
 export const TrendingSection = () => {
   const containerRef = useRef(null);
+  const [trendingProducts, setTrendingProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start end', 'end start'],
@@ -17,6 +20,23 @@ export const TrendingSection = () => {
 
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.2], [0.95, 1]);
+
+  useEffect(() => {
+    loadTrendingProducts();
+  }, []);
+
+  const loadTrendingProducts = async () => {
+    try {
+      const data: any = await productApi.getFeatured(4);
+      const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
+      setTrendingProducts(normalized);
+    } catch (error: any) {
+      toast.error('Failed to load trending products');
+      console.error('Trending products error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section ref={containerRef} className="py-32 bg-card overflow-hidden">
@@ -47,9 +67,19 @@ export const TrendingSection = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {trendingProducts.map((product, index) => (
-            <TrendingProductCard key={product.id} product={product} index={index} />
-          ))}
+          {loading ? (
+            <div className="lg:col-span-12 text-center py-12 text-muted-foreground">
+              Loading trending products...
+            </div>
+          ) : trendingProducts.length === 0 ? (
+            <div className="lg:col-span-12 text-center py-12 text-muted-foreground">
+              No trending products available
+            </div>
+          ) : (
+            trendingProducts.map((product, index) => (
+              <TrendingProductCard key={product.id} product={product} index={index} />
+            ))
+          )}
         </div>
 
         <motion.div
@@ -70,9 +100,14 @@ export const TrendingSection = () => {
   );
 };
 
-const TrendingProductCard = ({ product, index }: { product: typeof products[0]; index: number }) => {
+const TrendingProductCard = ({ product, index }: { product: Product; index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const addItem = useCartStore((state) => state.addItem);
+  const { addItem } = useCartStore();
+
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await addItem(product, product.sizes[0]);
+  };
 
   const gridClasses = ['lg:col-span-7 lg:row-span-2', 'lg:col-span-5', 'lg:col-span-5', 'lg:col-span-12'];
   const heights = ['h-[500px] lg:h-full', 'h-[300px]', 'h-[300px]', 'h-[400px]'];
@@ -125,7 +160,7 @@ const TrendingProductCard = ({ product, index }: { product: typeof products[0]; 
             <Button size="sm" variant="outline" className="flex-1" onClick={(e) => e.preventDefault()}>
               <Eye size={16} className="mr-2" /> Quick View
             </Button>
-            <Button size="sm" className="flex-1" onClick={(e) => { e.preventDefault(); addItem(product, product.sizes[0]); }}>
+            <Button size="sm" className="flex-1" onClick={handleAddToCart}>
               <ShoppingBag size={16} className="mr-2" /> Add to Cart
             </Button>
           </motion.div>

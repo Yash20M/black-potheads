@@ -1,16 +1,63 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ProductCard } from '@/components/products/ProductCard';
-import { products, categories } from '@/data/products';
-import { Category } from '@/types/product';
+import { Category, Product, normalizeProduct, ApiProduct } from '@/types/product';
 import { cn } from '@/lib/utils';
+import { productApi } from '@/lib/api';
+import { toast } from 'sonner';
+
+const categories = [
+  { id: 'all', label: 'All' },
+  { id: 'Shiva', label: 'Shiva' },
+  { id: 'Shrooms', label: 'Shrooms' },
+  { id: 'LSD', label: 'LSD' },
+  { id: 'Chakras', label: 'Chakras' },
+  { id: 'Dark', label: 'Dark' },
+  { id: 'Rick n Morty', label: 'Rick n Morty' },
+];
 
 const ShopPage = () => {
   const [activeCategory, setActiveCategory] = useState<Category>('all');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredProducts = activeCategory === 'all'
-    ? products
-    : products.filter((p) => p.category === activeCategory);
+  // Memoize the load products function
+  const loadProducts = useCallback(async () => {
+    setLoading(true);
+    try {
+      if (activeCategory === 'all') {
+        // Load all products without category filter
+        const data: any = await productApi.getAll(1, 100);
+        const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
+        setProducts(normalized);
+      } else {
+        const data: any = await productApi.getByCategory(activeCategory, 1, 50);
+        const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
+        setProducts(normalized);
+      }
+    } catch (error: any) {
+      toast.error('Failed to load products');
+      console.error('Load products error:', error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeCategory]);
+
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
+
+  // Memoize products count text
+  const productsCountText = useMemo(() => {
+    if (loading) return 'Loading...';
+    return `Showing ${products.length} product${products.length !== 1 ? 's' : ''}`;
+  }, [loading, products.length]);
+
+  // Memoize category change handler
+  const handleCategoryChange = useCallback((categoryId: Category) => {
+    setActiveCategory(categoryId);
+  }, []);
 
   return (
     <div className="min-h-screen pt-20">
@@ -45,7 +92,7 @@ const ShopPage = () => {
                 key={category.id}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setActiveCategory(category.id as Category)}
+                onClick={() => handleCategoryChange(category.id as Category)}
                 className={cn(
                   'px-6 py-3 text-sm uppercase tracking-wider transition-all duration-300 border',
                   activeCategory === category.id
@@ -64,14 +111,24 @@ const ShopPage = () => {
             animate={{ opacity: 1 }}
             className="text-muted-foreground text-sm mb-8"
           >
-            Showing {filteredProducts.length} products
+            {productsCountText}
           </motion.p>
 
           {/* Products Grid */}
           <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredProducts.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
-            ))}
+            {loading ? (
+              <div className="col-span-full text-center py-12 text-muted-foreground">
+                Loading products...
+              </div>
+            ) : products.length === 0 ? (
+              <div className="col-span-full text-center py-12 text-muted-foreground">
+                No products found in this category
+              </div>
+            ) : (
+              products.map((product, index) => (
+                <ProductCard key={product.id} product={product} index={index} />
+              ))
+            )}
           </motion.div>
         </div>
       </section>

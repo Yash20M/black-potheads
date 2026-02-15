@@ -3,15 +3,14 @@ import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import skullTee from '@/assets/products/skull-tee.jpg';
-import gothicTee from '@/assets/products/gothic-tee.jpg';
-import tribalTee from '@/assets/products/tribal-tee.jpg';
-import graffitiTee from '@/assets/products/graffiti-tee.jpg';
 
 const categories = [
-  { name: 'SKULLS', count: 8, image: skullTee, color: 'from-red-500/20' },
-  { name: 'GOTHIC', count: 6, image: gothicTee, color: 'from-purple-500/20' },
-  { name: 'TRIBAL', count: 7, image: tribalTee, color: 'from-orange-500/20' },
-  { name: 'GRAFFITI', count: 5, image: graffitiTee, color: 'from-pink-500/20' },
+  { name: 'SHIVA', image: skullTee, color: 'from-blue-500/20' },
+  { name: 'SHROOMS', image: skullTee, color: 'from-purple-500/20' },
+  { name: 'LSD', image: skullTee, color: 'from-pink-500/20' },
+  { name: 'CHAKRAS', image: skullTee, color: 'from-orange-500/20' },
+  { name: 'DARK', image: skullTee, color: 'from-red-500/20' },
+  { name: 'RICK N MORTY', image: skullTee, color: 'from-green-500/20' },
 ];
 
 export const CategoriesShowcase = () => {
@@ -38,7 +37,7 @@ export const CategoriesShowcase = () => {
           <h2 className="font-display text-5xl md:text-7xl">CATEGORIES</h2>
         </motion.div>
 
-        <motion.div style={{ x }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.div style={{ x }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((category, index) => (
             <motion.div
               key={category.name}
@@ -74,7 +73,6 @@ export const CategoriesShowcase = () => {
                       </motion.div>
                     </motion.div>
                     <div>
-                      <span className="text-muted-foreground text-sm block mb-2">{category.count} products</span>
                       <h3 className="font-display text-4xl group-hover:text-primary transition-colors duration-300">
                         {category.name}
                       </h3>

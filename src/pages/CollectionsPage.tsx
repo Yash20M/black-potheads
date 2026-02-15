@@ -1,57 +1,56 @@
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import skullTee from '@/assets/products/skull-tee.jpg';
-import gothicTee from '@/assets/products/gothic-tee.jpg';
-import tribalTee from '@/assets/products/tribal-tee.jpg';
-import graffitiTee from '@/assets/products/graffiti-tee.jpg';
-import snakeTee from '@/assets/products/snake-tee.jpg';
 import collectionDark from '@/assets/collection-dark.jpg';
+import skullTee from '@/assets/products/skull-tee.jpg';
 
 const collections = [
   {
-    id: 'skulls',
-    title: 'Skulls & Bones',
-    subtitle: 'Death Collection',
-    description: 'Our darkest skull prints. Hand-illustrated by tattoo artists.',
-    count: 8,
+    id: 'Shiva',
+    title: 'Shiva Collection',
+    subtitle: 'Divine Power',
+    description: 'Spiritual designs featuring Lord Shiva. Premium prints on cotton.',
     image: skullTee,
     featured: true,
   },
   {
-    id: 'gothic',
-    title: 'Gothic Romance',
-    subtitle: 'Dark Florals',
-    description: 'Roses, thorns, and dark beauty. Gothic elegance on cotton.',
-    count: 6,
-    image: gothicTee,
+    id: 'Shrooms',
+    title: 'Shrooms Collection',
+    subtitle: 'Psychedelic Art',
+    description: 'Trippy mushroom designs. Explore consciousness through fashion.',
+    image: skullTee,
     featured: false,
   },
   {
-    id: 'tribal',
-    title: 'Tribal Fire',
-    subtitle: 'Ancient Patterns',
-    description: 'Geometric warrior patterns inspired by ancient civilizations.',
-    count: 7,
-    image: tribalTee,
+    id: 'LSD',
+    title: 'LSD Collection',
+    subtitle: 'Mind Expansion',
+    description: 'Psychedelic patterns and vibrant colors. Art that transcends.',
+    image: skullTee,
     featured: false,
   },
   {
-    id: 'graffiti',
-    title: 'Street Art',
-    subtitle: 'Urban Canvas',
-    description: 'Neon drips and graffiti tags. The streets on your chest.',
-    count: 5,
-    image: graffitiTee,
+    id: 'Chakras',
+    title: 'Chakras Collection',
+    subtitle: 'Energy Centers',
+    description: 'Sacred geometry and chakra symbols. Balance your energy.',
+    image: skullTee,
     featured: false,
   },
   {
-    id: 'tattoo',
-    title: 'Ink & Iron',
-    subtitle: 'Tattoo Flash',
-    description: 'Traditional flash art meets modern streetwear. Snakes, daggers, and more.',
-    count: 6,
-    image: snakeTee,
+    id: 'Dark',
+    title: 'Dark Collection',
+    subtitle: 'Shadow Realm',
+    description: 'Our darkest designs. Embrace the darkness within.',
+    image: skullTee,
+    featured: false,
+  },
+  {
+    id: 'Rick n Morty',
+    title: 'Rick n Morty',
+    subtitle: 'Wubba Lubba',
+    description: 'Get schwifty with Rick and Morty designs. Interdimensional style.',
+    image: skullTee,
     featured: false,
   },
 ];
@@ -107,7 +106,6 @@ const CollectionsPage = () => {
                       {featuredCollection.description}
                     </p>
                     <div className="flex items-center gap-4">
-                      <span className="text-sm text-muted-foreground">{featuredCollection.count} items</span>
                       <motion.span whileHover={{ x: 10 }} className="flex items-center gap-2 text-primary font-medium">
                         Shop Collection <ArrowRight size={18} />
                       </motion.span>
@@ -158,7 +156,6 @@ const CollectionsPage = () => {
                   <h3 className="font-display text-3xl mt-1 group-hover:text-primary transition-colors">
                     {collection.title.toUpperCase()}
                   </h3>
-                  <p className="text-muted-foreground text-sm mt-2">{collection.count} items</p>
                 </Link>
               </motion.div>
             ))}

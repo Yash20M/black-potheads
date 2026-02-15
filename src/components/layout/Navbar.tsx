@@ -1,8 +1,10 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ShoppingBag, Menu, X, Search, User, Skull } from 'lucide-react';
+import { ShoppingBag, Menu, X, Search, User, Skull, Heart } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCartStore } from '@/store/cartStore';
+import { useAuthStore } from '@/store/authStore';
+import { useWishlistStore } from '@/store/wishlistStore';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
@@ -15,7 +17,10 @@ const navLinks = [
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { toggleCart, getTotalItems } = useCartStore();
+  const { user, logout } = useAuthStore();
+  const { wishlistIds } = useWishlistStore();
   const totalItems = getTotalItems();
+  const wishlistCount = wishlistIds.size;
   const location = useLocation();
 
   const { scrollY } = useScroll();
@@ -83,14 +88,68 @@ export const Navbar = () => {
             <Search size={20} />
           </motion.button>
 
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="p-2 hover:text-primary transition-colors hidden md:block"
-            aria-label="Account"
-          >
-            <User size={20} />
-          </motion.button>
+          {user ? (
+            <div className="hidden md:flex items-center gap-2">
+              <Link to="/wishlist">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="p-2 hover:text-primary transition-colors relative"
+                  aria-label="Wishlist"
+                >
+                  <Heart size={20} />
+                  {wishlistCount > 0 && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold"
+                    >
+                      {wishlistCount}
+                    </motion.span>
+                  )}
+                </motion.button>
+              </Link>
+              <Link to="/profile">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="p-2 hover:text-primary transition-colors"
+                  aria-label="Profile"
+                >
+                  <User size={20} />
+                </motion.button>
+              </Link>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={logout}
+                className="text-xs uppercase tracking-wider px-3 py-1 border border-border hover:border-primary transition-colors"
+              >
+                Logout
+              </motion.button>
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-2">
+              <Link to="/login">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="text-xs uppercase tracking-wider px-3 py-1 border border-border hover:border-primary transition-colors"
+                >
+                  Login
+                </motion.button>
+              </Link>
+              <Link to="/register">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="text-xs uppercase tracking-wider px-3 py-1 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  Register
+                </motion.button>
+              </Link>
+            </div>
+          )}
 
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -154,6 +213,48 @@ export const Navbar = () => {
               </Link>
             </motion.div>
           ))}
+          
+          {user ? (
+            <>
+              <Link to="/wishlist" onClick={() => setIsMenuOpen(false)}>
+                <div className="text-2xl font-display uppercase tracking-wider py-2 border-b border-border flex items-center justify-between">
+                  Wishlist
+                  {wishlistCount > 0 && (
+                    <span className="text-sm bg-primary text-primary-foreground px-2 py-1">
+                      {wishlistCount}
+                    </span>
+                  )}
+                </div>
+              </Link>
+              <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
+                <div className="text-2xl font-display uppercase tracking-wider py-2 border-b border-border">
+                  Profile
+                </div>
+              </Link>
+              <button
+                onClick={() => {
+                  logout();
+                  setIsMenuOpen(false);
+                }}
+                className="text-2xl font-display uppercase tracking-wider py-2 border-b border-border text-left"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                <div className="text-2xl font-display uppercase tracking-wider py-2 border-b border-border">
+                  Login
+                </div>
+              </Link>
+              <Link to="/register" onClick={() => setIsMenuOpen(false)}>
+                <div className="text-2xl font-display uppercase tracking-wider py-2 border-b border-border">
+                  Register
+                </div>
+              </Link>
+            </>
+          )}
         </div>
       </motion.div>
     </motion.header>

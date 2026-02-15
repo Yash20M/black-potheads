@@ -1,9 +1,13 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { Plus, Eye } from 'lucide-react';
+import { useState, useCallback, memo } from 'react';
+import { Plus, Eye, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { useCartStore } from '@/store/cartStore';
+import { useWishlistStore } from '@/store/wishlistStore';
+import { useAuthStore } from '@/store/authStore';
+import { wishlistApi } from '@/lib/api';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 interface ProductCardProps {
@@ -11,17 +15,55 @@ interface ProductCardProps {
   index: number;
 }
 
-export const ProductCard = ({ product, index }: ProductCardProps) => {
+const ProductCardComponent = ({ product, index }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
+  const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const { addItem, openCart } = useCartStore();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlistStore();
+  const { user } = useAuthStore();
+  const inWishlist = isInWishlist(product.id);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem(product, selectedSize);
+    await addItem(product, selectedSize);
     openCart();
-  };
+  }, [product, selectedSize, addItem, openCart]);
+
+  const handleToggleWishlist = useCallback(async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!user) {
+      toast.error('Please login to add items to wishlist');
+      return;
+    }
+
+    setIsTogglingWishlist(true);
+    try {
+      await wishlistApi.add(product.id);
+      
+      if (inWishlist) {
+        removeFromWishlist(product.id);
+        toast.success('Removed from wishlist');
+      } else {
+        addToWishlist(product.id);
+        toast.success('Added to wishlist');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update wishlist');
+    } finally {
+      setIsTogglingWishlist(false);
+    }
+  }, [user, product.id, inWishlist, addToWishlist, removeFromWishlist]);
+
+  const handleImageError = useCallback(() => {
+    setImageError(true);
+  }, []);
+
+  const imageSrc = imageError ? 'https://via.placeholder.com/400x500?text=No+Image' : product.image;
 
   return (
     <motion.div
@@ -38,8 +80,9 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
         <div className="relative aspect-[3/4] bg-secondary overflow-hidden mb-4">
           {/* Product Image */}
           <motion.img
-            src={product.image}
+            src={imageSrc}
             alt={product.name}
+            onError={handleImageError}
             className="w-full h-full object-cover"
             animate={{ scale: isHovered ? 1.1 : 1 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -111,11 +154,17 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={(e) => e.preventDefault()}
-                className="flex items-center justify-center w-12 h-12 border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background transition-colors"
-                aria-label="Quick view"
+                onClick={handleToggleWishlist}
+                disabled={isTogglingWishlist}
+                className={cn(
+                  'flex items-center justify-center w-12 h-12 border-2 transition-colors',
+                  inWishlist
+                    ? 'bg-primary border-primary text-primary-foreground'
+                    : 'border-foreground bg-transparent hover:bg-foreground hover:text-background'
+                )}
+                aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
               >
-                <Eye size={18} />
+                <Heart size={18} className={inWishlist ? 'fill-current' : ''} />
               </motion.button>
             </div>
           </motion.div>
@@ -141,3 +190,11 @@ export const ProductCard = ({ product, index }: ProductCardProps) => {
     </motion.div>
   );
 };
+
+// Memoize the component to prevent unnecessary re-renders
+export const ProductCard = memo(ProductCardComponent, (prevProps, nextProps) => {
+  return (
+    prevProps.product.id === nextProps.product.id &&
+    prevProps.index === nextProps.index
+  );
+});

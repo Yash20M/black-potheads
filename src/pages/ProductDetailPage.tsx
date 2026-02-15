@@ -1,29 +1,72 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Minus, Plus, Heart, Truck, RotateCcw, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { products } from '@/data/products';
 import { useCartStore } from '@/store/cartStore';
+import { useWishlistStore } from '@/store/wishlistStore';
+import { useAuthStore } from '@/store/authStore';
+import { wishlistApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { ProductCard } from '@/components/products/ProductCard';
+import { productApi } from '@/lib/api';
+import { Product, normalizeProduct, ApiProduct } from '@/types/product';
+import { toast } from 'sonner';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
-  const product = products.find((p) => p.id === id);
-  const [selectedSize, setSelectedSize] = useState(product?.sizes[0] || '');
+  const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
   const { addItem, openCart } = useCartStore();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlistStore();
+  const { user } = useAuthStore();
+  const inWishlist = product ? isInWishlist(product.id) : false;
 
-  // Related products from same category
-  const relatedProducts = products
-    .filter((p) => p.id !== id && p.category === product?.category)
-    .slice(0, 3);
+  useEffect(() => {
+    if (id) {
+      loadProduct();
+    }
+  }, [id]);
 
-  // If not enough from same category, fill with others
-  const displayRelated = relatedProducts.length >= 3
-    ? relatedProducts
-    : [...relatedProducts, ...products.filter((p) => p.id !== id && p.category !== product?.category)].slice(0, 3);
+  const loadProduct = async () => {
+    setLoading(true);
+    try {
+      const data: any = await productApi.getById(id!);
+      const normalized = normalizeProduct(data.product);
+      setProduct(normalized);
+      setSelectedSize(normalized.sizes[0] || '');
+      
+      // Load related products from same category
+      if (data.product.category) {
+        const relatedData: any = await productApi.getByCategory(data.product.category, 1, 4);
+        const relatedNormalized = relatedData.products
+          .filter((p: ApiProduct) => p._id !== id)
+          .slice(0, 3)
+          .map((p: ApiProduct) => normalizeProduct(p));
+        setRelatedProducts(relatedNormalized);
+      }
+    } catch (error: any) {
+      toast.error('Failed to load product');
+      console.error('Load product error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-20 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="font-display text-4xl mb-4">Loading...</h1>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -38,11 +81,38 @@ const ProductDetailPage = () => {
     );
   }
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    if (!product) return;
     for (let i = 0; i < quantity; i++) {
-      addItem(product, selectedSize);
+      await addItem(product, selectedSize);
     }
     openCart();
+  };
+
+  const handleToggleWishlist = async () => {
+    if (!product) return;
+    
+    if (!user) {
+      toast.error('Please login to add items to wishlist');
+      return;
+    }
+
+    setIsTogglingWishlist(true);
+    try {
+      await wishlistApi.add(product.id);
+      
+      if (inWishlist) {
+        removeFromWishlist(product.id);
+        toast.success('Removed from wishlist');
+      } else {
+        addToWishlist(product.id);
+        toast.success('Added to wishlist');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update wishlist');
+    } finally {
+      setIsTogglingWishlist(false);
+    }
   };
 
   return (
@@ -61,20 +131,45 @@ const ProductDetailPage = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              className="relative aspect-[3/4] bg-secondary overflow-hidden"
-            >
-              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-              {product.isNew && (
-                <span className="absolute top-4 left-4 bg-primary text-primary-foreground px-4 py-2 text-sm uppercase tracking-wider font-bold">New</span>
+            <div>
+              <motion.div
+                initial={{ opacity: 0, x: -40 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                className="relative aspect-[3/4] bg-secondary overflow-hidden mb-4"
+              >
+                <img 
+                  src={product.images[selectedImage] || product.image} 
+                  alt={product.name} 
+                  className="w-full h-full object-cover" 
+                />
+                {product.isNew && (
+                  <span className="absolute top-4 left-4 bg-primary text-primary-foreground px-4 py-2 text-sm uppercase tracking-wider font-bold">New</span>
+                )}
+                {product.isSale && (
+                  <span className="absolute top-4 left-4 bg-destructive text-destructive-foreground px-4 py-2 text-sm uppercase tracking-wider font-bold">Sale</span>
+                )}
+              </motion.div>
+              
+              {/* Image Thumbnails */}
+              {product.images.length > 1 && (
+                <div className="grid grid-cols-4 gap-2">
+                  {product.images.map((img, idx) => (
+                    <motion.button
+                      key={idx}
+                      whileHover={{ scale: 1.05 }}
+                      onClick={() => setSelectedImage(idx)}
+                      className={cn(
+                        'aspect-square overflow-hidden border-2 transition-all',
+                        selectedImage === idx ? 'border-primary' : 'border-transparent'
+                      )}
+                    >
+                      <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                    </motion.button>
+                  ))}
+                </div>
               )}
-              {product.isSale && (
-                <span className="absolute top-4 left-4 bg-destructive text-destructive-foreground px-4 py-2 text-sm uppercase tracking-wider font-bold">Sale</span>
-              )}
-            </motion.div>
+            </div>
 
             <motion.div
               initial={{ opacity: 0, x: 40 }}
@@ -146,9 +241,17 @@ const ProductDetailPage = () => {
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="w-14 h-14 border-2 border-border flex items-center justify-center hover:border-primary hover:text-primary transition-colors"
+                  onClick={handleToggleWishlist}
+                  disabled={isTogglingWishlist}
+                  className={cn(
+                    'w-14 h-14 border-2 flex items-center justify-center transition-colors',
+                    inWishlist
+                      ? 'bg-primary border-primary text-primary-foreground'
+                      : 'border-border hover:border-primary hover:text-primary'
+                  )}
+                  aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
                 >
-                  <Heart size={22} />
+                  <Heart size={22} className={inWishlist ? 'fill-current' : ''} />
                 </motion.button>
               </div>
 
@@ -182,7 +285,7 @@ const ProductDetailPage = () => {
             MORE FROM {product.category.toUpperCase()}
           </motion.h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {displayRelated.map((p, index) => (
+            {relatedProducts.map((p, index) => (
               <ProductCard key={p.id} product={p} index={index} />
             ))}
           </div>
