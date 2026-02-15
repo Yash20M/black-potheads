@@ -14,20 +14,18 @@ export const ScrollingText = () => {
   return (
     <section ref={containerRef} className="py-24 bg-background overflow-hidden">
       <div className="space-y-8">
-        {/* First Row */}
         <motion.div style={{ x: x1 }} className="flex whitespace-nowrap">
           {Array(4).fill(null).map((_, i) => (
             <span key={i} className="font-display text-[12vw] text-foreground/5 mx-8">
-              STREETWEAR • CULTURE • AUTHENTIC •
+              BLACK POTHEADS • DARK PRINTS • REBEL WEAR •
             </span>
           ))}
         </motion.div>
 
-        {/* Second Row - Opposite Direction */}
         <motion.div style={{ x: x2 }} className="flex whitespace-nowrap">
           {Array(4).fill(null).map((_, i) => (
             <span key={i} className="font-display text-[12vw] text-primary/10 mx-8">
-              STYLE • URBAN • PREMIUM •
+              SKULLS • GOTHIC • TRIBAL • GRAFFITI •
             </span>
           ))}
         </motion.div>

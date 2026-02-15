@@ -17,4 +17,4 @@ export interface CartItem extends Product {
   selectedSize: string;
 }
 
-export type Category = 'all' | 'hoodies' | 'tees' | 'pants' | 'footwear' | 'accessories';
+export type Category = 'all' | 'skulls' | 'gothic' | 'tribal' | 'graffiti' | 'tattoo' | 'typography';

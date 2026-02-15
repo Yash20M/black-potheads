@@ -1,44 +1,57 @@
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import collectionBanner from '@/assets/collection-banner.jpg';
-import heroImage from '@/assets/hero-model.jpg';
+import skullTee from '@/assets/products/skull-tee.jpg';
+import gothicTee from '@/assets/products/gothic-tee.jpg';
+import tribalTee from '@/assets/products/tribal-tee.jpg';
+import graffitiTee from '@/assets/products/graffiti-tee.jpg';
+import snakeTee from '@/assets/products/snake-tee.jpg';
+import collectionDark from '@/assets/collection-dark.jpg';
 
 const collections = [
   {
-    id: 'winter-2025',
-    title: 'Winter 2025',
-    subtitle: 'Featured Collection',
-    description: 'Premium outerwear and essentials for the colder months.',
-    count: 32,
-    image: collectionBanner,
+    id: 'skulls',
+    title: 'Skulls & Bones',
+    subtitle: 'Death Collection',
+    description: 'Our darkest skull prints. Hand-illustrated by tattoo artists.',
+    count: 8,
+    image: skullTee,
     featured: true,
   },
   {
-    id: 'essentials',
-    title: 'Essentials',
-    subtitle: 'Timeless Basics',
-    description: 'Core pieces that form the foundation of any wardrobe.',
-    count: 24,
-    image: heroImage,
-    featured: false,
-  },
-  {
-    id: 'urban-core',
-    title: 'Urban Core',
-    subtitle: 'Street Ready',
-    description: 'Bold pieces designed for the concrete jungle.',
-    count: 18,
-    image: collectionBanner,
-    featured: false,
-  },
-  {
-    id: 'limited-edition',
-    title: 'Limited Edition',
-    subtitle: 'Exclusive Drops',
-    description: 'One-time releases. Once they\'re gone, they\'re gone.',
+    id: 'gothic',
+    title: 'Gothic Romance',
+    subtitle: 'Dark Florals',
+    description: 'Roses, thorns, and dark beauty. Gothic elegance on cotton.',
     count: 6,
-    image: heroImage,
+    image: gothicTee,
+    featured: false,
+  },
+  {
+    id: 'tribal',
+    title: 'Tribal Fire',
+    subtitle: 'Ancient Patterns',
+    description: 'Geometric warrior patterns inspired by ancient civilizations.',
+    count: 7,
+    image: tribalTee,
+    featured: false,
+  },
+  {
+    id: 'graffiti',
+    title: 'Street Art',
+    subtitle: 'Urban Canvas',
+    description: 'Neon drips and graffiti tags. The streets on your chest.',
+    count: 5,
+    image: graffitiTee,
+    featured: false,
+  },
+  {
+    id: 'tattoo',
+    title: 'Ink & Iron',
+    subtitle: 'Tattoo Flash',
+    description: 'Traditional flash art meets modern streetwear. Snakes, daggers, and more.',
+    count: 6,
+    image: snakeTee,
     featured: false,
   },
 ];
@@ -49,7 +62,6 @@ const CollectionsPage = () => {
 
   return (
     <div className="min-h-screen pt-20">
-      {/* Page Header */}
       <section className="py-16 bg-card border-b border-border">
         <div className="container mx-auto px-6">
           <motion.div
@@ -65,7 +77,6 @@ const CollectionsPage = () => {
         </div>
       </section>
 
-      {/* Featured Collection */}
       {featuredCollection && (
         <section className="py-16 bg-background">
           <div className="container mx-auto px-6">
@@ -77,7 +88,7 @@ const CollectionsPage = () => {
             >
               <Link to="/shop">
                 <motion.img
-                  src={featuredCollection.image}
+                  src={collectionDark}
                   alt={featuredCollection.title}
                   className="w-full h-full object-cover"
                   whileHover={{ scale: 1.05 }}
@@ -96,13 +107,8 @@ const CollectionsPage = () => {
                       {featuredCollection.description}
                     </p>
                     <div className="flex items-center gap-4">
-                      <span className="text-sm text-muted-foreground">
-                        {featuredCollection.count} items
-                      </span>
-                      <motion.span
-                        whileHover={{ x: 10 }}
-                        className="flex items-center gap-2 text-primary font-medium"
-                      >
+                      <span className="text-sm text-muted-foreground">{featuredCollection.count} items</span>
+                      <motion.span whileHover={{ x: 10 }} className="flex items-center gap-2 text-primary font-medium">
                         Shop Collection <ArrowRight size={18} />
                       </motion.span>
                     </div>
@@ -114,7 +120,6 @@ const CollectionsPage = () => {
         </section>
       )}
 
-      {/* Other Collections Grid */}
       <section className="py-16 bg-card">
         <div className="container mx-auto px-6">
           <motion.h2
@@ -126,7 +131,7 @@ const CollectionsPage = () => {
             ALL COLLECTIONS
           </motion.h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {otherCollections.map((collection, index) => (
               <motion.div
                 key={collection.id}

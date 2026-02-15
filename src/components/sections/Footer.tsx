@@ -1,17 +1,17 @@
 import { motion } from 'framer-motion';
-import { Instagram, Twitter, ArrowRight } from 'lucide-react';
+import { Instagram, Twitter, ArrowRight, Skull } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 const footerLinks = {
-  shop: ['All Products', 'Hoodies', 'Tees', 'Pants', 'Accessories'],
+  shop: ['All Products', 'Skulls', 'Gothic', 'Tribal', 'Graffiti', 'Tattoo'],
   support: ['FAQ', 'Shipping', 'Returns', 'Size Guide', 'Contact'],
   company: ['About Us', 'Careers', 'Press', 'Sustainability'],
 };
 
 export const Footer = () => {
   return (
-    <footer id="about" className="bg-card border-t border-border">
-      {/* Newsletter Section */}
+    <footer className="bg-card border-t border-border">
       <div className="container mx-auto px-6 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -19,7 +19,7 @@ export const Footer = () => {
           viewport={{ once: true }}
           className="max-w-2xl mx-auto text-center mb-16"
         >
-          <h3 className="font-display text-4xl md:text-5xl mb-4">JOIN THE MOVEMENT</h3>
+          <h3 className="font-display text-4xl md:text-5xl mb-4">JOIN THE DARKNESS</h3>
           <p className="text-muted-foreground mb-8">
             Subscribe for exclusive drops, early access, and 10% off your first order.
           </p>
@@ -36,20 +36,20 @@ export const Footer = () => {
           </div>
         </motion.div>
 
-        {/* Links Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-16 border-b border-border">
-          {/* Logo & Social */}
           <div className="col-span-2 md:col-span-1">
-            <h4 className="font-display text-3xl mb-4">STRĒET</h4>
+            <div className="flex items-center gap-2 mb-4">
+              <Skull size={24} className="text-primary" />
+              <h4 className="font-display text-2xl">BLACK POTHEADS</h4>
+            </div>
             <p className="text-muted-foreground text-sm mb-6">
-              Premium streetwear for the bold and uncompromising.
+              Premium printed tees for the unapologetically bold.
             </p>
             <div className="flex gap-4">
               <motion.a
                 href="#"
                 whileHover={{ scale: 1.1, y: -2 }}
                 className="w-10 h-10 border border-border flex items-center justify-center hover:border-primary hover:text-primary transition-colors"
-                aria-label="Instagram"
               >
                 <Instagram size={18} />
               </motion.a>
@@ -57,69 +57,55 @@ export const Footer = () => {
                 href="#"
                 whileHover={{ scale: 1.1, y: -2 }}
                 className="w-10 h-10 border border-border flex items-center justify-center hover:border-primary hover:text-primary transition-colors"
-                aria-label="Twitter"
               >
                 <Twitter size={18} />
               </motion.a>
             </div>
           </div>
 
-          {/* Shop Links */}
           <div>
             <h5 className="font-display text-lg uppercase tracking-wider mb-4">Shop</h5>
             <ul className="space-y-2">
               {footerLinks.shop.map((link) => (
                 <li key={link}>
-                  <a
-                    href="#"
-                    className="text-muted-foreground text-sm hover:text-foreground transition-colors"
-                  >
+                  <Link to="/shop" className="text-muted-foreground text-sm hover:text-foreground transition-colors">
                     {link}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Support Links */}
           <div>
             <h5 className="font-display text-lg uppercase tracking-wider mb-4">Support</h5>
             <ul className="space-y-2">
               {footerLinks.support.map((link) => (
                 <li key={link}>
-                  <a
-                    href="#"
-                    className="text-muted-foreground text-sm hover:text-foreground transition-colors"
-                  >
+                  <Link to="/contact" className="text-muted-foreground text-sm hover:text-foreground transition-colors">
                     {link}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Company Links */}
           <div>
             <h5 className="font-display text-lg uppercase tracking-wider mb-4">Company</h5>
             <ul className="space-y-2">
               {footerLinks.company.map((link) => (
                 <li key={link}>
-                  <a
-                    href="#"
-                    className="text-muted-foreground text-sm hover:text-foreground transition-colors"
-                  >
+                  <Link to="/about" className="text-muted-foreground text-sm hover:text-foreground transition-colors">
                     {link}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8">
           <p className="text-muted-foreground text-sm">
-            © 2025 STRĒET. All rights reserved.
+            © 2026 BLACK POTHEADS. All rights reserved.
           </p>
           <div className="flex gap-6 text-muted-foreground text-sm">
             <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>

@@ -28,15 +28,8 @@ export const TrendingSection = () => {
           className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-8"
         >
           <div>
-            <motion.div
-              initial={{ width: 0 }}
-              whileInView={{ width: 80 }}
-              viewport={{ once: true }}
-              className="h-1 bg-primary mb-6"
-            />
-            <span className="text-sm uppercase tracking-widest text-muted-foreground mb-4 block">
-              Most Popular
-            </span>
+            <motion.div initial={{ width: 0 }} whileInView={{ width: 80 }} viewport={{ once: true }} className="h-1 bg-primary mb-6" />
+            <span className="text-sm uppercase tracking-widest text-muted-foreground mb-4 block">Most Popular</span>
             <h2 className="font-display text-5xl md:text-7xl">
               TRENDING<br />
               <span className="text-accent-gradient">RIGHT NOW</span>
@@ -48,12 +41,11 @@ export const TrendingSection = () => {
             viewport={{ once: true }}
             className="text-muted-foreground max-w-md text-lg"
           >
-            The pieces everyone's talking about. Limited quantities, 
-            unlimited style. Don't miss out on the hottest drops.
+            The prints everyone's talking about. Limited runs, 
+            unlimited darkness. Don't miss out.
           </motion.p>
         </motion.div>
 
-        {/* Product Grid - Asymmetric Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {trendingProducts.map((product, index) => (
             <TrendingProductCard key={product.id} product={product} index={index} />
@@ -82,20 +74,8 @@ const TrendingProductCard = ({ product, index }: { product: typeof products[0]; 
   const [isHovered, setIsHovered] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
 
-  // Asymmetric grid positioning
-  const gridClasses = [
-    'lg:col-span-7 lg:row-span-2',
-    'lg:col-span-5',
-    'lg:col-span-5',
-    'lg:col-span-12',
-  ];
-
-  const heights = [
-    'h-[500px] lg:h-full',
-    'h-[300px]',
-    'h-[300px]',
-    'h-[400px]',
-  ];
+  const gridClasses = ['lg:col-span-7 lg:row-span-2', 'lg:col-span-5', 'lg:col-span-5', 'lg:col-span-12'];
+  const heights = ['h-[500px] lg:h-full', 'h-[300px]', 'h-[300px]', 'h-[400px]'];
 
   return (
     <motion.div
@@ -115,14 +95,10 @@ const TrendingProductCard = ({ product, index }: { product: typeof products[0]; 
           animate={{ scale: isHovered ? 1.1 : 1 }}
           transition={{ duration: 0.6 }}
         />
-
-        {/* Overlay */}
         <motion.div
           className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"
           animate={{ opacity: isHovered ? 0.9 : 0.6 }}
         />
-
-        {/* Badge */}
         {product.badge && (
           <motion.div
             initial={{ x: -100, opacity: 0 }}
@@ -134,50 +110,23 @@ const TrendingProductCard = ({ product, index }: { product: typeof products[0]; 
             {product.badge}
           </motion.div>
         )}
-
-        {/* Content */}
         <div className="absolute bottom-0 left-0 right-0 p-6">
-          <motion.div
-            animate={{ y: isHovered ? -10 : 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <span className="text-muted-foreground text-sm uppercase tracking-wider">
-              {product.category}
-            </span>
-            <h3 className="font-display text-2xl md:text-3xl mt-1 group-hover:text-primary transition-colors">
-              {product.name}
-            </h3>
+          <motion.div animate={{ y: isHovered ? -10 : 0 }} transition={{ duration: 0.3 }}>
+            <span className="text-muted-foreground text-sm uppercase tracking-wider">{product.category}</span>
+            <h3 className="font-display text-2xl md:text-3xl mt-1 group-hover:text-primary transition-colors">{product.name}</h3>
             <p className="text-xl font-medium mt-2">${product.price}</p>
           </motion.div>
-
-          {/* Actions */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 20 }}
             transition={{ duration: 0.3 }}
             className="flex gap-3 mt-4"
           >
-            <Button
-              size="sm"
-              variant="outline"
-              className="flex-1"
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-            >
-              <Eye size={16} className="mr-2" />
-              Quick View
+            <Button size="sm" variant="outline" className="flex-1" onClick={(e) => e.preventDefault()}>
+              <Eye size={16} className="mr-2" /> Quick View
             </Button>
-            <Button
-              size="sm"
-              className="flex-1"
-              onClick={(e) => {
-                e.preventDefault();
-                addItem(product, product.sizes[0]);
-              }}
-            >
-              <ShoppingBag size={16} className="mr-2" />
-              Add to Cart
+            <Button size="sm" className="flex-1" onClick={(e) => { e.preventDefault(); addItem(product, product.sizes[0]); }}>
+              <ShoppingBag size={16} className="mr-2" /> Add to Cart
             </Button>
           </motion.div>
         </div>
