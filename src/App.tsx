@@ -17,6 +17,9 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminQR from "./pages/admin/AdminQR";
+import InventoryOverview from "./pages/admin/inventory/InventoryOverview";
+import InventoryAlerts from "./pages/admin/inventory/InventoryAlerts";
+import InventoryReports from "./pages/admin/inventory/InventoryReports";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -54,6 +57,9 @@ const App = () => (
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="products" element={<AdminProducts />} />
             <Route path="orders" element={<AdminOrders />} />
+            <Route path="inventory/overview" element={<InventoryOverview />} />
+            <Route path="inventory/alerts" element={<InventoryAlerts />} />
+            <Route path="inventory/reports" element={<InventoryReports />} />
             <Route path="qr" element={<AdminQR />} />
           </Route>
           

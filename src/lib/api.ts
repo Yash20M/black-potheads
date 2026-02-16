@@ -253,4 +253,54 @@ export const adminApi = {
         body: formData,
       }, true),
   },
+
+  // Inventory Management
+  inventory: {
+    getOverview: (lowStock?: number, category?: string) => {
+      const params = new URLSearchParams();
+      if (lowStock) params.append('lowStock', lowStock.toString());
+      if (category) params.append('category', category);
+      return apiFetch(`/api/admin/inventory/overview?${params.toString()}`, {}, true);
+    },
+
+    getStats: () =>
+      apiFetch('/api/admin/inventory/stats', {}, true),
+
+    updateStock: (productId: string, stock: number, operation: 'set' | 'add' | 'subtract' = 'set') =>
+      apiFetch(`/api/admin/inventory/update-stock/${productId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ stock, operation }),
+      }, true),
+
+    bulkUpdateStock: (updates: Array<{ productId: string; stock: number; operation: 'set' | 'add' | 'subtract' }>) =>
+      apiFetch('/api/admin/inventory/bulk-update-stock', {
+        method: 'PUT',
+        body: JSON.stringify({ updates }),
+      }, true),
+
+    getLowStock: (threshold = 10, page = 1, limit = 20) => {
+      const params = new URLSearchParams({ 
+        threshold: threshold.toString(), 
+        page: page.toString(), 
+        limit: limit.toString() 
+      });
+      return apiFetch(`/api/admin/inventory/low-stock?${params.toString()}`, {}, true);
+    },
+
+    getOutOfStock: (page = 1, limit = 20) => {
+      const params = new URLSearchParams({ 
+        page: page.toString(), 
+        limit: limit.toString() 
+      });
+      return apiFetch(`/api/admin/inventory/out-of-stock?${params.toString()}`, {}, true);
+    },
+
+    getStockMovement: (startDate?: string, endDate?: string, productId?: string) => {
+      const params = new URLSearchParams();
+      if (startDate) params.append('startDate', startDate);
+      if (endDate) params.append('endDate', endDate);
+      if (productId) params.append('productId', productId);
+      return apiFetch(`/api/admin/inventory/stock-movement?${params.toString()}`, {}, true);
+    },
+  },
 };
