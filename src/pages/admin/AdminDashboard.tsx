@@ -44,25 +44,25 @@ const AdminDashboard = () => {
       title: 'Total Orders',
       value: stats?.totalOrders || 0,
       icon: ShoppingCart,
-      color: 'text-blue-500',
+      color: 'text-gray-300',
     },
     {
       title: 'Pending',
       value: stats?.statusCounts?.find((s: any) => s._id === 'Pending')?.count || 0,
       icon: Package,
-      color: 'text-yellow-500',
+      color: 'text-gray-400',
     },
     {
       title: 'Delivered',
       value: stats?.statusCounts?.find((s: any) => s._id === 'Delivered')?.count || 0,
       icon: TrendingUp,
-      color: 'text-green-500',
+      color: 'text-gray-200',
     },
     {
       title: 'Processing',
       value: stats?.statusCounts?.find((s: any) => s._id === 'Processing')?.count || 0,
       icon: Users,
-      color: 'text-purple-500',
+      color: 'text-gray-500',
     },
   ];
 

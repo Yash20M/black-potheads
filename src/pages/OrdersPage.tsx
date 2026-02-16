@@ -56,12 +56,12 @@ const OrdersPage = () => {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      'Pending': 'text-yellow-500',
-      'Processing': 'text-blue-500',
-      'Shipped': 'text-purple-500',
-      'Out for Delivery': 'text-orange-500',
-      'Delivered': 'text-green-500',
-      'Cancelled': 'text-red-500',
+      'Pending': 'text-gray-400',
+      'Processing': 'text-gray-300',
+      'Shipped': 'text-gray-200',
+      'Out for Delivery': 'text-gray-400',
+      'Delivered': 'text-gray-300',
+      'Cancelled': 'text-gray-500',
     };
     return colors[status] || 'text-muted-foreground';
   };

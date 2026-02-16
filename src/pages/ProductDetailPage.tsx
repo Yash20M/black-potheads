@@ -1,12 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Minus, Plus, Heart, Truck, RotateCcw, Shield, Info, Package, X, ZoomIn } from 'lucide-react';
+import { ArrowLeft, Plus, X, ZoomIn, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
-import { useWishlistStore } from '@/store/wishlistStore';
-import { useAuthStore } from '@/store/authStore';
-import { wishlistApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { ProductCard } from '@/components/products/ProductCard';
 import { productApi } from '@/lib/api';
@@ -19,16 +16,13 @@ const ProductDetailPage = () => {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('');
-  const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
   const [activeDrawer, setActiveDrawer] = useState<'details' | 'shipping' | null>(null);
   const [isZoomed, setIsZoomed] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
   const { addItem, openCart } = useCartStore();
-  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlistStore();
-  const { user } = useAuthStore();
-  const inWishlist = product ? isInWishlist(product.id) : false;
 
   useEffect(() => {
     if (id) {
@@ -86,40 +80,46 @@ const ProductDetailPage = () => {
 
   const handleAddToCart = async () => {
     if (!product) return;
-    for (let i = 0; i < quantity; i++) {
-      await addItem(product, selectedSize);
-    }
+    await addItem(product, selectedSize);
     openCart();
   };
 
-  const handleToggleWishlist = async () => {
+  const handlePrevImage = () => {
     if (!product) return;
-    
-    if (!user) {
-      toast.error('Please login to add items to wishlist');
-      return;
-    }
-
-    setIsTogglingWishlist(true);
-    try {
-      await wishlistApi.add(product.id);
-      
-      if (inWishlist) {
-        removeFromWishlist(product.id);
-        toast.success('Removed from wishlist');
-      } else {
-        addToWishlist(product.id);
-        toast.success('Added to wishlist');
-      }
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update wishlist');
-    } finally {
-      setIsTogglingWishlist(false);
-    }
+    setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+    setImageError(false);
   };
 
-  const handleImageError = () => {
-    setImageError(true);
+  const handleNextImage = () => {
+    if (!product) return;
+    setSelectedImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+    setImageError(false);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      handleNextImage();
+    }
+    if (isRightSwipe) {
+      handlePrevImage();
+    }
+
+    setTouchStart(0);
+    setTouchEnd(0);
   };
 
   const currentImageSrc = imageError 
@@ -128,10 +128,10 @@ const ProductDetailPage = () => {
 
   return (
     <div className="min-h-screen pt-20 bg-white">
-      <div className="bg-black border-b border-gray-800">
+      <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-6 py-4">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-            <Link to="/shop" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+            <Link to="/shop" className="inline-flex items-center gap-2 text-gray-600 hover:text-black transition-colors">
               <ArrowLeft size={18} />
               <span className="text-sm uppercase tracking-[0.2em]">Back to Shop</span>
             </Link>
@@ -139,87 +139,115 @@ const ProductDetailPage = () => {
         </div>
       </div>
 
-      <section className="py-16 bg-white">
+      <section className="py-8 bg-white">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div>
-              <motion.div
-                initial={{ opacity: 0, x: -40 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="relative aspect-[3/4] bg-gray-100 overflow-hidden mb-4 group cursor-zoom-in border-2 border-black"
-                onClick={() => setIsZoomed(true)}
-              >
-                <motion.img 
-                  src={currentImageSrc}
-                  alt={product.name}
-                  onError={handleImageError}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
-                  whileHover={{ scale: 1.05 }}
-                />
-                {product.isNew && (
-                  <span className="absolute top-4 left-4 bg-black text-white px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold">New</span>
-                )}
-                {product.isSale && (
-                  <span className="absolute top-4 left-4 bg-white text-black px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold border-2 border-black">Sale</span>
-                )}
-                <div className="absolute bottom-4 right-4 bg-white border-2 border-black p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ZoomIn size={20} className="text-black" />
-                </div>
-              </motion.div>
-              
-              {/* Image Thumbnails */}
-              {product.images.length > 1 && (
-                <div className="grid grid-cols-4 gap-2">
-                  {product.images.map((img, idx) => (
-                    <motion.button
-                      key={idx}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        setSelectedImage(idx);
-                        setImageError(false);
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+            {/* Left side - Images section */}
+            <div className="lg:sticky lg:top-24 lg:self-start h-fit">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* First image - Fixed on left */}
+                {product.images[0] && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="relative aspect-[3/4] bg-gray-50 overflow-hidden group cursor-zoom-in lg:col-span-1"
+                    onClick={() => {
+                      setSelectedImage(0);
+                      setIsZoomed(true);
+                    }}
+                  >
+                    <motion.img 
+                      src={product.images[0]}
+                      alt={`${product.name} 1`}
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://via.placeholder.com/400x500?text=No+Image';
                       }}
-                      className={cn(
-                        'aspect-square overflow-hidden border-2 transition-all',
-                        selectedImage === idx ? 'border-black' : 'border-gray-300 hover:border-black'
-                      )}
-                    >
-                      <img 
-                        src={img} 
-                        alt={`${product.name} ${idx + 1}`} 
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = 'https://via.placeholder.com/400x500?text=No+Image';
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                    />
+                    {product.isNew && (
+                      <span className="absolute top-4 left-4 bg-black text-white px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold">New</span>
+                    )}
+                    {product.isSale && (
+                      <span className="absolute top-4 left-4 bg-white text-black px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold border-2 border-black">Sale</span>
+                    )}
+                    <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ZoomIn size={20} className="text-black" />
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Remaining images - Scrolling vertically on right */}
+                {product.images.length > 1 && (
+                  <div className="space-y-4 max-h-[600px] lg:max-h-[calc(100vh-120px)] overflow-y-auto pr-2 lg:col-span-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    {product.images.slice(1).map((img, index) => (
+                      <motion.div
+                        key={index + 1}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: (index + 1) * 0.1 }}
+                        className="relative aspect-[3/4] bg-gray-50 overflow-hidden group cursor-zoom-in"
+                        onClick={() => {
+                          setSelectedImage(index + 1);
+                          setIsZoomed(true);
                         }}
-                      />
-                    </motion.button>
-                  ))}
-                </div>
-              )}
+                      >
+                        <motion.img 
+                          src={img}
+                          alt={`${product.name} ${index + 2}`}
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://via.placeholder.com/400x500?text=No+Image';
+                          }}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                        />
+                        <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <ZoomIn size={20} className="text-black" />
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
+            {/* Right side - Product details */}
             <motion.div
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="flex flex-col"
             >
-              <span className="text-gray-500 text-xs uppercase tracking-[0.3em] mb-2">{product.category}</span>
-              <h1 className="font-display text-4xl md:text-5xl mb-4 text-black">{product.name.toUpperCase()}</h1>
+              <h1 className="font-display text-3xl md:text-4xl mb-3 text-black">{product.name}</h1>
               
               <div className="flex items-center gap-4 mb-6">
-                <span className="font-display text-3xl text-black">${product.price}</span>
+                <span className="font-display text-2xl text-black">{product.price.toLocaleString()}</span>
                 {product.originalPrice && (
-                  <span className="text-gray-400 line-through text-xl">${product.originalPrice}</span>
+                  <span className="text-gray-400 line-through text-lg">{product.originalPrice.toLocaleString()}</span>
                 )}
               </div>
 
-              <p className="text-gray-600 mb-8 leading-relaxed">{product.description}</p>
+              <p className="text-gray-600 mb-8 leading-relaxed text-sm">{product.description}</p>
 
+              {/* Wide Fit Note */}
+              <div className="mb-6 p-4 bg-gray-50 border border-gray-200">
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">Wide Fit</span><br />
+                  Model info and sizing details
+                </p>
+              </div>
+
+              {/* Size Selection */}
               <div className="mb-8">
-                <span className="text-xs uppercase tracking-[0.2em] mb-4 block text-black font-bold">Select Size</span>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs uppercase tracking-[0.2em] text-black font-semibold">Size</span>
+                  <button 
+                    onClick={() => setActiveDrawer('details')}
+                    className="text-xs uppercase tracking-[0.2em] text-black underline hover:no-underline"
+                  >
+                    Size Guide
+                  </button>
+                </div>
+                <div className="grid grid-cols-6 gap-2">
                   {product.sizes.map((size) => (
                     <motion.button
                       key={size}
@@ -227,10 +255,10 @@ const ProductDetailPage = () => {
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setSelectedSize(size)}
                       className={cn(
-                        'min-w-[50px] h-12 px-4 border-2 text-sm font-bold uppercase tracking-wider transition-all',
+                        'h-12 border text-sm font-medium transition-all relative',
                         selectedSize === size
                           ? 'bg-black text-white border-black'
-                          : 'bg-white border-black hover:bg-black hover:text-white text-black'
+                          : 'bg-white border-gray-300 hover:border-black text-black'
                       )}
                     >
                       {size}
@@ -239,83 +267,60 @@ const ProductDetailPage = () => {
                 </div>
               </div>
 
-              <div className="mb-8">
-                <span className="text-xs uppercase tracking-[0.2em] mb-4 block text-black font-bold">Quantity</span>
-                <div className="flex items-center gap-4">
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-12 h-12 border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors text-black"
-                  >
-                    <Minus size={18} />
-                  </motion.button>
-                  <span className="w-12 text-center font-display text-2xl text-black">{quantity}</span>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="w-12 h-12 border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors text-black"
-                  >
-                    <Plus size={18} />
-                  </motion.button>
-                </div>
-              </div>
-
-              <div className="flex gap-4 mb-8">
-                <Button variant="hero" size="xl" className="flex-1 bg-black hover:bg-gray-900 text-white border-2 border-black uppercase tracking-[0.2em]" onClick={handleAddToCart}>
+              {/* Add to Cart Button */}
+              <div className="mb-6">
+                <Button 
+                  variant="default" 
+                  size="lg" 
+                  className="w-full bg-black hover:bg-gray-800 text-white uppercase tracking-[0.15em] h-14 text-sm font-medium"
+                  onClick={handleAddToCart}
+                >
                   Add to Cart
                 </Button>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={handleToggleWishlist}
-                  disabled={isTogglingWishlist}
-                  className={cn(
-                    'w-14 h-14 border-2 flex items-center justify-center transition-colors',
-                    inWishlist
-                      ? 'bg-black border-black text-white'
-                      : 'border-black hover:bg-black hover:text-white text-black'
-                  )}
-                  aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-                >
-                  <Heart size={22} className={inWishlist ? 'fill-current' : ''} />
-                </motion.button>
               </div>
 
-              <div className="border-t-2 border-black pt-8 space-y-4">
-                <div className="flex items-center gap-4 text-sm text-gray-700">
-                  <Truck size={20} className="text-black" />
-                  <span>Free shipping on orders over $100</span>
-                </div>
-                <div className="flex items-center gap-4 text-sm text-gray-700">
-                  <RotateCcw size={20} className="text-black" />
-                  <span>30-day free returns</span>
-                </div>
-                <div className="flex items-center gap-4 text-sm text-gray-700">
-                  <Shield size={20} className="text-black" />
-                  <span>Premium quality guarantee</span>
-                </div>
-              </div>
-
-              {/* Info Buttons */}
-              <div className="border-t-2 border-black mt-8 pt-8 flex gap-4">
-                <Button
-                  variant="outline"
-                  className="flex-1 border-2 border-black text-black hover:bg-black hover:text-white uppercase tracking-[0.15em] text-xs"
+              {/* Info Sections */}
+              <div className="space-y-3 mb-8">
+                <button
                   onClick={() => setActiveDrawer('details')}
+                  className="w-full text-left border-b border-gray-200 pb-3 flex items-center justify-between hover:border-black transition-colors group"
                 >
-                  <Info size={18} className="mr-2" />
-                  Product Details
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1 border-2 border-black text-black hover:bg-black hover:text-white uppercase tracking-[0.15em] text-xs"
+                  <span className="text-sm uppercase tracking-[0.15em] text-black font-medium">Details</span>
+                  <Plus size={18} className="text-black group-hover:rotate-90 transition-transform" />
+                </button>
+                <button
                   onClick={() => setActiveDrawer('shipping')}
+                  className="w-full text-left border-b border-gray-200 pb-3 flex items-center justify-between hover:border-black transition-colors group"
                 >
-                  <Package size={18} className="mr-2" />
-                  Shipping & Returns
-                </Button>
+                  <span className="text-sm uppercase tracking-[0.15em] text-black font-medium">Shipping & Returns</span>
+                  <Plus size={18} className="text-black group-hover:rotate-90 transition-transform" />
+                </button>
+                <button
+                  className="w-full text-left border-b border-gray-200 pb-3 flex items-center justify-between hover:border-black transition-colors group"
+                >
+                  <span className="text-sm uppercase tracking-[0.15em] text-black font-medium">Assistance</span>
+                  <Plus size={18} className="text-black group-hover:rotate-90 transition-transform" />
+                </button>
+              </div>
+
+              {/* Features List */}
+              <div className="space-y-3 text-sm text-gray-700">
+                <div className="flex items-start gap-3">
+                  <Check size={18} className="text-black mt-0.5 flex-shrink-0" />
+                  <span>Cash on Delivery</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Check size={18} className="text-black mt-0.5 flex-shrink-0" />
+                  <span>Free Shipping</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Check size={18} className="text-black mt-0.5 flex-shrink-0" />
+                  <span>30 Days Free Returns</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Check size={18} className="text-black mt-0.5 flex-shrink-0" />
+                  <span>Delivery within 3 to 7 working days</span>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -331,16 +336,53 @@ const ProductDetailPage = () => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-white/98 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={() => setIsZoomed(false)}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
             <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="absolute top-4 right-4 w-12 h-12 bg-white border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors z-10 text-black"
-              onClick={() => setIsZoomed(false)}
+              className="absolute top-4 right-4 w-12 h-12 bg-white border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors z-10 text-black"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsZoomed(false);
+              }}
             >
               <X size={24} />
             </motion.button>
+
+            {/* Navigation Arrows */}
+            {product.images.length > 1 && (
+              <>
+                <motion.button
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors z-10 text-black"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePrevImage();
+                  }}
+                >
+                  <ChevronLeft size={24} />
+                </motion.button>
+                <motion.button
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors z-10 text-black"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNextImage();
+                  }}
+                >
+                  <ChevronRight size={24} />
+                </motion.button>
+              </>
+            )}
+
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
@@ -351,7 +393,10 @@ const ProductDetailPage = () => {
               <img
                 src={currentImageSrc}
                 alt={product.name}
-                className="w-full h-full object-contain border-2 border-black"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = 'https://via.placeholder.com/400x500?text=No+Image';
+                }}
               />
               {product.images.length > 1 && (
                 <div className="flex justify-center gap-2 mt-4">
@@ -363,7 +408,7 @@ const ProductDetailPage = () => {
                         setImageError(false);
                       }}
                       className={cn(
-                        'w-3 h-3 transition-all border border-black',
+                        'w-2 h-2 rounded-full transition-all border border-black',
                         selectedImage === idx ? 'bg-black w-8' : 'bg-white'
                       )}
                     />
@@ -383,7 +428,7 @@ const ProductDetailPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm"
+              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
               onClick={() => setActiveDrawer(null)}
             />
             <motion.div
@@ -410,17 +455,17 @@ const ProductDetailPage = () => {
                   <div className="space-y-6">
                     <div>
                       <h3 className="font-medium mb-2 text-gray-900">Description</h3>
-                      <p className="text-gray-600">
-                        {product?.description || 'Premium quality T-shirt with unique printed design. Made from 100% cotton for maximum comfort and durability.'}
+                      <p className="text-gray-600 text-sm">
+                        {product?.description || 'Premium quality product with unique design. Made from high-quality materials for maximum comfort and durability.'}
                       </p>
                     </div>
                     <div>
                       <h3 className="font-medium mb-2 text-gray-900">Material</h3>
-                      <p className="text-gray-600">100% Premium Cotton</p>
+                      <p className="text-gray-600 text-sm">100% Premium Quality Material</p>
                     </div>
                     <div>
                       <h3 className="font-medium mb-2 text-gray-900">Care Instructions</h3>
-                      <ul className="text-gray-600 space-y-1">
+                      <ul className="text-gray-600 space-y-1 text-sm">
                         <li>• Machine wash cold</li>
                         <li>• Tumble dry low</li>
                         <li>• Do not bleach</li>
@@ -430,21 +475,20 @@ const ProductDetailPage = () => {
                     </div>
                     <div>
                       <h3 className="font-medium mb-2 text-gray-900">Features</h3>
-                      <ul className="text-gray-600 space-y-1">
-                        <li>• High-quality screen printing</li>
-                        <li>• Pre-shrunk fabric</li>
-                        <li>• Reinforced seams</li>
-                        <li>• Tagless for comfort</li>
-                        <li>• Unisex fit</li>
+                      <ul className="text-gray-600 space-y-1 text-sm">
+                        <li>• High-quality construction</li>
+                        <li>• Premium materials</li>
+                        <li>• Durable design</li>
+                        <li>• Comfortable fit</li>
+                        <li>• Unique style</li>
                       </ul>
                     </div>
                     <div>
                       <h3 className="font-medium mb-2 text-gray-900">Size Guide</h3>
                       <div className="text-gray-600 space-y-1 text-sm">
-                        <p>S - Chest: 36-38"</p>
-                        <p>M - Chest: 38-40"</p>
-                        <p>L - Chest: 42-44"</p>
-                        <p>XL - Chest: 46-48"</p>
+                        {product.sizes.map((size, idx) => (
+                          <p key={size}>Size {size} - Standard fit</p>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -452,8 +496,8 @@ const ProductDetailPage = () => {
                   <div className="space-y-6">
                     <div>
                       <h3 className="font-medium mb-2 text-gray-900">Shipping Information</h3>
-                      <ul className="text-gray-600 space-y-2">
-                        <li>• Free standard shipping on orders over $100</li>
+                      <ul className="text-gray-600 space-y-2 text-sm">
+                        <li>• Free standard shipping on all orders</li>
                         <li>• Standard shipping: 5-7 business days</li>
                         <li>• Express shipping: 2-3 business days</li>
                         <li>• International shipping available</li>
@@ -462,7 +506,7 @@ const ProductDetailPage = () => {
                     </div>
                     <div>
                       <h3 className="font-medium mb-2 text-gray-900">Return Policy</h3>
-                      <ul className="text-gray-600 space-y-2">
+                      <ul className="text-gray-600 space-y-2 text-sm">
                         <li>• 30-day return window</li>
                         <li>• Items must be unworn and unwashed</li>
                         <li>• Original tags must be attached</li>
@@ -472,7 +516,7 @@ const ProductDetailPage = () => {
                     </div>
                     <div>
                       <h3 className="font-medium mb-2 text-gray-900">Exchange Policy</h3>
-                      <ul className="text-gray-600 space-y-2">
+                      <ul className="text-gray-600 space-y-2 text-sm">
                         <li>• Free size exchanges</li>
                         <li>• Exchange processed within 3-5 business days</li>
                         <li>• Contact support for exchange requests</li>
@@ -480,8 +524,8 @@ const ProductDetailPage = () => {
                     </div>
                     <div>
                       <h3 className="font-medium mb-2 text-gray-900">Customer Support</h3>
-                      <p className="text-gray-600">
-                        Have questions? Contact us at support@blackpotheads.com or call 1-800-POTHEAD
+                      <p className="text-gray-600 text-sm">
+                        Have questions? Contact us at support@store.com or call our customer service line.
                       </p>
                     </div>
                   </div>
@@ -492,23 +536,25 @@ const ProductDetailPage = () => {
         )}
       </AnimatePresence>
 
-      <section className="py-16 bg-black">
-        <div className="container mx-auto px-6">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="font-display text-4xl md:text-5xl mb-12 text-white uppercase tracking-wider"
-          >
-            MORE FROM {product.category.toUpperCase()}
-          </motion.h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {relatedProducts.map((p, index) => (
-              <ProductCard key={p.id} product={p} index={index} />
-            ))}
+      {relatedProducts.length > 0 && (
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-6">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="font-display text-3xl md:text-4xl mb-12 text-black uppercase tracking-wider"
+            >
+              You May Also Like
+            </motion.h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {relatedProducts.map((p, index) => (
+                <ProductCard key={p.id} product={p} index={index} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 };

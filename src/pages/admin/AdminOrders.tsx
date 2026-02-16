@@ -98,12 +98,12 @@ const AdminOrders = () => {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      'Pending': 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
-      'Processing': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-      'Shipped': 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-      'Out for Delivery': 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20',
-      'Delivered': 'bg-green-500/10 text-green-500 border-green-500/20',
-      'Cancelled': 'bg-red-500/10 text-red-500 border-red-500/20',
+      'Pending': 'bg-gray-500/10 text-gray-400 border-gray-500/20',
+      'Processing': 'bg-gray-600/10 text-gray-300 border-gray-600/20',
+      'Shipped': 'bg-gray-700/10 text-gray-200 border-gray-700/20',
+      'Out for Delivery': 'bg-gray-500/10 text-gray-400 border-gray-500/20',
+      'Delivered': 'bg-gray-600/10 text-gray-300 border-gray-600/20',
+      'Cancelled': 'bg-gray-700/10 text-gray-500 border-gray-700/20',
     };
     return colors[status] || 'bg-gray-500/10 text-gray-500 border-gray-500/20';
   };
