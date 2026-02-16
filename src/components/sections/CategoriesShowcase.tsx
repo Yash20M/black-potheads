@@ -5,12 +5,12 @@ import { ArrowUpRight } from 'lucide-react';
 import skullTee from '@/assets/products/skull-tee.jpg';
 
 const categories = [
-  { name: 'SHIVA', image: skullTee, color: 'from-blue-500/20' },
-  { name: 'SHROOMS', image: skullTee, color: 'from-purple-500/20' },
-  { name: 'LSD', image: skullTee, color: 'from-pink-500/20' },
-  { name: 'CHAKRAS', image: skullTee, color: 'from-orange-500/20' },
-  { name: 'DARK', image: skullTee, color: 'from-red-500/20' },
-  { name: 'RICK N MORTY', image: skullTee, color: 'from-green-500/20' },
+  { name: 'SHIVA', image: skullTee, color: 'from-gray-800/20' },
+  { name: 'SHROOMS', image: skullTee, color: 'from-gray-700/20' },
+  { name: 'LSD', image: skullTee, color: 'from-gray-500/20' },
+  { name: 'CHAKRAS', image: skullTee, color: 'from-gray-600/20' },
+  { name: 'DARK', image: skullTee, color: 'from-gray-700/20' },
+  { name: 'RICK N MORTY', image: skullTee, color: 'from-gray-600/20' },
 ];
 
 export const CategoriesShowcase = () => {

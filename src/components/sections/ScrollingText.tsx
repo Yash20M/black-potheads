@@ -16,16 +16,16 @@ export const ScrollingText = () => {
       <div className="space-y-8">
         <motion.div style={{ x: x1 }} className="flex whitespace-nowrap">
           {Array(4).fill(null).map((_, i) => (
-            <span key={i} className="font-display text-[12vw] text-foreground/5 mx-8">
-              BLACK POTHEADS • DARK PRINTS • REBEL WEAR •
+            <span key={i} className="font-display text-[12vw] text-foreground/50 mx-8">
+              SHIVA • SHROOMS • LSD • CHAKRAS •
             </span>
           ))}
         </motion.div>
 
         <motion.div style={{ x: x2 }} className="flex whitespace-nowrap">
           {Array(4).fill(null).map((_, i) => (
-            <span key={i} className="font-display text-[12vw] text-primary/10 mx-8">
-              SKULLS • GOTHIC • TRIBAL • GRAFFITI •
+            <span key={i} className="font-display text-[12vw] text-primary/50 mx-8">
+              DARK • RICK N MORTY • BLACK POTHEADS •
             </span>
           ))}
         </motion.div>
