@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -28,25 +28,71 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroContainerRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number>(0);
+  const lastTimeRef = useRef<number>(-1);
 
-  // Scroll-linked video: track scroll over the hero container (3x viewport tall)
+  // Scroll progress over the tall hero container
   const { scrollYProgress } = useScroll({
     target: heroContainerRef,
-    offset: ['start start', 'end start'],
+    offset: ['start start', 'end end'],
   });
 
-  // Tie video currentTime to scroll position
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+  // Smooth video scrubbing with requestAnimationFrame
+  useEffect(() => {
     const video = videoRef.current;
-    if (video && video.duration && isFinite(video.duration)) {
-      video.currentTime = latest * video.duration;
-    }
-  });
+    if (!video) return;
 
-  // Hero content opacity/transforms based on scroll
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
-  const heroY = useTransform(scrollYProgress, [0, 0.3], ['0%', '-20%']);
-  const overlayOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.3, 0.6, 0.85]);
+    // Wait for video metadata to be ready
+    const onLoaded = () => {
+      const tick = () => {
+        const progress = scrollYProgress.get();
+        const duration = video.duration;
+        if (duration && isFinite(duration)) {
+          const targetTime = progress * duration;
+          // Only update if time changed meaningfully (avoid jitter)
+          if (Math.abs(targetTime - lastTimeRef.current) > 0.01) {
+            video.currentTime = targetTime;
+            lastTimeRef.current = targetTime;
+          }
+        }
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    if (video.readyState >= 1) {
+      onLoaded();
+    } else {
+      video.addEventListener('loadedmetadata', onLoaded);
+    }
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      video.removeEventListener('loadedmetadata', onLoaded);
+    };
+  }, [scrollYProgress]);
+
+  // Text appears between 15%-40% scroll, initially hidden
+  const textOpacity = useTransform(scrollYProgress, [0.12, 0.22, 0.42, 0.55], [0, 1, 1, 0]);
+  const textY = useTransform(scrollYProgress, [0.12, 0.22, 0.42, 0.55], [80, 0, 0, -60]);
+  const textScale = useTransform(scrollYProgress, [0.12, 0.22, 0.42, 0.55], [0.9, 1, 1, 0.95]);
+
+  // Subtle tagline arrives slightly after heading
+  const taglineOpacity = useTransform(scrollYProgress, [0.18, 0.28, 0.42, 0.52], [0, 1, 1, 0]);
+  const taglineY = useTransform(scrollYProgress, [0.18, 0.28], [40, 0]);
+
+  // CTA button
+  const ctaOpacity = useTransform(scrollYProgress, [0.24, 0.32, 0.42, 0.50], [0, 1, 1, 0]);
+  const ctaY = useTransform(scrollYProgress, [0.24, 0.32], [30, 0]);
+
+  // Overlay darkens as you scroll further
+  const overlayOpacity = useTransform(scrollYProgress, [0, 0.3, 0.6, 1], [0.15, 0.35, 0.65, 0.9]);
+
+  // Scroll indicator visible only at the very start
+  const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
+
+  // Vignette / cinematic bars
+  const vignetteOpacity = useTransform(scrollYProgress, [0, 0.5], [0.6, 0.9]);
 
   useEffect(() => {
     loadFeaturedProducts();
@@ -67,86 +113,103 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      {/* ===== STICKY VIDEO HERO ===== */}
-      {/* This container is 300vh tall so the video stays pinned while user scrolls */}
-      <div ref={heroContainerRef} className="relative" style={{ height: '300vh' }}>
-        {/* Sticky video layer */}
+      {/* ===== SCROLL-LINKED VIDEO HERO ===== */}
+      <div ref={heroContainerRef} className="relative" style={{ height: '400vh' }}>
         <div className="sticky top-0 h-screen w-full overflow-hidden">
+          {/* Video */}
           <video
             ref={videoRef}
             muted
             playsInline
             preload="auto"
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover will-change-auto"
+            style={{ willChange: 'auto' }}
           >
             <source src="/Video.mp4" type="video/mp4" />
           </video>
-          {/* Dynamic dark overlay that increases with scroll */}
+
+          {/* Cinematic vignette overlay */}
           <motion.div
-            className="absolute inset-0 bg-background"
+            className="absolute inset-0 pointer-events-none"
+            style={{ opacity: vignetteOpacity }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/40" />
+            <div className="absolute inset-0 bg-gradient-to-r from-background/30 via-transparent to-background/30" />
+          </motion.div>
+
+          {/* Dynamic darkness overlay */}
+          <motion.div
+            className="absolute inset-0 bg-background pointer-events-none"
             style={{ opacity: overlayOpacity }}
           />
 
-          {/* Hero content — fades out as you scroll */}
+          {/* Scroll indicator — visible initially, fades fast */}
           <motion.div
-            className="absolute inset-0 flex items-center justify-center z-10"
-            style={{ opacity: heroOpacity, y: heroY }}
+            className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center"
+            style={{ opacity: scrollIndicatorOpacity }}
           >
-            <div className="text-center px-6">
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <h1 className="font-display text-7xl md:text-9xl lg:text-[12rem] leading-none tracking-tight">
-                  BLACK
-                  <br />
-                  <span className="text-gradient">POTHEADS</span>
+            <motion.div
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              className="w-5 h-9 border border-foreground/30 rounded-full flex justify-center pt-2"
+            >
+              <motion.div className="w-0.5 h-1.5 bg-foreground/50 rounded-full" />
+            </motion.div>
+            <span className="text-[10px] uppercase tracking-[0.3em] text-foreground/30 mt-3">
+              Scroll
+            </span>
+          </motion.div>
+
+          {/* Hero text content — appears after scrolling ~15% */}
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div className="text-center px-6 max-w-5xl">
+              {/* Main heading */}
+              <motion.div style={{ opacity: textOpacity, y: textY, scale: textScale }}>
+                <h1 className="font-display text-[5rem] md:text-[9rem] lg:text-[13rem] leading-[0.85] tracking-tight">
+                  <span className="block text-foreground">BLACK</span>
+                  <span className="block text-gradient">POTHEADS</span>
                 </h1>
               </motion.div>
 
+              {/* Tagline */}
               <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.8 }}
-                className="text-muted-foreground text-lg md:text-xl mt-6 max-w-lg mx-auto"
+                className="text-muted-foreground text-base md:text-lg lg:text-xl mt-8 max-w-md mx-auto font-light tracking-wide"
+                style={{ opacity: taglineOpacity, y: taglineY }}
               >
                 Premium streetwear for the bold. Not for the faint-hearted.
               </motion.p>
 
+              {/* CTA */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7, duration: 0.6 }}
                 className="mt-10"
+                style={{ opacity: ctaOpacity, y: ctaY }}
               >
                 <Button variant="hero" size="lg" asChild>
-                  <Link to="/shop">
+                  <Link to="/shop" className="group">
                     Shop Now
-                    <ArrowRight size={18} />
+                    <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
               </motion.div>
-
-              {/* Scroll indicator */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.2 }}
-                className="mt-16"
-              >
-                <motion.div
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="w-6 h-10 border-2 border-foreground/30 rounded-full flex justify-center pt-2 mx-auto"
-                >
-                  <motion.div className="w-1 h-2 bg-foreground/40 rounded-full" />
-                </motion.div>
-                <span className="text-xs uppercase tracking-widest text-muted-foreground mt-3 block">
-                  Scroll to explore
-                </span>
-              </motion.div>
             </div>
+          </div>
+
+          {/* Side labels */}
+          <motion.div
+            className="absolute left-6 top-1/2 -translate-y-1/2 hidden xl:block z-10"
+            style={{ opacity: textOpacity }}
+          >
+            <span className="text-[10px] uppercase tracking-[0.4em] text-foreground/20 vertical-text">
+              Scroll to explore
+            </span>
+          </motion.div>
+          <motion.div
+            className="absolute right-6 top-1/2 -translate-y-1/2 hidden xl:block z-10"
+            style={{ opacity: textOpacity }}
+          >
+            <span className="text-[10px] uppercase tracking-[0.4em] text-foreground/20 vertical-text">
+              Est. 2024
+            </span>
           </motion.div>
         </div>
       </div>
@@ -215,25 +278,12 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Scrolling Text */}
       <ScrollingText />
-
-      {/* Trending Products */}
       <TrendingSection />
-
-      {/* Video / Campaign Section */}
       <VideoSection />
-
-      {/* About Brand Section */}
       <AboutBrandSection />
-
-      {/* Lookbook Section */}
       <LookbookSection />
-
-      {/* Process Section */}
       <ProcessSection />
-
-      {/* Features Section */}
       <FeaturesSection />
 
       {/* Featured Collection Banner */}
@@ -300,19 +350,10 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Upcoming Drop */}
       <UpcomingDrop />
-
-      {/* Stats Section */}
       <StatsSection />
-
-      {/* Testimonials */}
       <TestimonialsSection />
-
-      {/* Instagram Feed */}
       <InstagramSection />
-
-      {/* Newsletter */}
       <NewsletterSection />
     </div>
   );
