@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -18,15 +18,35 @@ import { ProcessSection } from '@/components/sections/ProcessSection';
 import { VideoSection } from '@/components/sections/VideoSection';
 import { ScrollingText } from '@/components/sections/ScrollingText';
 import { UpcomingDrop } from '@/components/sections/UpcomingDrop';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { productApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { Product, normalizeProduct, ApiProduct } from '@/types/product';
 
 const Index = () => {
-  const heroRef = useRef(null);
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const heroContainerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll-linked video: track scroll over the hero container (3x viewport tall)
+  const { scrollYProgress } = useScroll({
+    target: heroContainerRef,
+    offset: ['start start', 'end start'],
+  });
+
+  // Tie video currentTime to scroll position
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    const video = videoRef.current;
+    if (video && video.duration && isFinite(video.duration)) {
+      video.currentTime = latest * video.duration;
+    }
+  });
+
+  // Hero content opacity/transforms based on scroll
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 0.3], ['0%', '-20%']);
+  const overlayOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.3, 0.6, 0.85]);
 
   useEffect(() => {
     loadFeaturedProducts();
@@ -47,57 +67,100 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section with Video */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Video Background */}
-        <div className="absolute inset-0">
+      {/* ===== STICKY VIDEO HERO ===== */}
+      {/* This container is 300vh tall so the video stays pinned while user scrolls */}
+      <div ref={heroContainerRef} className="relative" style={{ height: '300vh' }}>
+        {/* Sticky video layer */}
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
           <video
-            autoPlay
-            loop
+            ref={videoRef}
             muted
             playsInline
             preload="auto"
             className="w-full h-full object-cover"
-            onEnded={(e) => {
-              // Ensure seamless loop by restarting immediately
-              e.currentTarget.currentTime = 0;
-              e.currentTarget.play();
-            }}
           >
             <source src="/Video.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
           </video>
-          {/* Dark overlay for better contrast */}
-          <div className="absolute inset-0 bg-black/40" />
-        </div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10"
-        >
+          {/* Dynamic dark overlay that increases with scroll */}
           <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-6 h-10 border-2 border-white/60 rounded-full flex justify-center pt-2"
-          >
-            <motion.div className="w-1 h-2 bg-white/60 rounded-full" />
-          </motion.div>
-        </motion.div>
+            className="absolute inset-0 bg-background"
+            style={{ opacity: overlayOpacity }}
+          />
 
-        {/* Marquee */}
-        <div className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm py-3 overflow-hidden z-10">
-          <div className="animate-marquee whitespace-nowrap flex">
-            {Array(10).fill(null).map((_, i) => (
-              <span key={i} className="mx-8 text-white font-display text-lg tracking-wider">
-                FREE SHIPPING ON ORDERS OVER $100 ✦ NEW DROPS EVERY FRIDAY ✦ BLACK POTHEADS ✦
-              </span>
-            ))}
-          </div>
+          {/* Hero content — fades out as you scroll */}
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center z-10"
+            style={{ opacity: heroOpacity, y: heroY }}
+          >
+            <div className="text-center px-6">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <h1 className="font-display text-7xl md:text-9xl lg:text-[12rem] leading-none tracking-tight">
+                  BLACK
+                  <br />
+                  <span className="text-gradient">POTHEADS</span>
+                </h1>
+              </motion.div>
+
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.8 }}
+                className="text-muted-foreground text-lg md:text-xl mt-6 max-w-lg mx-auto"
+              >
+                Premium streetwear for the bold. Not for the faint-hearted.
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.6 }}
+                className="mt-10"
+              >
+                <Button variant="hero" size="lg" asChild>
+                  <Link to="/shop">
+                    Shop Now
+                    <ArrowRight size={18} />
+                  </Link>
+                </Button>
+              </motion.div>
+
+              {/* Scroll indicator */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.2 }}
+                className="mt-16"
+              >
+                <motion.div
+                  animate={{ y: [0, 10, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="w-6 h-10 border-2 border-foreground/30 rounded-full flex justify-center pt-2 mx-auto"
+                >
+                  <motion.div className="w-1 h-2 bg-foreground/40 rounded-full" />
+                </motion.div>
+                <span className="text-xs uppercase tracking-widest text-muted-foreground mt-3 block">
+                  Scroll to explore
+                </span>
+              </motion.div>
+            </div>
+          </motion.div>
         </div>
-      </section>
+      </div>
+
+      {/* ===== MARQUEE BAR ===== */}
+      <div className="bg-background/90 backdrop-blur-sm py-3 overflow-hidden border-b border-border/30">
+        <div className="animate-marquee whitespace-nowrap flex">
+          {Array(10).fill(null).map((_, i) => (
+            <span key={i} className="mx-8 font-display text-lg tracking-wider text-muted-foreground">
+              FREE SHIPPING ON ORDERS OVER $100 ✦ NEW DROPS EVERY FRIDAY ✦ BLACK POTHEADS ✦
+            </span>
+          ))}
+        </div>
+      </div>
 
       {/* Brand Marquee */}
       <BrandMarquee />
