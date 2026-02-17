@@ -1,8 +1,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Skull } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import heroImage from '@/assets/hero-dark.jpg';
 import { ProductCard } from '@/components/products/ProductCard';
 import collectionBanner from '@/assets/collection-dark.jpg';
 import { BrandMarquee } from '@/components/sections/BrandMarquee';
@@ -29,15 +28,6 @@ const Index = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ['start start', 'end start'],
-  });
-
-  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const textY = useTransform(scrollYProgress, [0, 1], [0, 100]);
-
   useEffect(() => {
     loadFeaturedProducts();
   }, []);
@@ -57,103 +47,51 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      {/* Hero Section with Video */}
       <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <motion.div
-          style={{ scale: heroScale }}
-          className="absolute inset-0"
-        >
-          <motion.img
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.5 }}
-            src={heroImage}
-            alt="Black Potheads"
+        {/* Video Background */}
+        <div className="absolute inset-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
             className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50" />
-        </motion.div>
-
-        <motion.div style={{ opacity: heroOpacity, y: textY }} className="container mx-auto px-6 relative z-10">
-          <div className="max-w-3xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="inline-flex items-center gap-3 mb-6"
-            >
-              <motion.div
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                <Skull size={24} className="text-primary" />
-              </motion.div>
-              <span className="text-sm uppercase tracking-widest text-muted-foreground">
-                Premium Printed Streetwear
-              </span>
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-none mb-6"
-            >
-              <span className="text-gradient">BLACK</span>
-              <br />
-              <span className="text-accent-gradient">POTHEADS</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.7 }}
-              className="text-lg md:text-xl text-muted-foreground max-w-md mb-8"
-            >
-              Wear the rebellion. Premium printed tees for the unapologetically bold.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.9 }}
-              className="flex flex-col sm:flex-row gap-4"
-            >
-              <Button variant="hero" size="xl" asChild>
-                <Link to="/shop">
-                  Shop Now
-                  <ArrowRight className="ml-2" size={20} />
-                </Link>
-              </Button>
-              <Button variant="outline" size="xl" asChild>
-                <Link to="/collections">View Collections</Link>
-              </Button>
-            </motion.div>
-          </div>
-        </motion.div>
+            onEnded={(e) => {
+              // Ensure seamless loop by restarting immediately
+              e.currentTarget.currentTime = 0;
+              e.currentTarget.play();
+            }}
+          >
+            <source src="/Video.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          {/* Dark overlay for better contrast */}
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
 
         {/* Scroll Indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
-          className="absolute bottom-24 left-1/2 -translate-x-1/2"
+          className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10"
         >
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-6 h-10 border-2 border-muted-foreground rounded-full flex justify-center pt-2"
+            className="w-6 h-10 border-2 border-white/60 rounded-full flex justify-center pt-2"
           >
-            <motion.div className="w-1 h-2 bg-muted-foreground rounded-full" />
+            <motion.div className="w-1 h-2 bg-white/60 rounded-full" />
           </motion.div>
         </motion.div>
 
         {/* Marquee */}
-        <div className="absolute bottom-0 left-0 right-0 bg-primary py-3 overflow-hidden">
+        <div className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm py-3 overflow-hidden z-10">
           <div className="animate-marquee whitespace-nowrap flex">
             {Array(10).fill(null).map((_, i) => (
-              <span key={i} className="mx-8 text-primary-foreground font-display text-lg tracking-wider">
+              <span key={i} className="mx-8 text-white font-display text-lg tracking-wider">
                 FREE SHIPPING ON ORDERS OVER $100 ✦ NEW DROPS EVERY FRIDAY ✦ BLACK POTHEADS ✦
               </span>
             ))}

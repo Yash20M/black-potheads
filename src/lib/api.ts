@@ -256,51 +256,58 @@ export const adminApi = {
 
   // Inventory Management
   inventory: {
-    getOverview: (lowStock?: number, category?: string) => {
-      const params = new URLSearchParams();
-      if (lowStock) params.append('lowStock', lowStock.toString());
-      if (category) params.append('category', category);
-      return apiFetch(`/api/admin/inventory/overview?${params.toString()}`, {}, true);
+    // Get inventory overview with filters
+    getOverview: (params?: {
+      category?: string;
+      lowStock?: boolean;
+      outOfStock?: boolean;
+      threshold?: number;
+    }) => {
+      const queryParams = new URLSearchParams();
+      if (params?.category) queryParams.append('category', params.category);
+      if (params?.lowStock) queryParams.append('lowStock', 'true');
+      if (params?.outOfStock) queryParams.append('outOfStock', 'true');
+      if (params?.threshold) queryParams.append('threshold', params.threshold.toString());
+      return apiFetch(`/api/admin/inventory/overview?${queryParams.toString()}`, {}, true);
     },
 
-    getStats: () =>
-      apiFetch('/api/admin/inventory/stats', {}, true),
+    // Get low stock alerts
+    getLowStockAlerts: (threshold = 10, category?: string) => {
+      const params = new URLSearchParams({ threshold: threshold.toString() });
+      if (category) params.append('category', category);
+      return apiFetch(`/api/admin/inventory/low-stock?${params.toString()}`, {}, true);
+    },
 
-    updateStock: (productId: string, stock: number, operation: 'set' | 'add' | 'subtract' = 'set') =>
-      apiFetch(`/api/admin/inventory/update-stock/${productId}`, {
+    // Update single product stock
+    updateProductStock: (productId: string, stock: number, operation: 'set' | 'add' | 'subtract' = 'set') =>
+      apiFetch(`/api/admin/inventory/stock/${productId}`, {
         method: 'PUT',
         body: JSON.stringify({ stock, operation }),
       }, true),
 
+    // Bulk update stock
     bulkUpdateStock: (updates: Array<{ productId: string; stock: number; operation: 'set' | 'add' | 'subtract' }>) =>
-      apiFetch('/api/admin/inventory/bulk-update-stock', {
-        method: 'PUT',
+      apiFetch('/api/admin/inventory/bulk-update', {
+        method: 'POST',
         body: JSON.stringify({ updates }),
       }, true),
 
-    getLowStock: (threshold = 10, page = 1, limit = 20) => {
-      const params = new URLSearchParams({ 
-        threshold: threshold.toString(), 
-        page: page.toString(), 
-        limit: limit.toString() 
-      });
-      return apiFetch(`/api/admin/inventory/low-stock?${params.toString()}`, {}, true);
+    // Get category analytics
+    getCategoryAnalytics: (category?: string) => {
+      const params = category ? `?category=${category}` : '';
+      return apiFetch(`/api/admin/inventory/analytics${params}`, {}, true);
     },
 
-    getOutOfStock: (page = 1, limit = 20) => {
-      const params = new URLSearchParams({ 
-        page: page.toString(), 
-        limit: limit.toString() 
-      });
-      return apiFetch(`/api/admin/inventory/out-of-stock?${params.toString()}`, {}, true);
-    },
-
-    getStockMovement: (startDate?: string, endDate?: string, productId?: string) => {
+    // Get stock movement report
+    getStockMovementReport: (startDate?: string, endDate?: string) => {
       const params = new URLSearchParams();
       if (startDate) params.append('startDate', startDate);
       if (endDate) params.append('endDate', endDate);
-      if (productId) params.append('productId', productId);
       return apiFetch(`/api/admin/inventory/stock-movement?${params.toString()}`, {}, true);
     },
+
+    // Get products by category
+    getProductsByCategory: (category: string) =>
+      apiFetch(`/api/admin/inventory/category/${encodeURIComponent(category)}`, {}, true),
   },
 };

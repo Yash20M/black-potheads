@@ -1,55 +1,50 @@
 import { useEffect, useState } from 'react';
-import { AlertTriangle, Package, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Package, RefreshCw, TrendingDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { adminApi } from '@/lib/api';
 import { toast } from 'sonner';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 const InventoryAlerts = () => {
-  const [lowStock, setLowStock] = useState<any[]>([]);
-  const [outOfStock, setOutOfStock] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [threshold, setThreshold] = useState(10);
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+
+  const categories = ['Shiva', 'Shrooms', 'LSD', 'Chakras', 'Dark', 'Rick n Morty'];
 
   useEffect(() => {
     loadAlerts();
-  }, []);
+  }, [threshold, categoryFilter]);
 
   const loadAlerts = async () => {
     try {
       setLoading(true);
-      const [lowStockData, outOfStockData]: [any, any] = await Promise.all([
-        adminApi.inventory.getLowStock(10, 1, 50),
-        adminApi.inventory.getOutOfStock(1, 50),
-      ]);
-      setLowStock(lowStockData.products || []);
-      setOutOfStock(outOfStockData.products || []);
-    } catch (error) {
+      const data = await adminApi.inventory.getLowStockAlerts(
+        threshold,
+        categoryFilter === 'all' ? undefined : categoryFilter
+      );
+      setAlerts(data);
+    } catch (error: any) {
       toast.error('Failed to load alerts');
+      console.error('Load alerts error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
-    return <div className="text-center py-12">Loading alerts...</div>;
-  }
+  const criticalAlerts = alerts?.alerts?.critical || [];
+  const warningAlerts = alerts?.alerts?.warning || [];
+  const totalAlerts = alerts?.alerts?.total || 0;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-display text-4xl mb-2">Inventory Alerts</h1>
-          <p className="text-muted-foreground">Monitor low stock and out of stock products</p>
+          <p className="text-muted-foreground">Monitor low stock and out of stock items</p>
         </div>
         <Button variant="hero" onClick={loadAlerts}>
           <RefreshCw size={18} />
@@ -57,200 +52,210 @@ const InventoryAlerts = () => {
         </Button>
       </div>
 
-      <div className="space-y-6">
-        {/* Out of Stock Alert */}
-        {outOfStock.length > 0 && (
-          <Card className="border-red-500">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-red-500">
-                <AlertTriangle size={20} />
-                Critical: Out of Stock ({outOfStock.length})
-              </CardTitle>
-              <CardDescription>These products need immediate restocking</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {outOfStock.map((product: any) => (
-                  <div
-                    key={product._id}
-                    className="flex items-center justify-between p-3 bg-secondary rounded-md"
-                  >
-                    <div className="flex items-center gap-3">
-                      {product.image && (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-12 h-12 object-cover rounded"
-                        />
-                      )}
-                      <div>
-                        <p className="font-medium">{product.name}</p>
-                        <p className="text-sm text-muted-foreground">{product.category}</p>
-                      </div>
-                    </div>
-                    <StockUpdateDialog product={product} onUpdate={loadAlerts} />
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Critical Alerts</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-gray-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-gray-500">{criticalAlerts.length}</div>
+            <p className="text-xs text-muted-foreground mt-1">≤ 5 units remaining</p>
+          </CardContent>
+        </Card>
 
-        {/* Low Stock Alert */}
-        {lowStock.length > 0 && (
-          <Card className="border-orange-500">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-orange-500">
-                <AlertTriangle size={20} />
-                Warning: Low Stock ({lowStock.length})
-              </CardTitle>
-              <CardDescription>
-                These products are running low and need restocking soon
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {lowStock.map((product: any) => (
-                  <div
-                    key={product._id}
-                    className="flex items-center justify-between p-3 bg-secondary rounded-md"
-                  >
-                    <div className="flex items-center gap-3">
-                      {product.image && (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-12 h-12 object-cover rounded"
-                        />
-                      )}
-                      <div>
-                        <p className="font-medium">{product.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {product.category} • {product.stock}
-                        </p>
-                      </div>
-                    </div>
-                    <StockUpdateDialog product={product} onUpdate={loadAlerts} />
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Warning Alerts</CardTitle>
+            <TrendingDown className="h-4 w-4 text-gray-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-gray-400">{warningAlerts.length}</div>
+            <p className="text-xs text-muted-foreground mt-1">6-{threshold} units remaining</p>
+          </CardContent>
+        </Card>
 
-        {outOfStock.length === 0 && lowStock.length === 0 && (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-lg font-medium">All products are well stocked!</p>
-              <p className="text-sm text-muted-foreground">No alerts at this time</p>
-            </CardContent>
-          </Card>
-        )}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Alerts</CardTitle>
+            <Package className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalAlerts}</div>
+            <p className="text-xs text-muted-foreground mt-1">Products need attention</p>
+          </CardContent>
+        </Card>
       </div>
-    </div>
-  );
-};
 
-// Stock Update Dialog Component
-const StockUpdateDialog = ({ product, onUpdate }: any) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [stock, setStock] = useState('');
-  const [operation, setOperation] = useState<'set' | 'add' | 'subtract'>('set');
-  const [loading, setLoading] = useState(false);
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <Select value={categoryFilter} onValueChange={(val) => setCategoryFilter(val)}>
+          <SelectTrigger className="w-full sm:w-[200px]">
+            <SelectValue placeholder="All Categories" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {categories.map((cat) => (
+              <SelectItem key={cat} value={cat}>
+                {cat}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!stock || parseInt(stock) < 0) {
-      toast.error('Please enter a valid stock quantity');
-      return;
-    }
+        <Select
+          value={threshold.toString()}
+          onValueChange={(val) => setThreshold(parseInt(val))}
+        >
+          <SelectTrigger className="w-full sm:w-[200px]">
+            <SelectValue placeholder="Alert Threshold" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="5">Threshold: 5</SelectItem>
+            <SelectItem value="10">Threshold: 10</SelectItem>
+            <SelectItem value="15">Threshold: 15</SelectItem>
+            <SelectItem value="20">Threshold: 20</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-    try {
-      setLoading(true);
-      const result: any = await adminApi.inventory.updateStock(
-        product._id,
-        parseInt(stock),
-        operation
-      );
-
-      if (result.success) {
-        toast.success(`Stock updated to ${result.product.currentStock}`);
-        setIsOpen(false);
-        setStock('');
-        onUpdate();
-      }
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update stock');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <RefreshCw size={16} />
-          Update Stock
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Update Stock - {product.name}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label>Current Stock</Label>
-            <p className="text-2xl font-bold mt-1">{product.stock}</p>
-          </div>
-
-          <div>
-            <Label htmlFor="operation">Operation</Label>
-            <Select value={operation} onValueChange={(val: any) => setOperation(val)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="set">Set to exact value</SelectItem>
-                <SelectItem value="add">Add to current stock</SelectItem>
-                <SelectItem value="subtract">Subtract from current stock</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="stock">Quantity</Label>
-            <Input
-              id="stock"
-              type="number"
-              min="0"
-              value={stock}
-              onChange={(e) => setStock(e.target.value)}
-              placeholder="Enter quantity"
-              required
-            />
-          </div>
-
-          {stock && (
-            <div className="p-3 bg-secondary rounded-md">
-              <p className="text-sm text-muted-foreground">New stock will be:</p>
-              <p className="text-xl font-bold">
-                {operation === 'set'
-                  ? parseInt(stock)
-                  : operation === 'add'
-                  ? product.stock + parseInt(stock)
-                  : Math.max(0, product.stock - parseInt(stock))}
-              </p>
+      {loading ? (
+        <div className="text-center py-12">Loading alerts...</div>
+      ) : (
+        <div className="space-y-6">
+          {/* Critical Alerts */}
+          {criticalAlerts.length > 0 && (
+            <div>
+              <h2 className="font-display text-2xl mb-4 flex items-center gap-2">
+                <AlertTriangle className="text-gray-500" size={24} />
+                Critical Alerts ({criticalAlerts.length})
+              </h2>
+              <div className="bg-card border border-border overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-secondary">
+                    <tr>
+                      <th className="text-left p-4 font-medium">Product</th>
+                      <th className="text-left p-4 font-medium">Category</th>
+                      <th className="text-left p-4 font-medium">Current Stock</th>
+                      <th className="text-left p-4 font-medium">Status</th>
+                      <th className="text-left p-4 font-medium">Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {criticalAlerts.map((product: any) => {
+                      // Handle both object format {url: "..."} and string format
+                      const productImage = product.images?.[0]?.url || product.images?.[0] || product.image;
+                      return (
+                        <tr key={product._id} className="border-t border-border">
+                          <td className="p-4">
+                            <div className="flex items-center gap-3">
+                              {productImage ? (
+                                <img
+                                  src={productImage}
+                                  alt={product.name}
+                                  className="w-12 h-12 object-cover rounded"
+                                  onError={(e) => {
+                                    e.currentTarget.src = '/placeholder.svg';
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-12 h-12 bg-secondary flex items-center justify-center text-xs rounded">
+                                  No Img
+                                </div>
+                              )}
+                              <span className="font-medium">{product.name}</span>
+                            </div>
+                          </td>
+                          <td className="p-4">{product.category}</td>
+                          <td className="p-4">
+                            <span className="text-lg font-bold text-gray-500">{product.stock}</span>
+                          </td>
+                          <td className="p-4">
+                            <Badge variant="destructive">Critical</Badge>
+                          </td>
+                          <td className="p-4">₹{product.price}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
-          <Button type="submit" variant="hero" className="w-full" disabled={loading}>
-            {loading ? 'Updating...' : 'Update Stock'}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+          {/* Warning Alerts */}
+          {warningAlerts.length > 0 && (
+            <div>
+              <h2 className="font-display text-2xl mb-4 flex items-center gap-2">
+                <TrendingDown className="text-gray-400" size={24} />
+                Warning Alerts ({warningAlerts.length})
+              </h2>
+              <div className="bg-card border border-border overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-secondary">
+                    <tr>
+                      <th className="text-left p-4 font-medium">Product</th>
+                      <th className="text-left p-4 font-medium">Category</th>
+                      <th className="text-left p-4 font-medium">Current Stock</th>
+                      <th className="text-left p-4 font-medium">Status</th>
+                      <th className="text-left p-4 font-medium">Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {warningAlerts.map((product: any) => {
+                      // Handle both object format {url: "..."} and string format
+                      const productImage = product.images?.[0]?.url || product.images?.[0] || product.image;
+                      return (
+                        <tr key={product._id} className="border-t border-border">
+                          <td className="p-4">
+                            <div className="flex items-center gap-3">
+                              {productImage ? (
+                                <img
+                                  src={productImage}
+                                  alt={product.name}
+                                  className="w-12 h-12 object-cover rounded"
+                                  onError={(e) => {
+                                    e.currentTarget.src = '/placeholder.svg';
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-12 h-12 bg-secondary flex items-center justify-center text-xs rounded">
+                                  No Img
+                                </div>
+                              )}
+                              <span className="font-medium">{product.name}</span>
+                            </div>
+                          </td>
+                          <td className="p-4">{product.category}</td>
+                          <td className="p-4">
+                            <span className="text-lg font-bold text-gray-400">{product.stock}</span>
+                          </td>
+                          <td className="p-4">
+                            <Badge variant="outline" className="border-gray-400 text-gray-400">
+                              Warning
+                            </Badge>
+                          </td>
+                          <td className="p-4">₹{product.price}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {alerts?.alerts?.total === 0 && (
+            <div className="text-center py-12 bg-card border border-border">
+              <Package size={48} className="mx-auto text-muted-foreground mb-4" />
+              <p className="text-lg font-medium mb-2">No Alerts</p>
+              <p className="text-muted-foreground">All products have sufficient stock</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 

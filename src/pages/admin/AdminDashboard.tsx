@@ -20,7 +20,7 @@ const AdminDashboard = () => {
     try {
       const [orderData, inventoryData] = await Promise.all([
         adminApi.orders.getStatistics(),
-        adminApi.inventory.getStats().catch(() => null) // Don't fail if inventory API is not available
+        adminApi.inventory.getOverview({}).catch(() => null) // Use overview endpoint
       ]);
       setStats(orderData);
       setInventoryStats(inventoryData);
@@ -66,30 +66,30 @@ const AdminDashboard = () => {
     },
   ];
 
-  const inventoryCards = inventoryStats?.stats ? [
+  const inventoryCards = inventoryStats?.overallStats ? [
     {
       title: 'Total Products',
-      value: inventoryStats.stats.totalProducts || 0,
+      value: inventoryStats.overallStats.totalProducts || 0,
       icon: Warehouse,
-      color: 'text-blue-500',
+      color: 'text-gray-300',
     },
     {
-      title: 'In Stock',
-      value: inventoryStats.stats.inStockProducts || 0,
+      title: 'Total Stock',
+      value: inventoryStats.overallStats.totalStock || 0,
       icon: Package,
-      color: 'text-green-500',
+      color: 'text-gray-200',
     },
     {
       title: 'Low Stock',
-      value: inventoryStats.stats.lowStockProducts || 0,
+      value: inventoryStats.overallStats.lowStockCount || 0,
       icon: AlertTriangle,
-      color: 'text-orange-500',
+      color: 'text-gray-400',
     },
     {
       title: 'Out of Stock',
-      value: inventoryStats.stats.outOfStockProducts || 0,
+      value: inventoryStats.overallStats.outOfStockCount || 0,
       icon: AlertTriangle,
-      color: 'text-red-500',
+      color: 'text-gray-500',
     },
   ] : [];
 
@@ -158,27 +158,27 @@ const AdminDashboard = () => {
       )}
 
       {/* Low Stock Alert */}
-      {inventoryStats?.stats && (inventoryStats.stats.lowStockProducts > 0 || inventoryStats.stats.outOfStockProducts > 0) && (
-        <Card className="mb-8 border-orange-500">
+      {inventoryStats?.overallStats && (inventoryStats.overallStats.lowStockCount > 0 || inventoryStats.overallStats.outOfStockCount > 0) && (
+        <Card className="mb-8 border-gray-500">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-orange-500">
+            <CardTitle className="flex items-center gap-2 text-gray-400">
               <AlertTriangle size={20} />
               Inventory Alerts
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {inventoryStats.stats.outOfStockProducts > 0 && (
-                <p className="text-red-500">
-                  {inventoryStats.stats.outOfStockProducts} product(s) are out of stock
+              {inventoryStats.overallStats.outOfStockCount > 0 && (
+                <p className="text-gray-500">
+                  {inventoryStats.overallStats.outOfStockCount} product(s) are out of stock
                 </p>
               )}
-              {inventoryStats.stats.lowStockProducts > 0 && (
-                <p className="text-orange-500">
-                  {inventoryStats.stats.lowStockProducts} product(s) are running low
+              {inventoryStats.overallStats.lowStockCount > 0 && (
+                <p className="text-gray-400">
+                  {inventoryStats.overallStats.lowStockCount} product(s) are running low
                 </p>
               )}
-              <Link to="/admin/inventory">
+              <Link to="/admin/inventory/overview">
                 <Button variant="outline" size="sm" className="mt-2">
                   Manage Inventory
                 </Button>

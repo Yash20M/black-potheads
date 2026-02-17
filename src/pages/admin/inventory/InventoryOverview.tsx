@@ -32,10 +32,10 @@ const InventoryOverview = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const data = await adminApi.inventory.getOverview(
-        lowStockThreshold,
-        categoryFilter === 'all' ? undefined : categoryFilter
-      );
+      const data = await adminApi.inventory.getOverview({
+        category: categoryFilter === 'all' ? undefined : categoryFilter,
+        threshold: lowStockThreshold,
+      });
       setOverview(data);
     } catch (error: any) {
       toast.error('Failed to load inventory data');
@@ -48,6 +48,9 @@ const InventoryOverview = () => {
   const filteredProducts = overview?.products?.filter((p: any) =>
     p.name?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
+
+  const overallStats = overview?.overallStats || {};
+  const categoryStats = overview?.categoryStats || [];
 
   return (
     <div>
@@ -63,7 +66,7 @@ const InventoryOverview = () => {
       </div>
 
       {/* Summary Cards */}
-      {overview?.summary && (
+      {overallStats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -71,31 +74,40 @@ const InventoryOverview = () => {
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{overview.summary.totalProducts}</div>
+              <div className="text-2xl font-bold">{overallStats.totalProducts || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {overallStats.totalStock || 0} units in stock
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Low Stock</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-orange-500" />
+              <AlertTriangle className="h-4 w-4 text-gray-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-500">
-                {overview.summary.lowStockCount}
+              <div className="text-2xl font-bold text-gray-400">
+                {overallStats.lowStockCount || 0}
               </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Below {lowStockThreshold} units
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Out of Stock</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-red-500" />
+              <AlertTriangle className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-500">
-                {overview.summary.outOfStockCount}
+              <div className="text-2xl font-bold text-gray-500">
+                {overallStats.outOfStockCount || 0}
               </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Needs restocking
+              </p>
             </CardContent>
           </Card>
 
@@ -106,8 +118,11 @@ const InventoryOverview = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                ₹{overview.summary.totalStockValue?.toLocaleString() || 0}
+                ₹{overallStats.totalInventoryValue?.toLocaleString() || 0}
               </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Total stock value
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -172,44 +187,62 @@ const InventoryOverview = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map((product: any) => (
-                <tr key={product._id} className="border-t border-border">
-                  <td className="p-4">
-                    {product.image ? (
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-16 h-16 object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = '/placeholder.svg';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-secondary flex items-center justify-center text-xs text-muted-foreground">
-                        No Image
+              {filteredProducts.map((product: any) => {
+                // Calculate stock status
+                const getStockStatus = (stock: number) => {
+                  if (stock === 0) return { label: 'Out of Stock', color: 'text-gray-500' };
+                  if (stock <= 5) return { label: 'Critical', color: 'text-gray-500' };
+                  if (stock <= lowStockThreshold) return { label: 'Low Stock', color: 'text-gray-400' };
+                  return { label: 'In Stock', color: 'text-gray-300' };
+                };
+
+                const status = getStockStatus(product.stock);
+                // Handle both object format {url: "..."} and string format
+                const productImage = product.images?.[0]?.url || product.images?.[0] || product.image;
+
+                return (
+                  <tr key={product._id} className="border-t border-border">
+                    <td className="p-4">
+                      {productImage ? (
+                        <img
+                          src={productImage}
+                          alt={product.name}
+                          className="w-16 h-16 object-cover rounded"
+                          onError={(e) => {
+                            e.currentTarget.src = '/placeholder.svg';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-secondary flex items-center justify-center text-xs text-muted-foreground rounded">
+                          No Image
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-4">
+                      <div>
+                        <p className="font-medium">{product.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {product.sizes?.join(', ')}
+                        </p>
                       </div>
-                    )}
-                  </td>
-                  <td className="p-4">
-                    <div>
-                      <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {product.sizes?.join(', ')}
-                      </p>
-                    </div>
-                  </td>
-                  <td className="p-4">{product.category}</td>
-                  <td className="p-4">
-                    <span className="font-medium">{product.stock}</span>
-                  </td>
-                  <td className="p-4">{product.stockStatus}</td>
-                  <td className="p-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <StockUpdateDialog product={product} onUpdate={loadData} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="p-4">{product.category}</td>
+                    <td className="p-4">
+                      <span className={`font-medium ${status.color}`}>{product.stock}</span>
+                    </td>
+                    <td className="p-4">
+                      <span className={`text-sm font-medium ${status.color}`}>
+                        {status.label}
+                      </span>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <StockUpdateDialog product={product} onUpdate={loadData} />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -234,14 +267,14 @@ const StockUpdateDialog = ({ product, onUpdate }: any) => {
 
     try {
       setLoading(true);
-      const result: any = await adminApi.inventory.updateStock(
+      const result: any = await adminApi.inventory.updateProductStock(
         product._id,
         parseInt(stock),
         operation
       );
 
       if (result.success) {
-        toast.success(`Stock updated to ${result.product.currentStock}`);
+        toast.success(`Stock updated successfully`);
         setIsOpen(false);
         setStock('');
         onUpdate();
