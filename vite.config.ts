@@ -12,7 +12,10 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    react(), 
+    mode === "development" && componentTagger()
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -25,9 +28,17 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           // Vendor chunks for better caching
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['framer-motion', '@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-label'],
+          'motion': ['framer-motion'],
+          'ui-radix': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-select',
+            '@radix-ui/react-label',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast',
+          ],
           'state-vendor': ['zustand', '@tanstack/react-query'],
-          'utils-vendor': ['axios', 'sonner', 'clsx'],
+          'icons': ['lucide-react'],
         },
       },
     },
@@ -37,10 +48,15 @@ export default defineConfig(({ mode }) => ({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: mode === 'production', // Remove console.logs in production
+        drop_console: mode === 'production',
         drop_debugger: true,
+        pure_funcs: mode === 'production' ? ['console.log', 'console.info'] : [],
       },
     },
+    // Optimize CSS
+    cssCodeSplit: true,
+    // Reduce asset inline limit for better caching
+    assetsInlineLimit: 4096,
   },
   // Optimize dependencies
   optimizeDeps: {
@@ -51,6 +67,14 @@ export default defineConfig(({ mode }) => ({
       'framer-motion',
       'zustand',
       '@tanstack/react-query',
+      'lucide-react',
     ],
+    exclude: ['@lovable-dev/tagger'],
+  },
+  // Performance optimizations
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' },
+    // Drop console in production
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
   },
 }));

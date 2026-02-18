@@ -22,6 +22,7 @@ import { useRef, useEffect, useState } from 'react';
 import { productApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { Product, normalizeProduct, ApiProduct } from '@/types/product';
+import { isMobileDevice } from '@/lib/performance';
 
 const Index = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -38,81 +39,66 @@ const Index = () => {
     offset: ['start start', 'end end'],
   });
 
-  // Preload entire video and track buffering
+  // Optimized video loading - faster initial load
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    // Force full preload
-    video.preload = 'auto';
+    // Optimize for mobile - use metadata preload
+    const isMobile = window.innerWidth < 768;
+    video.preload = isMobile ? 'metadata' : 'auto';
 
     const checkBuffered = () => {
       if (video.buffered.length > 0 && video.duration) {
         const bufferedEnd = video.buffered.end(video.buffered.length - 1);
         const pct = Math.min((bufferedEnd / video.duration) * 100, 100);
         setLoadProgress(pct);
-        if (bufferedEnd >= video.duration - 0.5) {
+        // Lower threshold for faster start
+        if (bufferedEnd >= video.duration * 0.3 || pct >= 30) {
           setVideoReady(true);
         }
       }
     };
 
-    const onCanPlayThrough = () => {
-      setLoadProgress(100);
+    const onCanPlay = () => {
+      setLoadProgress(50);
       setVideoReady(true);
     };
 
+    video.addEventListener('canplay', onCanPlay);
     video.addEventListener('progress', checkBuffered);
-    video.addEventListener('canplaythrough', onCanPlayThrough);
-    // Also check periodically in case events are missed
-    const interval = setInterval(checkBuffered, 200);
-
+    
     // Trigger load
     video.load();
 
     return () => {
+      video.removeEventListener('canplay', onCanPlay);
       video.removeEventListener('progress', checkBuffered);
-      video.removeEventListener('canplaythrough', onCanPlayThrough);
-      clearInterval(interval);
     };
   }, []);
 
-  // Smooth video scrubbing with interpolation (lerp)
+  // Auto-play video when ready
   useEffect(() => {
     if (!videoReady) return;
     const video = videoRef.current;
-    if (!video || !video.duration) return;
+    if (!video) return;
 
-    const duration = video.duration;
-    smoothTimeRef.current = 0;
+    // Play video with error handling
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(error => {
+        console.log('Video autoplay prevented:', error);
+      });
+    }
+  }, [videoReady]);
 
-    const tick = () => {
-      const targetTime = scrollYProgress.get() * duration;
-      // Lerp for buttery smoothness — interpolate 12% toward target each frame
-      smoothTimeRef.current += (targetTime - smoothTimeRef.current) * 0.12;
-
-      // Clamp
-      const clamped = Math.max(0, Math.min(smoothTimeRef.current, duration));
-      video.currentTime = clamped;
-
-      rafRef.current = requestAnimationFrame(tick);
-    };
-
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [videoReady, scrollYProgress]);
-
-  // Hero text appears after scrolling ~15%
+  // Optimized text animations - reduced complexity
   const textOpacity = useTransform(scrollYProgress, [0.12, 0.22, 0.42, 0.55], [0, 1, 1, 0]);
-  const textY = useTransform(scrollYProgress, [0.12, 0.22, 0.42, 0.55], [80, 0, 0, -60]);
-  const textScale = useTransform(scrollYProgress, [0.12, 0.22, 0.42, 0.55], [0.9, 1, 1, 0.95]);
+  const textY = useTransform(scrollYProgress, [0.12, 0.22, 0.42, 0.55], [40, 0, 0, -40]);
   const taglineOpacity = useTransform(scrollYProgress, [0.18, 0.28, 0.42, 0.52], [0, 1, 1, 0]);
-  const taglineY = useTransform(scrollYProgress, [0.18, 0.28], [40, 0]);
   const ctaOpacity = useTransform(scrollYProgress, [0.24, 0.32, 0.42, 0.50], [0, 1, 1, 0]);
-  const ctaY = useTransform(scrollYProgress, [0.24, 0.32], [30, 0]);
-  const overlayOpacity = useTransform(scrollYProgress, [0, 0.3, 0.6, 1], [0.15, 0.35, 0.65, 0.9]);
+  const overlayOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.15, 0.65, 0.9]);
   const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
-  const vignetteOpacity = useTransform(scrollYProgress, [0, 0.5], [0.6, 0.9]);
 
   useEffect(() => {
     loadFeaturedProducts();
@@ -140,16 +126,16 @@ const Index = () => {
             key="loader"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
             className="fixed inset-0 z-[9999] bg-background flex flex-col items-center justify-center"
           >
-            {/* Skull pulse */}
+            {/* Simplified loader */}
             <motion.div
-              animate={{ scale: [1, 1.08, 1], opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              className="mb-10"
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="mb-8"
             >
-              <span className="font-display text-5xl md:text-7xl tracking-tight text-foreground">
+              <span className="font-display text-4xl md:text-6xl tracking-tight text-foreground">
                 BLACK <span className="text-gradient">POTHEADS</span>
               </span>
             </motion.div>
@@ -160,42 +146,41 @@ const Index = () => {
                 className="h-full bg-foreground/60 rounded-full"
                 initial={{ width: '0%' }}
                 animate={{ width: `${loadProgress}%` }}
-                transition={{ duration: 0.3, ease: 'linear' }}
+                transition={{ duration: 0.2, ease: 'linear' }}
               />
             </div>
 
             <motion.span
               animate={{ opacity: [0.3, 0.7, 0.3] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mt-4"
+              transition={{ duration: 1.2, repeat: Infinity }}
+              className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mt-4"
             >
-              Loading experience
+              Loading
             </motion.span>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* ===== SCROLL-LINKED VIDEO HERO ===== */}
-      <div ref={heroContainerRef} className="relative" style={{ height: '400vh' }}>
+      <div ref={heroContainerRef} className="relative" style={{ height: isMobileDevice() ? '300vh' : '400vh' }}>
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           <video
             ref={videoRef}
             muted
             playsInline
             preload="auto"
+            autoPlay
+            loop
             className="absolute inset-0 w-full h-full object-cover"
           >
             <source src="/Video.mp4" type="video/mp4" />
           </video>
 
-          {/* Cinematic vignette */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none"
-            style={{ opacity: vignetteOpacity }}
-          >
+          {/* Simplified vignette - static for performance */}
+          <div className="absolute inset-0 pointer-events-none opacity-70">
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/40" />
             <div className="absolute inset-0 bg-gradient-to-r from-background/30 via-transparent to-background/30" />
-          </motion.div>
+          </div>
 
           {/* Dynamic darkness */}
           <motion.div
@@ -223,7 +208,7 @@ const Index = () => {
           {/* Hero text — scroll-revealed */}
           <div className="absolute inset-0 flex items-center justify-center z-10">
             <div className="text-center px-6 max-w-5xl">
-              <motion.div style={{ opacity: textOpacity, y: textY, scale: textScale }}>
+              <motion.div style={{ opacity: textOpacity, y: textY }}>
                 <h1 className="font-display text-[5rem] md:text-[9rem] lg:text-[13rem] leading-[0.85] tracking-tight">
                   <span className="block text-foreground">BLACK</span>
                   <span className="block text-gradient">POTHEADS</span>
@@ -232,12 +217,12 @@ const Index = () => {
 
               <motion.p
                 className="text-muted-foreground text-base md:text-lg lg:text-xl mt-8 max-w-md mx-auto font-light tracking-wide"
-                style={{ opacity: taglineOpacity, y: taglineY }}
+                style={{ opacity: taglineOpacity }}
               >
                 Premium streetwear for the bold. Not for the faint-hearted.
               </motion.p>
 
-              <motion.div className="mt-10" style={{ opacity: ctaOpacity, y: ctaY }}>
+              <motion.div className="mt-10" style={{ opacity: ctaOpacity }}>
                 <Button variant="hero" size="lg" asChild>
                   <Link to="/shop" className="group">
                     Shop Now

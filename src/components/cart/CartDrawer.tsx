@@ -2,10 +2,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export const CartDrawer = () => {
   const { isOpen, closeCart, items, removeItem, updateQuantity, getTotalPrice } = useCartStore();
+  const navigate = useNavigate();
+
+  const handleCheckout = () => {
+    closeCart();
+    navigate('/checkout');
+  };
 
   return (
     <AnimatePresence>
@@ -145,11 +151,14 @@ export const CartDrawer = () => {
                   </span>
                   <span className="font-display text-2xl">${getTotalPrice().toFixed(2)}</span>
                 </div>
-                <Link to="/checkout" onClick={closeCart}>
-                  <Button variant="hero" size="lg" className="w-full">
-                    Checkout
-                  </Button>
-                </Link>
+                <Button 
+                  variant="hero" 
+                  size="lg" 
+                  className="w-full"
+                  onClick={handleCheckout}
+                >
+                  Checkout
+                </Button>
                 <p className="text-center text-muted-foreground text-xs">
                   Shipping & taxes calculated at checkout
                 </p>

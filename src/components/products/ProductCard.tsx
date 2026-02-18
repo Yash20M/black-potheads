@@ -79,10 +79,10 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-100px' }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.3) }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="group relative"
@@ -95,9 +95,10 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
             src={imageSrc}
             alt={product.name}
             onError={handleImageError}
+            loading="lazy"
             className="w-full h-full object-cover"
-            animate={{ scale: isHovered ? 1.1 : 1 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
+            animate={{ scale: isHovered ? 1.08 : 1 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
           />
 
           {/* Badges */}

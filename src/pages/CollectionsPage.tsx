@@ -1,8 +1,6 @@
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import collectionDark from '@/assets/collection-dark.jpg';
-import skullTee from '@/assets/products/skull-tee.jpg';
 
 const collections = [
   {
@@ -10,7 +8,7 @@ const collections = [
     title: 'Shiva Collection',
     subtitle: 'Divine Power',
     description: 'Spiritual designs featuring Lord Shiva. Premium prints on cotton.',
-    image: skullTee,
+    image: '/Shiva.PNG',
     featured: true,
   },
   {
@@ -18,7 +16,7 @@ const collections = [
     title: 'Shrooms Collection',
     subtitle: 'Psychedelic Art',
     description: 'Trippy mushroom designs. Explore consciousness through fashion.',
-    image: skullTee,
+    image: '/Shrooms.PNG',
     featured: false,
   },
   {
@@ -26,7 +24,7 @@ const collections = [
     title: 'LSD Collection',
     subtitle: 'Mind Expansion',
     description: 'Psychedelic patterns and vibrant colors. Art that transcends.',
-    image: skullTee,
+    image: '/LSD.PNG',
     featured: false,
   },
   {
@@ -34,7 +32,7 @@ const collections = [
     title: 'Chakras Collection',
     subtitle: 'Energy Centers',
     description: 'Sacred geometry and chakra symbols. Balance your energy.',
-    image: skullTee,
+    image: '/Chakras.PNG',
     featured: false,
   },
   {
@@ -42,7 +40,7 @@ const collections = [
     title: 'Dark Collection',
     subtitle: 'Shadow Realm',
     description: 'Our darkest designs. Embrace the darkness within.',
-    image: skullTee,
+    image: '/Dark.PNG',
     featured: false,
   },
   {
@@ -50,7 +48,7 @@ const collections = [
     title: 'Rick n Morty',
     subtitle: 'Wubba Lubba',
     description: 'Get schwifty with Rick and Morty designs. Interdimensional style.',
-    image: skullTee,
+    image: '/Rick-N-Morty.PNG',
     featured: false,
   },
 ];
@@ -87,7 +85,7 @@ const CollectionsPage = () => {
             >
               <Link to="/shop">
                 <motion.img
-                  src={collectionDark}
+                  src={featuredCollection.image}
                   alt={featuredCollection.title}
                   className="w-full h-full object-cover"
                   whileHover={{ scale: 1.05 }}

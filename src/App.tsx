@@ -9,7 +9,10 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import { PageLoader } from "@/components/ui/loader";
 import { LoadingBar } from "@/components/ui/loading-bar";
 
-// Lazy load pages for better performance
+// Eager load critical pages (checkout is critical for conversions)
+import CheckoutPage from "./pages/CheckoutPage";
+
+// Lazy load other pages for better performance
 const Index = lazy(() => import("./pages/Index"));
 const ShopPage = lazy(() => import("./pages/ShopPage"));
 const CollectionsPage = lazy(() => import("./pages/CollectionsPage"));
@@ -19,7 +22,6 @@ const ContactPage = lazy(() => import("./pages/ContactPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Login = lazy(() => import("./pages/auth/Login"));
 const Register = lazy(() => import("./pages/auth/Register"));
-const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const OrdersPage = lazy(() => import("./pages/OrdersPage"));
 const WishlistPage = lazy(() => import("./pages/WishlistPage"));
@@ -42,6 +44,8 @@ const queryClient = new QueryClient({
       gcTime: 1000 * 60 * 10, // 10 minutes
       retry: 1,
       refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
     },
   },
 });
