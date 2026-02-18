@@ -22,10 +22,7 @@ const InventoryAlerts = () => {
   const loadAlerts = async () => {
     try {
       setLoading(true);
-      const data = await adminApi.inventory.getLowStockAlerts(
-        threshold,
-        categoryFilter === 'all' ? undefined : categoryFilter
-      );
+      const data = await adminApi.inventory.getStockAlerts();
       setAlerts(data);
     } catch (error: any) {
       toast.error('Failed to load alerts');
@@ -35,9 +32,15 @@ const InventoryAlerts = () => {
     }
   };
 
-  const criticalAlerts = alerts?.alerts?.critical || [];
-  const warningAlerts = alerts?.alerts?.warning || [];
-  const totalAlerts = alerts?.alerts?.total || 0;
+  // Filter alerts based on category
+  const filteredAlerts = alerts?.alerts?.filter((alert: any) => {
+    if (categoryFilter === 'all') return true;
+    return alert.category === categoryFilter;
+  }) || [];
+
+  // Separate critical and warning alerts
+  const criticalAlerts = filteredAlerts.filter((alert: any) => alert.type === 'critical');
+  const warningAlerts = filteredAlerts.filter((alert: any) => alert.type === 'warning');
 
   return (
     <div>
@@ -61,7 +64,7 @@ const InventoryAlerts = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-500">{criticalAlerts.length}</div>
-            <p className="text-xs text-muted-foreground mt-1">≤ 5 units remaining</p>
+            <p className="text-xs text-muted-foreground mt-1">Out of stock or critical</p>
           </CardContent>
         </Card>
 
@@ -72,7 +75,7 @@ const InventoryAlerts = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-400">{warningAlerts.length}</div>
-            <p className="text-xs text-muted-foreground mt-1">6-{threshold} units remaining</p>
+            <p className="text-xs text-muted-foreground mt-1">Low stock items</p>
           </CardContent>
         </Card>
 
@@ -82,7 +85,7 @@ const InventoryAlerts = () => {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalAlerts}</div>
+            <div className="text-2xl font-bold">{filteredAlerts.length}</div>
             <p className="text-xs text-muted-foreground mt-1">Products need attention</p>
           </CardContent>
         </Card>
@@ -143,9 +146,10 @@ const InventoryAlerts = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {criticalAlerts.map((product: any) => {
-                      // Handle both object format {url: "..."} and string format
-                      const productImage = product.images?.[0]?.url || product.images?.[0] || product.image;
+                    {criticalAlerts.map((alert: any) => {
+                      const product = alert.product;
+                      if (!product) return null;
+                      const productImage = product.image;
                       return (
                         <tr key={product._id} className="border-t border-border">
                           <td className="p-4">
@@ -164,17 +168,22 @@ const InventoryAlerts = () => {
                                   No Img
                                 </div>
                               )}
-                              <span className="font-medium">{product.name}</span>
+                              <div>
+                                <span className="font-medium block">{product.name}</span>
+                                <span className="text-xs text-muted-foreground">{alert.message}</span>
+                              </div>
                             </div>
                           </td>
-                          <td className="p-4">{product.category}</td>
+                          <td className="p-4">{alert.category}</td>
                           <td className="p-4">
                             <span className="text-lg font-bold text-gray-500">{product.stock}</span>
                           </td>
                           <td className="p-4">
                             <Badge variant="destructive">Critical</Badge>
                           </td>
-                          <td className="p-4">₹{product.price}</td>
+                          <td className="p-4">
+                            <span className="text-sm text-muted-foreground">{alert.action}</span>
+                          </td>
                         </tr>
                       );
                     })}
@@ -203,9 +212,10 @@ const InventoryAlerts = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {warningAlerts.map((product: any) => {
-                      // Handle both object format {url: "..."} and string format
-                      const productImage = product.images?.[0]?.url || product.images?.[0] || product.image;
+                    {warningAlerts.map((alert: any) => {
+                      const product = alert.product;
+                      if (!product) return null;
+                      const productImage = product.image;
                       return (
                         <tr key={product._id} className="border-t border-border">
                           <td className="p-4">
@@ -224,10 +234,13 @@ const InventoryAlerts = () => {
                                   No Img
                                 </div>
                               )}
-                              <span className="font-medium">{product.name}</span>
+                              <div>
+                                <span className="font-medium block">{product.name}</span>
+                                <span className="text-xs text-muted-foreground">{alert.message}</span>
+                              </div>
                             </div>
                           </td>
-                          <td className="p-4">{product.category}</td>
+                          <td className="p-4">{alert.category}</td>
                           <td className="p-4">
                             <span className="text-lg font-bold text-gray-400">{product.stock}</span>
                           </td>
@@ -236,7 +249,9 @@ const InventoryAlerts = () => {
                               Warning
                             </Badge>
                           </td>
-                          <td className="p-4">₹{product.price}</td>
+                          <td className="p-4">
+                            <span className="text-sm text-muted-foreground">{alert.action}</span>
+                          </td>
                         </tr>
                       );
                     })}
@@ -246,7 +261,7 @@ const InventoryAlerts = () => {
             </div>
           )}
 
-          {alerts?.alerts?.total === 0 && (
+          {alerts?.totalAlerts === 0 && (
             <div className="text-center py-12 bg-card border border-border">
               <Package size={48} className="mx-auto text-muted-foreground mb-4" />
               <p className="text-lg font-medium mb-2">No Alerts</p>

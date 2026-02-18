@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/authStore';
 import { wishlistApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 
 interface ProductCardProps {
   product: Product;
@@ -28,8 +29,19 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
   const handleAddToCart = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    await addItem(product, selectedSize);
-    openCart();
+    
+    if (!product.stock || product.stock === 0) {
+      toast.error('This product is out of stock');
+      return;
+    }
+    
+    try {
+      await addItem(product, selectedSize);
+      openCart();
+    } catch (error) {
+      // Error is already handled in the store with toast
+      console.error('Add to cart error:', error);
+    }
   }, [product, selectedSize, addItem, openCart]);
 
   const handleToggleWishlist = useCallback(async (e: React.MouseEvent) => {
@@ -146,10 +158,11 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleAddToCart}
-                className="flex items-center gap-2 bg-white text-black px-6 py-3 uppercase text-sm tracking-wider font-bold border-2 border-white hover:bg-transparent hover:text-white transition-colors"
+                disabled={!product.stock || product.stock === 0}
+                className="flex items-center gap-2 bg-white text-black px-6 py-3 uppercase text-sm tracking-wider font-bold border-2 border-white hover:bg-transparent hover:text-white transition-colors disabled:bg-gray-400 disabled:border-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:hover:text-black"
               >
                 <Plus size={18} />
-                Add to Cart
+                {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -185,6 +198,24 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
               </span>
             )}
           </div>
+          {/* Stock Status */}
+          {product.stock !== undefined && (
+            <div className="flex items-center gap-1 text-xs">
+              {product.stock > 0 ? (
+                <>
+                  <div className="w-1.5 h-1.5 rounded-full bg-gray-600"></div>
+                  <span className="text-gray-600">
+                    {product.stock <= 5 ? `Only ${product.stock} left` : 'In Stock'}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
+                  <span className="text-gray-400">Out of Stock</span>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </Link>
     </motion.div>

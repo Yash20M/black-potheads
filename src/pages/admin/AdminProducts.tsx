@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { TableSkeleton } from '@/components/ui/loader';
 
 const AdminProducts = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -128,7 +129,7 @@ const AdminProducts = () => {
       </div>
 
       {loading ? (
-        <div className="text-center py-12">Loading...</div>
+        <TableSkeleton rows={10} cols={6} />
       ) : (
         <>
           <div className="bg-card border border-border overflow-hidden">
@@ -370,11 +371,22 @@ const AdminProducts = () => {
 };
 
 const ProductForm = ({ product, onSubmit }: any) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const categories = ['Shiva', 'Shrooms', 'LSD', 'Chakras', 'Dark', 'Rick n Morty'];
   const sizes = ['S', 'M', 'L', 'XL'];
 
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await onSubmit(e);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={handleFormSubmit} className="space-y-4">
       <div>
         <Label htmlFor="name">Product Name</Label>
         <Input
@@ -454,6 +466,30 @@ const ProductForm = ({ product, onSubmit }: any) => {
 
       <div>
         <Label htmlFor="images">Images</Label>
+        
+        {/* Show existing images when editing */}
+        {product?.images && product.images.length > 0 && (
+          <div className="mb-3">
+            <p className="text-sm text-muted-foreground mb-2">Current Images:</p>
+            <div className="grid grid-cols-3 gap-2">
+              {product.images.map((image: any, index: number) => {
+                const imageUrl = typeof image === 'string' ? image : image?.url;
+                return imageUrl ? (
+                  <img
+                    key={index}
+                    src={imageUrl}
+                    alt={`Product ${index + 1}`}
+                    className="w-full h-24 object-cover border border-border rounded"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.svg';
+                    }}
+                  />
+                ) : null;
+              })}
+            </div>
+          </div>
+        )}
+        
         <Input
           id="images"
           name="images"
@@ -461,6 +497,9 @@ const ProductForm = ({ product, onSubmit }: any) => {
           multiple
           accept="image/*"
         />
+        <p className="text-xs text-muted-foreground mt-1">
+          {product ? 'Upload new images to replace existing ones' : 'Select one or more images'}
+        </p>
       </div>
 
       <div className="flex items-center gap-2">
@@ -473,8 +512,11 @@ const ProductForm = ({ product, onSubmit }: any) => {
         <Label htmlFor="isFeatured">Featured Product</Label>
       </div>
 
-      <Button type="submit" variant="hero" className="w-full">
-        {product ? 'Update Product' : 'Create Product'}
+      <Button type="submit" variant="hero" className="w-full" disabled={isSubmitting}>
+        {isSubmitting 
+          ? (product ? 'Updating...' : 'Creating...') 
+          : (product ? 'Update Product' : 'Create Product')
+        }
       </Button>
     </form>
   );

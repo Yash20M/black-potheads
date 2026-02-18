@@ -5,6 +5,7 @@ import { Category, Product, normalizeProduct, ApiProduct } from '@/types/product
 import { cn } from '@/lib/utils';
 import { productApi } from '@/lib/api';
 import { toast } from 'sonner';
+import { SkeletonCard } from '@/components/ui/loader';
 
 const categories = [
   { id: 'all', label: 'All' },
@@ -117,9 +118,9 @@ const ShopPage = () => {
           {/* Products Grid */}
           <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {loading ? (
-              <div className="col-span-full text-center py-12 text-gray-600">
-                Loading products...
-              </div>
+              Array(8).fill(null).map((_, index) => (
+                <SkeletonCard key={index} />
+              ))
             ) : products.length === 0 ? (
               <div className="col-span-full text-center py-12 text-gray-600">
                 No products found in this category

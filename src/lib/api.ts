@@ -278,17 +278,27 @@ export const adminApi = {
       return apiFetch(`/api/admin/inventory/low-stock?${params.toString()}`, {}, true);
     },
 
+    // Get stock alerts (critical and warnings)
+    getStockAlerts: () => apiFetch('/api/admin/inventory/alerts', {}, true),
+
+    // Get inventory stats
+    getInventoryStats: () => apiFetch('/api/admin/inventory/stats', {}, true),
+
+    // Get inventory trends
+    getInventoryTrends: (days = 30) => 
+      apiFetch(`/api/admin/inventory/trends?days=${days}`, {}, true),
+
     // Update single product stock
     updateProductStock: (productId: string, stock: number, operation: 'set' | 'add' | 'subtract' = 'set') =>
-      apiFetch(`/api/admin/inventory/stock/${productId}`, {
+      apiFetch(`/api/admin/inventory/update-stock/${productId}`, {
         method: 'PUT',
         body: JSON.stringify({ stock, operation }),
       }, true),
 
     // Bulk update stock
     bulkUpdateStock: (updates: Array<{ productId: string; stock: number; operation: 'set' | 'add' | 'subtract' }>) =>
-      apiFetch('/api/admin/inventory/bulk-update', {
-        method: 'POST',
+      apiFetch('/api/admin/inventory/bulk-update-stock', {
+        method: 'PUT',
         body: JSON.stringify({ updates }),
       }, true),
 

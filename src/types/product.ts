@@ -25,6 +25,7 @@ export interface Product {
   sizes: string[];
   description?: string;
   badge?: string;
+  stock?: number;
 }
 
 export interface CartItem extends Product {
@@ -60,5 +61,6 @@ export const normalizeProduct = (apiProduct: ApiProduct): Product => {
     description: apiProduct.description,
     isFeatured: apiProduct.isFeatured,
     isNew: apiProduct.isFeatured,
+    stock: apiProduct.stock || 0,
   };
 };

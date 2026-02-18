@@ -3,12 +3,15 @@ import { motion } from 'framer-motion';
 import { LayoutDashboard, Package, ShoppingCart, LogOut, QrCode, Warehouse, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
+import { useAdminNotificationStore } from '@/store/adminNotificationStore';
 import { useEffect, useState } from 'react';
+import { adminApi } from '@/lib/api';
 
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAdmin, logoutAdmin } = useAuthStore();
+  const { pendingOrdersCount, setPendingOrdersCount, markOrdersAsViewed } = useAdminNotificationStore();
   const [inventoryOpen, setInventoryOpen] = useState(false);
 
   useEffect(() => {
@@ -23,6 +26,30 @@ const AdminLayout = () => {
       setInventoryOpen(true);
     }
   }, [location.pathname]);
+
+  // Fetch pending orders count
+  useEffect(() => {
+    if (isAdmin) {
+      fetchPendingOrdersCount();
+      // Poll every 30 seconds for new orders
+      const interval = setInterval(fetchPendingOrdersCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isAdmin]);
+
+  const fetchPendingOrdersCount = async () => {
+    try {
+      const response: any = await adminApi.orders.getAll({ filter: 'Pending' });
+      setPendingOrdersCount(response.totalOrders || 0);
+    } catch (error) {
+      console.error('Failed to fetch pending orders count:', error);
+    }
+  };
+
+  const handleOrdersClick = () => {
+    // Mark orders as viewed when clicking on Orders menu
+    markOrdersAsViewed();
+  };
 
   const handleLogout = () => {
     logoutAdmin();
@@ -58,19 +85,35 @@ const AdminLayout = () => {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
+            const isOrdersPage = item.path === '/admin/orders';
             
             return (
-              <Link key={item.path} to={item.path}>
+              <Link 
+                key={item.path} 
+                to={item.path}
+                onClick={isOrdersPage ? handleOrdersClick : undefined}
+              >
                 <motion.div
                   whileHover={{ x: 4 }}
-                  className={`flex items-center gap-3 px-4 py-3 rounded transition-colors ${
+                  className={`flex items-center justify-between px-4 py-3 rounded transition-colors ${
                     isActive
                       ? 'bg-primary text-primary-foreground'
                       : 'hover:bg-secondary'
                   }`}
                 >
-                  <Icon size={20} />
-                  <span className="font-medium">{item.label}</span>
+                  <div className="flex items-center gap-3">
+                    <Icon size={20} />
+                    <span className="font-medium">{item.label}</span>
+                  </div>
+                  {isOrdersPage && pendingOrdersCount > 0 && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="bg-red-500 text-white text-xs font-bold rounded-full min-w-[24px] h-6 px-2 flex items-center justify-center"
+                    >
+                      {pendingOrdersCount > 99 ? '99+' : pendingOrdersCount}
+                    </motion.span>
+                  )}
                 </motion.div>
               </Link>
             );

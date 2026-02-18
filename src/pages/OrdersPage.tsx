@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Spinner } from '@/components/ui/loader';
 
 const OrdersPage = () => {
   const navigate = useNavigate();
@@ -124,7 +125,10 @@ const OrdersPage = () => {
             className="lg:col-span-2"
           >
             {loading ? (
-              <div className="text-center py-12">Loading orders...</div>
+              <div className="flex flex-col items-center justify-center py-20">
+                <Spinner size="lg" />
+                <p className="mt-4 text-muted-foreground">Loading your orders...</p>
+              </div>
             ) : orders.length === 0 ? (
               <div className="bg-card border border-border p-12 text-center">
                 <Package size={48} className="mx-auto mb-4 text-muted-foreground" />

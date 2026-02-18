@@ -80,8 +80,19 @@ const ProductDetailPage = () => {
 
   const handleAddToCart = async () => {
     if (!product) return;
-    await addItem(product, selectedSize);
-    openCart();
+    
+    if (!product.stock || product.stock === 0) {
+      toast.error('This product is out of stock');
+      return;
+    }
+    
+    try {
+      await addItem(product, selectedSize);
+      openCart();
+    } catch (error) {
+      // Error is already handled in the store with toast
+      console.error('Add to cart error:', error);
+    }
   };
 
   const handlePrevImage = () => {
@@ -226,6 +237,29 @@ const ProductDetailPage = () => {
                 )}
               </div>
 
+              {/* Stock Status */}
+              <div className="mb-6">
+                {product.stock !== undefined && (
+                  <div className="flex items-center gap-2">
+                    {product.stock > 0 ? (
+                      <>
+                        <div className="w-2 h-2 rounded-full bg-gray-600"></div>
+                        <span className="text-sm text-gray-600">
+                          {product.stock <= 5 
+                            ? `Only ${product.stock} left in stock` 
+                            : 'In Stock'}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+                        <span className="text-sm text-gray-400">Out of Stock</span>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <p className="text-gray-600 mb-8 leading-relaxed text-sm">{product.description}</p>
 
               {/* Wide Fit Note */}
@@ -272,10 +306,11 @@ const ProductDetailPage = () => {
                 <Button 
                   variant="default" 
                   size="lg" 
-                  className="w-full bg-black hover:bg-gray-800 text-white uppercase tracking-[0.15em] h-14 text-sm font-medium"
+                  className="w-full bg-black hover:bg-gray-800 text-white uppercase tracking-[0.15em] h-14 text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
                   onClick={handleAddToCart}
+                  disabled={!product.stock || product.stock === 0}
                 >
-                  Add to Cart
+                  {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
                 </Button>
               </div>
 

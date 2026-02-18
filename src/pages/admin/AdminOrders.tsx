@@ -18,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { TableSkeleton } from '@/components/ui/loader';
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -164,7 +165,7 @@ const AdminOrders = () => {
       </div>
 
       {loading ? (
-        <div className="text-center py-12">Loading...</div>
+        <TableSkeleton rows={10} cols={7} />
       ) : (
         <>
           <div className="bg-card border border-border overflow-hidden">

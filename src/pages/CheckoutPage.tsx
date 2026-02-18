@@ -18,6 +18,7 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const [qrImage, setQrImage] = useState<string | null>(null);
   const [showQR, setShowQR] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
 
   const [formData, setFormData] = useState({
     line1: '',
@@ -29,6 +30,9 @@ const CheckoutPage = () => {
   });
 
   useEffect(() => {
+    // Don't redirect if order was just placed
+    if (orderPlaced) return;
+
     if (!user) {
       toast.error('Please login to checkout');
       navigate('/login');
@@ -42,7 +46,7 @@ const CheckoutPage = () => {
     }
 
     loadQR();
-  }, [user, items, navigate]);
+  }, [user, items, navigate, orderPlaced]);
 
   const loadQR = async () => {
     try {
@@ -86,8 +90,15 @@ const CheckoutPage = () => {
       };
 
       const response: any = await orderApi.create(orderData);
+      
+      // Set flag to prevent "cart is empty" message
+      setOrderPlaced(true);
+      
+      // Clear cart and show success message
+      await clearCart();
       toast.success('Order placed successfully!');
-      clearCart();
+      
+      // Navigate to orders page
       navigate(`/orders`);
     } catch (error: any) {
       toast.error(error.message || 'Failed to place order');

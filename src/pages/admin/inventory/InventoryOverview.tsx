@@ -49,8 +49,9 @@ const InventoryOverview = () => {
     p.name?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  const overallStats = overview?.overallStats || {};
-  const categoryStats = overview?.categoryStats || [];
+  // Use summary from API response
+  const summary = overview?.summary || {};
+  const products = overview?.products || [];
 
   return (
     <div>
@@ -66,7 +67,7 @@ const InventoryOverview = () => {
       </div>
 
       {/* Summary Cards */}
-      {overallStats && (
+      {summary && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -74,9 +75,9 @@ const InventoryOverview = () => {
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{overallStats.totalProducts || 0}</div>
+              <div className="text-2xl font-bold">{summary.totalProducts || 0}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {overallStats.totalStock || 0} units in stock
+                {products.reduce((sum: number, p: any) => sum + (p.stock || 0), 0)} units in stock
               </p>
             </CardContent>
           </Card>
@@ -88,7 +89,7 @@ const InventoryOverview = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-gray-400">
-                {overallStats.lowStockCount || 0}
+                {summary.lowStockCount || 0}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 Below {lowStockThreshold} units
@@ -103,7 +104,7 @@ const InventoryOverview = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-gray-500">
-                {overallStats.outOfStockCount || 0}
+                {summary.outOfStockCount || 0}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 Needs restocking
@@ -118,7 +119,7 @@ const InventoryOverview = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                ₹{overallStats.totalInventoryValue?.toLocaleString() || 0}
+                ₹{summary.totalStockValue?.toLocaleString() || 0}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 Total stock value
