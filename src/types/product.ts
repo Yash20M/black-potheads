@@ -19,7 +19,7 @@ export interface Product {
   originalPrice?: number;
   category: string;
   image: string;
-  images: string[];
+  images?: string[];
   isNew?: boolean;
   isSale?: boolean;
   sizes: string[];
@@ -59,7 +59,6 @@ export const normalizeProduct = (apiProduct: ApiProduct): Product => {
     images: images.length > 0 ? images : [placeholderImage],
     sizes: apiProduct.sizes,
     description: apiProduct.description,
-    isFeatured: apiProduct.isFeatured,
     isNew: apiProduct.isFeatured,
     stock: apiProduct.stock || 0,
   };
