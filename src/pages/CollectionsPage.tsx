@@ -7,42 +7,48 @@ const collections = [
     id: 'Shiva',
     title: 'Shiva Collection',
     subtitle: 'Divine Power',
-    description: 'Spiritual designs featuring Lord Shiva. Premium prints on cotton.',
+    description: 'Embrace the divine energy of Lord Shiva, the destroyer and transformer. Our Shiva collection features intricate spiritual designs that blend ancient Hindu mythology with contemporary streetwear aesthetics. Each piece is crafted with premium cotton and showcases detailed prints of the third eye, trishul, and cosmic dance of Nataraja.',
+    features: ['Premium Cotton', 'Spiritual Artwork', 'Limited Edition', 'Unisex Designs'],
     image: '/Shiva.PNG',
   },
   {
     id: 'Shrooms',
     title: 'Shrooms Collection',
     subtitle: 'Psychedelic Art',
-    description: 'Trippy mushroom designs. Explore consciousness through fashion.',
+    description: 'Journey into the mystical world of psychedelic mushrooms with our trippy designs. This collection celebrates consciousness expansion and natural wisdom through vibrant, mind-bending artwork. Featuring colorful mushroom patterns, fractal designs, and nature-inspired motifs that capture the essence of psychedelic experiences.',
+    features: ['Vibrant Colors', 'Nature-Inspired', 'Soft Fabric', 'Unique Artwork'],
     image: '/Shrooms.PNG',
   },
   {
     id: 'LSD',
     title: 'LSD Collection',
     subtitle: 'Mind Expansion',
-    description: 'Psychedelic patterns and vibrant colors. Art that transcends.',
+    description: 'Dive into a kaleidoscope of colors and patterns inspired by the psychedelic revolution. Our LSD collection features mesmerizing geometric patterns, optical illusions, and vibrant color combinations that transcend ordinary fashion. Each design is a visual journey, blending sacred geometry with modern street style.',
+    features: ['Geometric Patterns', 'Optical Illusions', 'Bold Colors', 'Premium Prints'],
     image: '/LSD.PNG',
   },
   {
     id: 'Chakras',
     title: 'Chakras Collection',
     subtitle: 'Energy Centers',
-    description: 'Sacred geometry and chakra symbols. Balance your energy.',
+    description: 'Align your energy centers with our Chakras collection, featuring sacred geometry and ancient symbols of spiritual balance. Each design represents the seven chakras, from root to crown, incorporating mandalas, lotus flowers, and energy flow patterns. Perfect for yoga enthusiasts and meditation practitioners.',
+    features: ['Sacred Geometry', 'Seven Chakras', 'Meditation-Inspired', 'Spiritual Balance'],
     image: '/Chakras.PNG',
   },
   {
     id: 'Dark',
     title: 'Dark Collection',
     subtitle: 'Shadow Realm',
-    description: 'Our darkest designs. Embrace the darkness within.',
+    description: 'Embrace the darkness within with our most mysterious and edgy collection. The Dark collection features gothic aesthetics, occult symbolism, and shadow-inspired designs that celebrate the beauty of the night. From skulls and ravens to mystical symbols and dark cosmic patterns, these pieces are for those who find power in the shadows.',
+    features: ['Gothic Aesthetics', 'Occult Symbolism', 'Dark Schemes', 'Edgy Street Style'],
     image: '/Dark.PNG',
   },
   {
     id: 'Rick n Morty',
     title: 'Rick n Morty',
     subtitle: 'Wubba Lubba',
-    description: 'Get schwifty with Rick and Morty designs. Interdimensional style.',
+    description: 'Get schwifty with our interdimensional Rick and Morty collection! Featuring iconic characters, memorable quotes, and scenes from across the multiverse. From portal guns to Pickle Rick, these designs capture the chaotic genius and dark humor of the show. Perfect for fans who appreciate science, sarcasm, and interdimensional adventures.',
+    features: ['Official-Style Art', 'Iconic Characters', 'Multiverse Designs', 'Fan Favorites'],
     image: '/Rick-N-Morty.PNG',
   },
 ];
@@ -127,25 +133,42 @@ const CollectionsPage = () => {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.4 }}
-                      className="text-gray-700 text-lg mb-8 max-w-md"
+                      className="text-gray-700 text-lg mb-6 max-w-xl leading-relaxed"
                     >
                       {collection.description}
                     </motion.p>
-                    
+
+                    {/* Features Grid */}
                     <motion.div
                       initial={{ opacity: 0, x: isEven ? -20 : 20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.5 }}
+                      className={`grid grid-cols-2 gap-3 mb-8 max-w-md ${!isEven ? 'lg:ml-auto' : ''}`}
+                    >
+                      {collection.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-black"></div>
+                          <span className="text-sm text-gray-600 uppercase tracking-wide">{feature}</span>
+                        </div>
+                      ))}
+                    </motion.div>
+                    
+                    <motion.div
+                      initial={{ opacity: 0, x: isEven ? -20 : 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.6 }}
                     >
                       <Link 
                         to={`/shop?collection=${collection.id}`}
-                        className={`inline-flex items-center gap-2 text-black font-medium hover:gap-4 transition-all duration-300 group ${
+                        className={`group inline-flex items-center gap-3 bg-black text-white px-8 py-4 uppercase text-sm tracking-wider font-bold hover:bg-gray-900 transition-all duration-300 relative overflow-hidden ${
                           !isEven ? 'lg:flex-row-reverse' : ''
                         }`}
                       >
-                        <span>Shop Collection</span>
-                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                        <span className="relative z-10">Shop Collection</span>
+                        <ArrowRight size={20} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-800 to-black transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
                       </Link>
                     </motion.div>
                   </div>
