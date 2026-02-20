@@ -31,15 +31,13 @@ const Index = () => {
   const [loadProgress, setLoadProgress] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroContainerRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef<number>(0);
-  const smoothTimeRef = useRef<number>(0);
 
   const { scrollYProgress } = useScroll({
     target: heroContainerRef,
     offset: ['start start', 'end end'],
   });
 
-  // Optimized video loading - faster initial load
+  // Optimized video loading with better performance
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -47,6 +45,9 @@ const Index = () => {
     // Optimize for mobile - use metadata preload
     const isMobile = window.innerWidth < 768;
     video.preload = isMobile ? 'metadata' : 'auto';
+    
+    // Set playback rate for smoother performance
+    video.playbackRate = 1.0;
 
     const checkBuffered = () => {
       if (video.buffered.length > 0 && video.duration) {
@@ -65,7 +66,12 @@ const Index = () => {
       setVideoReady(true);
     };
 
+    const onLoadedData = () => {
+      setVideoReady(true);
+    };
+
     video.addEventListener('canplay', onCanPlay);
+    video.addEventListener('loadeddata', onLoadedData);
     video.addEventListener('progress', checkBuffered);
     
     // Trigger load
@@ -73,16 +79,20 @@ const Index = () => {
 
     return () => {
       video.removeEventListener('canplay', onCanPlay);
+      video.removeEventListener('loadeddata', onLoadedData);
       video.removeEventListener('progress', checkBuffered);
     };
   }, []);
 
-  // Auto-play video when ready
+  // Auto-play video when ready with optimization
   useEffect(() => {
     if (!videoReady) return;
     const video = videoRef.current;
     if (!video) return;
 
+    // Ensure smooth playback
+    video.playbackRate = 1.0;
+    
     // Play video with error handling
     const playPromise = video.play();
     if (playPromise !== undefined) {
@@ -171,7 +181,14 @@ const Index = () => {
             preload="auto"
             autoPlay
             loop
-            className="absolute inset-0 w-full h-full object-cover"
+            webkit-playsinline="true"
+            x5-playsinline="true"
+            className="absolute inset-0 w-full h-full object-cover will-change-auto"
+            style={{ 
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden',
+              perspective: 1000
+            }}
           >
             <source src="/Video.mp4" type="video/mp4" />
           </video>
@@ -312,7 +329,7 @@ const Index = () => {
       <ProcessSection />
       <FeaturesSection />
 
-      <section className="py-24 bg-card">
+      {/* <section className="py-24 bg-card">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -336,12 +353,12 @@ const Index = () => {
             </Link>
           </motion.div>
         </div>
-      </section>
+      </section> */}
 
       <UpcomingDrop />
       <StatsSection />
       <TestimonialsSection />
-      <InstagramSection />
+      {/* <InstagramSection /> */}
       <NewsletterSection />
     </div>
   );

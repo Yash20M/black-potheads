@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ProductCard } from '@/components/products/ProductCard';
 import { Category, Product, normalizeProduct, ApiProduct } from '@/types/product';
 import { cn } from '@/lib/utils';
@@ -17,10 +18,65 @@ const categories = [
   { id: 'Rick n Morty', label: 'Rick n Morty' },
 ];
 
+const collectionDetails = {
+  'Shiva': {
+    title: 'Shiva Collection',
+    subtitle: 'Divine Power',
+    description: 'Embrace the divine energy of Lord Shiva, the destroyer and transformer. Our Shiva collection features intricate spiritual designs that blend ancient Hindu mythology with contemporary streetwear aesthetics. Each piece is crafted with premium cotton and showcases detailed prints of the third eye, trishul, and cosmic dance of Nataraja. Perfect for those seeking spiritual connection through fashion.',
+    highlights: ['Premium Cotton Fabric', 'Detailed Spiritual Artwork', 'Limited Edition Prints', 'Unisex Designs'],
+  },
+  'Shrooms': {
+    title: 'Shrooms Collection',
+    subtitle: 'Psychedelic Art',
+    description: 'Journey into the mystical world of psychedelic mushrooms with our trippy designs. This collection celebrates consciousness expansion and natural wisdom through vibrant, mind-bending artwork. Featuring colorful mushroom patterns, fractal designs, and nature-inspired motifs that capture the essence of psychedelic experiences. Made for free spirits and consciousness explorers.',
+    highlights: ['Vibrant Psychedelic Colors', 'Nature-Inspired Designs', 'Soft Comfortable Fabric', 'Unique Artwork'],
+  },
+  'LSD': {
+    title: 'LSD Collection',
+    subtitle: 'Mind Expansion',
+    description: 'Dive into a kaleidoscope of colors and patterns inspired by the psychedelic revolution. Our LSD collection features mesmerizing geometric patterns, optical illusions, and vibrant color combinations that transcend ordinary fashion. Each design is a visual journey, blending sacred geometry with modern street style. Art that challenges perception and celebrates consciousness.',
+    highlights: ['Geometric Patterns', 'Optical Illusions', 'Bold Color Palettes', 'Premium Quality Prints'],
+  },
+  'Chakras': {
+    title: 'Chakras Collection',
+    subtitle: 'Energy Centers',
+    description: 'Align your energy centers with our Chakras collection, featuring sacred geometry and ancient symbols of spiritual balance. Each design represents the seven chakras, from root to crown, incorporating mandalas, lotus flowers, and energy flow patterns. These pieces are perfect for yoga enthusiasts, meditation practitioners, and anyone seeking harmony between body, mind, and spirit.',
+    highlights: ['Sacred Geometry', 'Seven Chakra Symbols', 'Meditation-Inspired', 'Spiritual Balance'],
+  },
+  'Dark': {
+    title: 'Dark Collection',
+    subtitle: 'Shadow Realm',
+    description: 'Embrace the darkness within with our most mysterious and edgy collection. The Dark collection features gothic aesthetics, occult symbolism, and shadow-inspired designs that celebrate the beauty of the night. From skulls and ravens to mystical symbols and dark cosmic patterns, these pieces are for those who find power in the shadows and beauty in the darkness.',
+    highlights: ['Gothic Aesthetics', 'Occult Symbolism', 'Dark Color Schemes', 'Edgy Street Style'],
+  },
+  'Rick n Morty': {
+    title: 'Rick n Morty',
+    subtitle: 'Wubba Lubba',
+    description: 'Get schwifty with our interdimensional Rick and Morty collection! Featuring iconic characters, memorable quotes, and scenes from across the multiverse. From portal guns to Pickle Rick, these designs capture the chaotic genius and dark humor of the show. Perfect for fans who appreciate science, sarcasm, and interdimensional adventures. Wubba lubba dub dub!',
+    highlights: ['Official-Style Artwork', 'Iconic Characters', 'Multiverse Designs', 'Fan Favorite Quotes'],
+  },
+};
+
 const ShopPage = () => {
-  const [activeCategory, setActiveCategory] = useState<Category>('all');
+  const [searchParams] = useSearchParams();
+  const collectionParam = searchParams.get('collection');
+  const [activeCategory, setActiveCategory] = useState<Category>(
+    (collectionParam as Category) || 'all'
+  );
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Update active category when URL param changes
+  useEffect(() => {
+    if (collectionParam) {
+      setActiveCategory(collectionParam as Category);
+    }
+  }, [collectionParam]);
+
+  // Get current collection details
+  const currentCollection = activeCategory !== 'all' 
+    ? collectionDetails[activeCategory as keyof typeof collectionDetails]
+    : null;
 
   // Memoize the load products function
   const loadProducts = useCallback(async () => {
@@ -70,10 +126,39 @@ const ShopPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <span className="text-sm uppercase tracking-[0.3em] text-gray-400 mb-4 block">
-              Browse Our
-            </span>
-            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-white">SHOP</h1>
+            {currentCollection ? (
+              <>
+                <span className="text-sm uppercase tracking-[0.3em] text-gray-400 mb-4 block">
+                  {currentCollection.subtitle}
+                </span>
+                <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-white mb-6">
+                  {currentCollection.title.toUpperCase()}
+                </h1>
+                <p className="text-gray-300 text-lg max-w-3xl mx-auto mb-8 leading-relaxed">
+                  {currentCollection.description}
+                </p>
+                <div className="flex flex-wrap justify-center gap-4 mt-8">
+                  {currentCollection.highlights.map((highlight, index) => (
+                    <motion.span
+                      key={index}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + index * 0.1 }}
+                      className="px-4 py-2 bg-white/10 backdrop-blur-sm text-white text-sm uppercase tracking-wider border border-white/20"
+                    >
+                      {highlight}
+                    </motion.span>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <span className="text-sm uppercase tracking-[0.3em] text-gray-400 mb-4 block">
+                  Browse Our
+                </span>
+                <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-white">SHOP</h1>
+              </>
+            )}
           </motion.div>
         </div>
       </section>
@@ -116,7 +201,7 @@ const ShopPage = () => {
           </motion.p>
 
           {/* Products Grid */}
-          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {loading ? (
               Array(8).fill(null).map((_, index) => (
                 <SkeletonCard key={index} />
@@ -130,7 +215,7 @@ const ShopPage = () => {
                 <ProductCard key={product.id} product={product} index={index} />
               ))
             )}
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>

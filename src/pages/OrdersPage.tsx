@@ -192,7 +192,7 @@ const OrdersPage = () => {
                                   Size: {item.size} | Qty: {item.quantity}
                                 </p>
                               </div>
-                              <p className="font-display">${item.price * item.quantity}</p>
+                              <p className="font-display">₹{item.price * item.quantity}</p>
                             </div>
                           );
                         })}
@@ -206,7 +206,7 @@ const OrdersPage = () => {
                       <div className="flex items-center justify-between pt-4 border-t border-border">
                         <div>
                           <p className="text-sm text-muted-foreground">Total Amount</p>
-                          <p className="font-display text-xl">${order.totalAmount}</p>
+                          <p className="font-display text-xl">₹{order.totalAmount}</p>
                         </div>
                         <Button
                           variant="outline"
@@ -317,7 +317,7 @@ const OrdersPage = () => {
                             Size: {item.size} | Quantity: {item.quantity}
                           </p>
                           <p className="text-sm font-medium mt-1">
-                            ${item.price} × {item.quantity} = ${item.price * item.quantity}
+                            ₹{item.price} × {item.quantity} = ₹{item.price * item.quantity}
                           </p>
                         </div>
                       </div>
@@ -328,7 +328,7 @@ const OrdersPage = () => {
 
               <div className="flex justify-between font-display text-xl pt-4 border-t">
                 <span>Total</span>
-                <span>${selectedOrder.totalAmount}</span>
+                <span>₹{selectedOrder.totalAmount}</span>
               </div>
 
               <div>

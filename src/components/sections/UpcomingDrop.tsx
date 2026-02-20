@@ -110,7 +110,7 @@ export const UpcomingDrop = () => {
               ))}
             </motion.div>
 
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -138,7 +138,7 @@ export const UpcomingDrop = () => {
                   <span className="font-medium">You're on the list! We'll notify you.</span>
                 </motion.div>
               )}
-            </motion.div>
+            </motion.div> */}
           </div>
         </div>
       </div>

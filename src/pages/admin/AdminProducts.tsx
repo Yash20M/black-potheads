@@ -62,6 +62,14 @@ const AdminProducts = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
+    // Convert checkbox value to boolean
+    const isFeaturedValue = formData.get('isFeatured');
+    if (isFeaturedValue === 'on') {
+      formData.set('isFeatured', 'true');
+    } else if (!isFeaturedValue) {
+      formData.set('isFeatured', 'false');
+    }
+
     try {
       if (editingProduct) {
         await adminApi.products.update(editingProduct._id, formData);
@@ -89,20 +97,20 @@ const AdminProducts = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
         <div>
-          <h1 className="font-display text-4xl mb-2">Products</h1>
-          <p className="text-muted-foreground">Manage your product catalog</p>
+          <h1 className="font-display text-3xl md:text-4xl mb-2">Products</h1>
+          <p className="text-muted-foreground text-sm md:text-base">Manage your product catalog</p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="hero" onClick={() => setEditingProduct(null)}>
+            <Button variant="hero" onClick={() => setEditingProduct(null)} className="w-full sm:w-auto">
               <Plus size={18} />
               Add Product
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
             <DialogHeader>
               <DialogTitle>
                 {editingProduct ? 'Edit Product' : 'Add New Product'}
@@ -132,8 +140,8 @@ const AdminProducts = () => {
         <TableSkeleton rows={10} cols={6} />
       ) : (
         <>
-          <div className="bg-card border border-border overflow-hidden">
-            <table className="w-full">
+          <div className="bg-card border border-border overflow-x-auto">
+            <table className="w-full min-w-[800px]">
               <thead className="bg-secondary">
                 <tr>
                   <th className="text-left p-4 font-medium">Image</th>
@@ -185,7 +193,7 @@ const AdminProducts = () => {
                     </td>
                     <td className="p-4">{product.name}</td>
                     <td className="p-4">{product.category}</td>
-                    <td className="p-4">${product.price}</td>
+                    <td className="p-4">₹{product.price}</td>
                     <td className="p-4">{product.stock}</td>
                     <td className="p-4">
                       <div className="flex items-center justify-end gap-2">
@@ -247,7 +255,7 @@ const AdminProducts = () => {
 
       {/* View Product Details Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto mx-4">
           <DialogHeader>
             <DialogTitle>Product Details</DialogTitle>
           </DialogHeader>
@@ -293,7 +301,7 @@ const AdminProducts = () => {
 
                 <div>
                   <p className="text-sm text-muted-foreground">Price</p>
-                  <p className="font-display text-xl">${viewingProduct.price}</p>
+                  <p className="font-display text-xl">₹{viewingProduct.price}</p>
                 </div>
 
                 <div>

@@ -293,10 +293,10 @@ const WishlistProductCard = ({ product, index, onRemove, onAddToCart }: Wishlist
             {product.name}
           </h3>
           <div className="flex items-center gap-2">
-            <span className="font-display text-xl">${product.price}</span>
+            <span className="font-display text-xl">₹{product.price}</span>
             {product.originalPrice && (
               <span className="text-muted-foreground line-through text-sm">
-                ${product.originalPrice}
+                ₹{product.originalPrice}
               </span>
             )}
           </div>

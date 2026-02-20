@@ -149,7 +149,7 @@ const TrendingProductCard = ({ product, index }: { product: Product; index: numb
           <motion.div animate={{ y: isHovered ? -10 : 0 }} transition={{ duration: 0.3 }}>
             <span className="text-muted-foreground text-sm uppercase tracking-wider">{product.category}</span>
             <h3 className="font-display text-2xl md:text-3xl mt-1 group-hover:text-primary transition-colors">{product.name}</h3>
-            <p className="text-xl font-medium mt-2">${product.price}</p>
+            <p className="text-xl font-medium mt-2">₹{product.price}</p>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

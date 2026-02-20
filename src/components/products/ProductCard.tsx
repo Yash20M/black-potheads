@@ -78,100 +78,82 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
   const imageSrc = imageError ? 'https://via.placeholder.com/400x500?text=No+Image' : product.image;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.3) }}
+    <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative"
+      className="group relative opacity-0 animate-fadeIn"
+      style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
     >
       <Link to={`/product/${product.id}`}>
         {/* Image Container */}
         <div className="relative aspect-[3/4] bg-secondary overflow-hidden mb-4">
           {/* Product Image */}
-          <motion.img
+          <img
             src={imageSrc}
             alt={product.name}
             onError={handleImageError}
             loading="lazy"
-            className="w-full h-full object-cover"
-            animate={{ scale: isHovered ? 1.08 : 1 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
+            decoding="async"
+            className="w-full h-full object-cover transition-transform duration-400 ease-out"
+            style={{ transform: isHovered ? 'scale(1.08)' : 'scale(1)' }}
           />
 
           {/* Badges */}
-          <div className="absolute top-4 left-4 flex flex-col gap-2">
+          <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
             {product.isNew && (
-              <motion.span
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                className="bg-black text-white px-3 py-1 text-xs uppercase tracking-wider font-bold"
-              >
+              <span className="bg-black text-white px-3 py-1 text-xs uppercase tracking-wider font-bold">
                 New
-              </motion.span>
+              </span>
             )}
             {product.isSale && (
-              <motion.span
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                className="bg-white text-black border-2 border-black px-3 py-1 text-xs uppercase tracking-wider font-bold"
-              >
+              <span className="bg-white text-black border-2 border-black px-3 py-1 text-xs uppercase tracking-wider font-bold">
                 Sale
-              </motion.span>
+              </span>
             )}
           </div>
 
-          {/* Hover Overlay */}
-          <motion.div
-            initial={false}
-            animate={{ opacity: isHovered ? 1 : 0 }}
-            className="absolute inset-0 bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center gap-4 p-4"
+          {/* Overlay - Always visible on mobile, hover on desktop */}
+          <div
+            className="absolute inset-0 bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center gap-4 p-4 transition-opacity duration-300"
+            style={{ opacity: isHovered ? 1 : 0 }}
           >
             {/* Size Selector */}
             <div className="flex flex-wrap gap-2 justify-center" onClick={(e) => e.preventDefault()}>
               {product.sizes.map((size) => (
-                <motion.button
+                <button
                   key={size}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     setSelectedSize(size);
                   }}
                   className={cn(
-                    'w-10 h-10 border-2 text-sm font-bold transition-all',
+                    'w-10 h-10 border-2 text-sm font-bold transition-all active:scale-95 transform',
                     selectedSize === size
                       ? 'bg-white text-black border-white'
                       : 'bg-transparent border-white text-white hover:bg-white hover:text-black'
                   )}
                 >
                   {size}
-                </motion.button>
+                </button>
               ))}
             </div>
 
             {/* Action Buttons */}
             <div className="flex gap-3">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <button
                 onClick={handleAddToCart}
                 disabled={!product.stock || product.stock === 0}
-                className="flex items-center gap-2 bg-white text-black px-6 py-3 uppercase text-sm tracking-wider font-bold border-2 border-white hover:bg-transparent hover:text-white transition-colors disabled:bg-gray-400 disabled:border-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:hover:text-black"
+                className="flex items-center gap-2 bg-white text-black px-6 py-3 uppercase text-sm tracking-wider font-bold border-2 border-white hover:bg-transparent hover:text-white transition-colors disabled:bg-gray-400 disabled:border-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:hover:text-black active:scale-95 transform"
               >
                 <Plus size={18} />
                 {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              </button>
+              <button
                 onClick={handleToggleWishlist}
                 disabled={isTogglingWishlist}
                 className={cn(
-                  'flex items-center justify-center w-12 h-12 border-2 transition-colors',
+                  'flex items-center justify-center w-12 h-12 border-2 transition-colors active:scale-95 transform',
                   inWishlist
                     ? 'bg-white border-white text-black'
                     : 'border-white bg-transparent text-white hover:bg-white hover:text-black'
@@ -179,23 +161,21 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
                 aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
               >
                 <Heart size={18} className={inWishlist ? 'fill-current' : ''} />
-              </motion.button>
+              </button>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Product Info */}
         <div className="space-y-1">
-          <motion.h3
-            className="font-medium text-sm uppercase tracking-wider line-clamp-1 text-black group-hover:text-gray-700 transition-colors"
-          >
+          <h3 className="font-medium text-sm uppercase tracking-wider line-clamp-1 text-black group-hover:text-gray-700 transition-colors">
             {product.name}
-          </motion.h3>
+          </h3>
           <div className="flex items-center gap-2">
-            <span className="font-display text-xl text-black">${product.price}</span>
+            <span className="font-display text-xl text-black">₹{product.price}</span>
             {product.originalPrice && (
               <span className="text-gray-500 line-through text-sm">
-                ${product.originalPrice}
+                ₹{product.originalPrice}
               </span>
             )}
           </div>
@@ -219,7 +199,7 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
           )}
         </div>
       </Link>
-    </motion.div>
+    </div>
   );
 };
 

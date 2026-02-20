@@ -4,7 +4,6 @@ import { useRef, useEffect, useState } from 'react';
 const stats = [
   { value: 50, suffix: 'K+', label: 'Happy Customers' },
   { value: 200, suffix: '+', label: 'Exclusive Drops' },
-  { value: 15, suffix: '', label: 'Countries Shipped' },
   { value: 99, suffix: '%', label: 'Satisfaction Rate' },
 ];
 
@@ -63,7 +62,7 @@ export const StatsSection = () => {
           <h2 className="font-display text-5xl md:text-6xl">BY THE NUMBERS</h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.label}

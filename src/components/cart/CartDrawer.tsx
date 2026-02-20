@@ -91,7 +91,7 @@ export const CartDrawer = () => {
                           <p className="text-muted-foreground text-sm mt-1">
                             Size: {item.selectedSize}
                           </p>
-                          <p className="text-primary font-bold mt-1">${item.price}</p>
+                          <p className="text-primary font-bold mt-1">₹{item.price}</p>
 
                           {/* Quantity Controls */}
                           <div className="flex items-center gap-3 mt-3">
@@ -149,7 +149,7 @@ export const CartDrawer = () => {
                   <span className="text-muted-foreground uppercase tracking-wider text-sm">
                     Subtotal
                   </span>
-                  <span className="font-display text-2xl">${getTotalPrice().toFixed(2)}</span>
+                  <span className="font-display text-2xl">₹{getTotalPrice().toFixed(2)}</span>
                 </div>
                 <Button 
                   variant="hero" 

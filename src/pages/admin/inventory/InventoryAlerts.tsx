@@ -44,49 +44,49 @@ const InventoryAlerts = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-display text-4xl mb-2">Inventory Alerts</h1>
-          <p className="text-muted-foreground">Monitor low stock and out of stock items</p>
+          <h1 className="font-display text-3xl sm:text-4xl mb-2">Inventory Alerts</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">Monitor low stock and out of stock items</p>
         </div>
-        <Button variant="hero" onClick={loadAlerts}>
+        <Button variant="hero" onClick={loadAlerts} size="sm" className="w-full sm:w-auto">
           <RefreshCw size={18} />
-          Refresh
+          <span className="ml-2">Refresh</span>
         </Button>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Critical Alerts</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-gray-500" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium">Critical Alerts</CardTitle>
+            <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-500">{criticalAlerts.length}</div>
-            <p className="text-xs text-muted-foreground mt-1">Out of stock or critical</p>
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <div className="text-xl sm:text-2xl font-bold text-gray-500">{criticalAlerts.length}</div>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Out of stock or critical</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Warning Alerts</CardTitle>
-            <TrendingDown className="h-4 w-4 text-gray-400" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium">Warning Alerts</CardTitle>
+            <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-400">{warningAlerts.length}</div>
-            <p className="text-xs text-muted-foreground mt-1">Low stock items</p>
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <div className="text-xl sm:text-2xl font-bold text-gray-400">{warningAlerts.length}</div>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Low stock items</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Alerts</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium">Total Alerts</CardTitle>
+            <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{filteredAlerts.length}</div>
-            <p className="text-xs text-muted-foreground mt-1">Products need attention</p>
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{filteredAlerts.length}</div>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Products need attention</p>
           </CardContent>
         </Card>
       </div>
@@ -130,65 +130,114 @@ const InventoryAlerts = () => {
           {/* Critical Alerts */}
           {criticalAlerts.length > 0 && (
             <div>
-              <h2 className="font-display text-2xl mb-4 flex items-center gap-2">
-                <AlertTriangle className="text-gray-500" size={24} />
+              <h2 className="font-display text-xl sm:text-2xl mb-4 flex items-center gap-2">
+                <AlertTriangle className="text-gray-500" size={20} />
                 Critical Alerts ({criticalAlerts.length})
               </h2>
-              <div className="bg-card border border-border overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-secondary">
-                    <tr>
-                      <th className="text-left p-4 font-medium">Product</th>
-                      <th className="text-left p-4 font-medium">Category</th>
-                      <th className="text-left p-4 font-medium">Current Stock</th>
-                      <th className="text-left p-4 font-medium">Status</th>
-                      <th className="text-left p-4 font-medium">Price</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {criticalAlerts.map((alert: any) => {
-                      const product = alert.product;
-                      if (!product) return null;
-                      const productImage = product.image;
-                      return (
-                        <tr key={product._id} className="border-t border-border">
-                          <td className="p-4">
-                            <div className="flex items-center gap-3">
-                              {productImage ? (
-                                <img
-                                  src={productImage}
-                                  alt={product.name}
-                                  className="w-12 h-12 object-cover rounded"
-                                  onError={(e) => {
-                                    e.currentTarget.src = '/placeholder.svg';
-                                  }}
-                                />
-                              ) : (
-                                <div className="w-12 h-12 bg-secondary flex items-center justify-center text-xs rounded">
-                                  No Img
+              
+              {/* Desktop Table */}
+              <div className="hidden md:block bg-card border border-border overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-secondary">
+                      <tr>
+                        <th className="text-left p-4 font-medium">Product</th>
+                        <th className="text-left p-4 font-medium">Category</th>
+                        <th className="text-left p-4 font-medium">Current Stock</th>
+                        <th className="text-left p-4 font-medium">Status</th>
+                        <th className="text-left p-4 font-medium">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {criticalAlerts.map((alert: any) => {
+                        const product = alert.product;
+                        if (!product) return null;
+                        const productImage = product.image;
+                        return (
+                          <tr key={product._id} className="border-t border-border">
+                            <td className="p-4">
+                              <div className="flex items-center gap-3">
+                                {productImage ? (
+                                  <img
+                                    src={productImage}
+                                    alt={product.name}
+                                    className="w-12 h-12 object-cover rounded"
+                                    onError={(e) => {
+                                      e.currentTarget.src = '/placeholder.svg';
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="w-12 h-12 bg-secondary flex items-center justify-center text-xs rounded">
+                                    No Img
+                                  </div>
+                                )}
+                                <div>
+                                  <span className="font-medium block">{product.name}</span>
+                                  <span className="text-xs text-muted-foreground">{alert.message}</span>
                                 </div>
-                              )}
-                              <div>
-                                <span className="font-medium block">{product.name}</span>
-                                <span className="text-xs text-muted-foreground">{alert.message}</span>
                               </div>
-                            </div>
-                          </td>
-                          <td className="p-4">{alert.category}</td>
-                          <td className="p-4">
-                            <span className="text-lg font-bold text-gray-500">{product.stock}</span>
-                          </td>
-                          <td className="p-4">
-                            <Badge variant="destructive">Critical</Badge>
-                          </td>
-                          <td className="p-4">
-                            <span className="text-sm text-muted-foreground">{alert.action}</span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                            </td>
+                            <td className="p-4">{alert.category}</td>
+                            <td className="p-4">
+                              <span className="text-lg font-bold text-gray-500">{product.stock}</span>
+                            </td>
+                            <td className="p-4">
+                              <Badge variant="destructive">Critical</Badge>
+                            </td>
+                            <td className="p-4">
+                              <span className="text-sm text-muted-foreground">{alert.action}</span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden space-y-3">
+                {criticalAlerts.map((alert: any) => {
+                  const product = alert.product;
+                  if (!product) return null;
+                  const productImage = product.image;
+                  return (
+                    <div key={product._id} className="bg-card border border-border rounded-lg p-4">
+                      <div className="flex gap-3 mb-3">
+                        {productImage ? (
+                          <img
+                            src={productImage}
+                            alt={product.name}
+                            className="w-16 h-16 object-cover rounded flex-shrink-0"
+                            onError={(e) => {
+                              e.currentTarget.src = '/placeholder.svg';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-16 h-16 bg-secondary flex items-center justify-center text-xs rounded flex-shrink-0">
+                            No Img
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-sm truncate">{product.name}</h3>
+                          <p className="text-xs text-muted-foreground mt-1">{alert.category}</p>
+                          <Badge variant="destructive" className="mt-2">Critical</Badge>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between pt-3 border-t border-border">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Stock</p>
+                          <p className="text-lg font-bold text-gray-500">{product.stock}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground mb-1">Action</p>
+                          <p className="text-xs font-medium">{alert.action}</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-3">{alert.message}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -196,67 +245,118 @@ const InventoryAlerts = () => {
           {/* Warning Alerts */}
           {warningAlerts.length > 0 && (
             <div>
-              <h2 className="font-display text-2xl mb-4 flex items-center gap-2">
-                <TrendingDown className="text-gray-400" size={24} />
+              <h2 className="font-display text-xl sm:text-2xl mb-4 flex items-center gap-2">
+                <TrendingDown className="text-gray-400" size={20} />
                 Warning Alerts ({warningAlerts.length})
               </h2>
-              <div className="bg-card border border-border overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-secondary">
-                    <tr>
-                      <th className="text-left p-4 font-medium">Product</th>
-                      <th className="text-left p-4 font-medium">Category</th>
-                      <th className="text-left p-4 font-medium">Current Stock</th>
-                      <th className="text-left p-4 font-medium">Status</th>
-                      <th className="text-left p-4 font-medium">Price</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {warningAlerts.map((alert: any) => {
-                      const product = alert.product;
-                      if (!product) return null;
-                      const productImage = product.image;
-                      return (
-                        <tr key={product._id} className="border-t border-border">
-                          <td className="p-4">
-                            <div className="flex items-center gap-3">
-                              {productImage ? (
-                                <img
-                                  src={productImage}
-                                  alt={product.name}
-                                  className="w-12 h-12 object-cover rounded"
-                                  onError={(e) => {
-                                    e.currentTarget.src = '/placeholder.svg';
-                                  }}
-                                />
-                              ) : (
-                                <div className="w-12 h-12 bg-secondary flex items-center justify-center text-xs rounded">
-                                  No Img
+              
+              {/* Desktop Table */}
+              <div className="hidden md:block bg-card border border-border overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-secondary">
+                      <tr>
+                        <th className="text-left p-4 font-medium">Product</th>
+                        <th className="text-left p-4 font-medium">Category</th>
+                        <th className="text-left p-4 font-medium">Current Stock</th>
+                        <th className="text-left p-4 font-medium">Status</th>
+                        <th className="text-left p-4 font-medium">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {warningAlerts.map((alert: any) => {
+                        const product = alert.product;
+                        if (!product) return null;
+                        const productImage = product.image;
+                        return (
+                          <tr key={product._id} className="border-t border-border">
+                            <td className="p-4">
+                              <div className="flex items-center gap-3">
+                                {productImage ? (
+                                  <img
+                                    src={productImage}
+                                    alt={product.name}
+                                    className="w-12 h-12 object-cover rounded"
+                                    onError={(e) => {
+                                      e.currentTarget.src = '/placeholder.svg';
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="w-12 h-12 bg-secondary flex items-center justify-center text-xs rounded">
+                                    No Img
+                                  </div>
+                                )}
+                                <div>
+                                  <span className="font-medium block">{product.name}</span>
+                                  <span className="text-xs text-muted-foreground">{alert.message}</span>
                                 </div>
-                              )}
-                              <div>
-                                <span className="font-medium block">{product.name}</span>
-                                <span className="text-xs text-muted-foreground">{alert.message}</span>
                               </div>
-                            </div>
-                          </td>
-                          <td className="p-4">{alert.category}</td>
-                          <td className="p-4">
-                            <span className="text-lg font-bold text-gray-400">{product.stock}</span>
-                          </td>
-                          <td className="p-4">
-                            <Badge variant="outline" className="border-gray-400 text-gray-400">
-                              Warning
-                            </Badge>
-                          </td>
-                          <td className="p-4">
-                            <span className="text-sm text-muted-foreground">{alert.action}</span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                            </td>
+                            <td className="p-4">{alert.category}</td>
+                            <td className="p-4">
+                              <span className="text-lg font-bold text-gray-400">{product.stock}</span>
+                            </td>
+                            <td className="p-4">
+                              <Badge variant="outline" className="border-gray-400 text-gray-400">
+                                Warning
+                              </Badge>
+                            </td>
+                            <td className="p-4">
+                              <span className="text-sm text-muted-foreground">{alert.action}</span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden space-y-3">
+                {warningAlerts.map((alert: any) => {
+                  const product = alert.product;
+                  if (!product) return null;
+                  const productImage = product.image;
+                  return (
+                    <div key={product._id} className="bg-card border border-border rounded-lg p-4">
+                      <div className="flex gap-3 mb-3">
+                        {productImage ? (
+                          <img
+                            src={productImage}
+                            alt={product.name}
+                            className="w-16 h-16 object-cover rounded flex-shrink-0"
+                            onError={(e) => {
+                              e.currentTarget.src = '/placeholder.svg';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-16 h-16 bg-secondary flex items-center justify-center text-xs rounded flex-shrink-0">
+                            No Img
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-sm truncate">{product.name}</h3>
+                          <p className="text-xs text-muted-foreground mt-1">{alert.category}</p>
+                          <Badge variant="outline" className="border-gray-400 text-gray-400 mt-2">
+                            Warning
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between pt-3 border-t border-border">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Stock</p>
+                          <p className="text-lg font-bold text-gray-400">{product.stock}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground mb-1">Action</p>
+                          <p className="text-xs font-medium">{alert.action}</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-3">{alert.message}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

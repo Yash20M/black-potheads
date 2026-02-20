@@ -114,9 +114,9 @@ const AdminOrders = () => {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="font-display text-4xl mb-2">Orders</h1>
-        <p className="text-muted-foreground">Manage customer orders</p>
+      <div className="mb-6 md:mb-8">
+        <h1 className="font-display text-3xl md:text-4xl mb-2">Orders</h1>
+        <p className="text-muted-foreground text-sm md:text-base">Manage customer orders</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -168,8 +168,8 @@ const AdminOrders = () => {
         <TableSkeleton rows={10} cols={7} />
       ) : (
         <>
-          <div className="bg-card border border-border overflow-hidden">
-            <table className="w-full">
+          <div className="bg-card border border-border overflow-x-auto">
+            <table className="w-full min-w-[900px]">
               <thead className="bg-secondary">
                 <tr>
                   <th className="text-left p-4 font-medium">Order ID</th>
@@ -196,7 +196,7 @@ const AdminOrders = () => {
                       </div>
                     </td>
                     <td className="p-4">{order.items?.length || 0}</td>
-                    <td className="p-4">${order.totalAmount}</td>
+                    <td className="p-4">₹{order.totalAmount}</td>
                     <td className="p-4">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
                         {order.status}
@@ -370,7 +370,7 @@ const AdminOrders = () => {
                             Size: {item.size} | Quantity: {item.quantity}
                           </p>
                           <p className="text-sm font-medium mt-1">
-                            ${item.price} × {item.quantity} = ${item.price * item.quantity}
+                            ₹{item.price} × {item.quantity} = ₹{item.price * item.quantity}
                           </p>
                         </div>
                       </div>
@@ -384,7 +384,7 @@ const AdminOrders = () => {
               {/* Order Total */}
               <div className="flex justify-between items-center font-display text-2xl pt-4 border-t-2 border-border">
                 <span>Total Amount</span>
-                <span className="text-primary">${selectedOrder.totalAmount}</span>
+                <span className="text-primary">₹{selectedOrder.totalAmount}</span>
               </div>
             </div>
           )}

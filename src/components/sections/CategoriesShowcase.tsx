@@ -50,7 +50,7 @@ export const CategoriesShowcase = () => {
                 <motion.div
                   whileHover={{ y: -12 }}
                   transition={{ duration: 0.4 }}
-                  className="relative h-[400px] overflow-hidden bg-card"
+                  className="relative h-[400px] overflow-hidden"
                 >
                   <motion.img
                     src={category.image}
@@ -59,8 +59,6 @@ export const CategoriesShowcase = () => {
                     whileHover={{ scale: 1.15 }}
                     transition={{ duration: 0.6 }}
                   />
-                  <div className={`absolute inset-0 bg-gradient-to-t ${category.color} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 
                   <div className="absolute inset-0 p-6 flex flex-col justify-between">
                     <motion.div className="self-end">

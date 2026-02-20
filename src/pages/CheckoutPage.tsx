@@ -274,7 +274,7 @@ const CheckoutPage = () => {
                 className="w-full"
                 disabled={loading}
               >
-                {loading ? 'Placing Order...' : `Place Order - $${totalPrice}`}
+                {loading ? 'Placing Order...' : `Place Order - ₹${totalPrice}`}
               </Button>
             </form>
           </motion.div>
@@ -301,7 +301,7 @@ const CheckoutPage = () => {
                       <p className="text-sm text-muted-foreground">
                         Size: {item.selectedSize} | Qty: {item.quantity}
                       </p>
-                      <p className="font-display">${item.price * item.quantity}</p>
+                      <p className="font-display">₹{item.price * item.quantity}</p>
                     </div>
                   </div>
                 ))}
@@ -310,7 +310,7 @@ const CheckoutPage = () => {
               <div className="border-t border-border pt-4 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>${totalPrice}</span>
+                  <span>₹{totalPrice}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
@@ -318,7 +318,7 @@ const CheckoutPage = () => {
                 </div>
                 <div className="flex justify-between font-display text-xl pt-2 border-t border-border">
                   <span>Total</span>
-                  <span>${totalPrice}</span>
+                  <span>₹{totalPrice}</span>
                 </div>
               </div>
             </div>

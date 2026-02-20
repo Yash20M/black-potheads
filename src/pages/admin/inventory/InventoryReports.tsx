@@ -48,14 +48,14 @@ const InventoryReports = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-display text-4xl mb-2">Inventory Reports</h1>
-          <p className="text-muted-foreground">Analytics and insights for your inventory</p>
+          <h1 className="font-display text-3xl sm:text-4xl mb-2">Inventory Reports</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">Analytics and insights for your inventory</p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
           <Select value={period} onValueChange={setPeriod}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -65,62 +65,62 @@ const InventoryReports = () => {
               <SelectItem value="90">Last 90 Days</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="hero" onClick={loadData}>
+          <Button variant="hero" onClick={loadData} size="sm" className="w-full sm:w-auto">
             <RefreshCw size={18} />
-            Refresh
+            <span className="ml-2">Refresh</span>
           </Button>
         </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium">Total Products</CardTitle>
+            <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.stats?.totalProducts || 0}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{stats?.stats?.totalProducts || 0}</div>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
               {stats?.stats?.inStockProducts || 0} in stock
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Inventory Value</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium">Inventory Value</CardTitle>
+            <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <div className="text-lg sm:text-2xl font-bold">
               ₹{stats?.stats?.totalInventoryValue?.toLocaleString() || 0}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">Total stock value</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Total value</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Daily Orders</CardTitle>
-            <TrendingUp className="h-4 w-4 text-gray-300" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium">Avg Daily Orders</CardTitle>
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-gray-300" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-300">
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <div className="text-xl sm:text-2xl font-bold text-gray-300">
               {trends?.trends?.avgDailyOrders?.toFixed(1) || 0}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">Last {period} days</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Last {period} days</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Period</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium">Period</CardTitle>
+            <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{period}</div>
-            <p className="text-xs text-muted-foreground mt-1">Days analyzed</p>
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{period}</div>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Days analyzed</p>
           </CardContent>
         </Card>
       </div>
@@ -211,24 +211,24 @@ const InventoryReports = () => {
       {/* Stock by Category */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Package size={20} />
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Package size={18} className="sm:w-5 sm:h-5" />
             Current Stock by Category
           </CardTitle>
         </CardHeader>
         <CardContent>
           {stockByCategory.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {stockByCategory.map((cat: any, index: number) => (
                 <motion.div
                   key={cat._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="p-4 bg-secondary rounded border border-border"
+                  className="p-3 sm:p-4 bg-secondary rounded border border-border"
                 >
-                  <h3 className="font-display text-xl mb-2">{cat._id}</h3>
-                  <div className="space-y-1 text-sm">
+                  <h3 className="font-display text-lg sm:text-xl mb-2">{cat._id}</h3>
+                  <div className="space-y-1 text-xs sm:text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Total Stock:</span>
                       <span className="font-medium">{cat.totalStock}</span>

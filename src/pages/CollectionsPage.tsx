@@ -9,7 +9,6 @@ const collections = [
     subtitle: 'Divine Power',
     description: 'Spiritual designs featuring Lord Shiva. Premium prints on cotton.',
     image: '/Shiva.PNG',
-    featured: true,
   },
   {
     id: 'Shrooms',
@@ -17,7 +16,6 @@ const collections = [
     subtitle: 'Psychedelic Art',
     description: 'Trippy mushroom designs. Explore consciousness through fashion.',
     image: '/Shrooms.PNG',
-    featured: false,
   },
   {
     id: 'LSD',
@@ -25,7 +23,6 @@ const collections = [
     subtitle: 'Mind Expansion',
     description: 'Psychedelic patterns and vibrant colors. Art that transcends.',
     image: '/LSD.PNG',
-    featured: false,
   },
   {
     id: 'Chakras',
@@ -33,7 +30,6 @@ const collections = [
     subtitle: 'Energy Centers',
     description: 'Sacred geometry and chakra symbols. Balance your energy.',
     image: '/Chakras.PNG',
-    featured: false,
   },
   {
     id: 'Dark',
@@ -41,7 +37,6 @@ const collections = [
     subtitle: 'Shadow Realm',
     description: 'Our darkest designs. Embrace the darkness within.',
     image: '/Dark.PNG',
-    featured: false,
   },
   {
     id: 'Rick n Morty',
@@ -49,14 +44,10 @@ const collections = [
     subtitle: 'Wubba Lubba',
     description: 'Get schwifty with Rick and Morty designs. Interdimensional style.',
     image: '/Rick-N-Morty.PNG',
-    featured: false,
   },
 ];
 
 const CollectionsPage = () => {
-  const featuredCollection = collections.find((c) => c.featured);
-  const otherCollections = collections.filter((c) => !c.featured);
-
   return (
     <div className="min-h-screen pt-20 bg-white">
       <section className="py-16 bg-white border-b border-gray-200">
@@ -74,89 +65,93 @@ const CollectionsPage = () => {
         </div>
       </section>
 
-      {featuredCollection && (
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="relative h-[600px] overflow-hidden group"
-            >
-              <Link to="/shop">
-                <motion.img
-                  src={featuredCollection.image}
-                  alt={featuredCollection.title}
-                  className="w-full h-full object-cover"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.6 }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
-                <div className="absolute inset-0 flex items-center">
-                  <div className="max-w-xl px-8 md:px-16">
-                    <span className="text-white text-sm uppercase tracking-widest mb-4 block">
-                      {featuredCollection.subtitle}
-                    </span>
-                    <h2 className="font-display text-5xl md:text-7xl mb-4 text-white">
-                      {featuredCollection.title.toUpperCase()}
-                    </h2>
-                    <p className="text-gray-200 text-lg mb-6">
-                      {featuredCollection.description}
-                    </p>
-                    <div className="flex items-center gap-4">
-                      <motion.span whileHover={{ x: 10 }} className="flex items-center gap-2 text-white font-medium">
-                        Shop Collection <ArrowRight size={18} />
-                      </motion.span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          </div>
-        </section>
-      )}
-
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-6">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="font-display text-4xl md:text-5xl mb-12 text-black"
-          >
-            ALL COLLECTIONS
-          </motion.h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {otherCollections.map((collection, index) => (
-              <motion.div
-                key={collection.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="group"
-              >
-                <Link to="/shop">
-                  <div className="relative h-80 overflow-hidden mb-4 bg-gray-100">
+          <div className="space-y-24">
+            {collections.map((collection, index) => {
+              const isEven = index % 2 === 0;
+              
+              return (
+                <motion.div
+                  key={collection.id}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center ${
+                    !isEven ? 'lg:flex-row-reverse' : ''
+                  }`}
+                >
+                  {/* Image Section */}
+                  <Link 
+                    to={`/shop?collection=${collection.id}`}
+                    className={`relative h-[500px] lg:h-[600px] overflow-hidden group ${
+                      !isEven ? 'lg:order-2' : 'lg:order-1'
+                    }`}
+                  >
                     <motion.img
                       src={collection.image}
                       alt={collection.title}
                       className="w-full h-full object-cover"
-                      whileHover={{ scale: 1.1 }}
+                      whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.6 }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                  </Link>
+
+                  {/* Content Section */}
+                  <div className={`flex flex-col justify-center ${
+                    !isEven ? 'lg:order-1 lg:text-right' : 'lg:order-2'
+                  }`}>
+                    <motion.span 
+                      initial={{ opacity: 0, x: isEven ? -20 : 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.2 }}
+                      className="text-sm uppercase tracking-widest text-gray-600 mb-4 block"
+                    >
+                      {collection.subtitle}
+                    </motion.span>
+                    
+                    <motion.h2 
+                      initial={{ opacity: 0, x: isEven ? -20 : 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3 }}
+                      className="font-display text-5xl md:text-6xl lg:text-7xl mb-6 text-black"
+                    >
+                      {collection.title.toUpperCase()}
+                    </motion.h2>
+                    
+                    <motion.p 
+                      initial={{ opacity: 0, x: isEven ? -20 : 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.4 }}
+                      className="text-gray-700 text-lg mb-8 max-w-md"
+                    >
+                      {collection.description}
+                    </motion.p>
+                    
+                    <motion.div
+                      initial={{ opacity: 0, x: isEven ? -20 : 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      <Link 
+                        to={`/shop?collection=${collection.id}`}
+                        className={`inline-flex items-center gap-2 text-black font-medium hover:gap-4 transition-all duration-300 group ${
+                          !isEven ? 'lg:flex-row-reverse' : ''
+                        }`}
+                      >
+                        <span>Shop Collection</span>
+                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </motion.div>
                   </div>
-                  <span className="text-gray-600 text-sm uppercase tracking-widest">
-                    {collection.subtitle}
-                  </span>
-                  <h3 className="font-display text-3xl mt-1 text-black group-hover:text-gray-700 transition-colors">
-                    {collection.title.toUpperCase()}
-                  </h3>
-                </Link>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>

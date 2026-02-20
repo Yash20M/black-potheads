@@ -95,28 +95,28 @@ const AdminDashboard = () => {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="font-display text-4xl mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Overview of your store</p>
+      <div className="mb-6 md:mb-8">
+        <h1 className="font-display text-3xl md:text-4xl mb-2">Dashboard</h1>
+        <p className="text-muted-foreground text-sm md:text-base">Overview of your store</p>
       </div>
 
       {/* Orders Section */}
-      <div className="mb-8">
-        <h2 className="font-display text-2xl mb-4">Orders Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="mb-6 md:mb-8">
+        <h2 className="font-display text-xl md:text-2xl mb-4">Orders Overview</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {statCards.map((stat, index) => (
             <motion.div
               key={stat.title}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-card border border-border p-6"
+              className="bg-card border border-border p-4 md:p-6"
             >
               <div className="flex items-center justify-between mb-4">
-                <stat.icon className={`w-8 h-8 ${stat.color}`} />
+                <stat.icon className={`w-6 h-6 md:w-8 md:h-8 ${stat.color}`} />
               </div>
-              <p className="text-3xl font-display mb-1">{stat.value}</p>
-              <p className="text-sm text-muted-foreground uppercase tracking-wider">
+              <p className="text-2xl md:text-3xl font-display mb-1">{stat.value}</p>
+              <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider">
                 {stat.title}
               </p>
             </motion.div>
@@ -126,28 +126,28 @@ const AdminDashboard = () => {
 
       {/* Inventory Section */}
       {inventoryCards.length > 0 && (
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display text-2xl">Inventory Overview</h2>
+        <div className="mb-6 md:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <h2 className="font-display text-xl md:text-2xl">Inventory Overview</h2>
             <Link to="/admin/inventory">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 View Details
               </Button>
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {inventoryCards.map((stat, index) => (
               <motion.div
                 key={stat.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 + 0.4 }}
-                className="bg-card border border-border p-6"
+                className="bg-card border border-border p-4 md:p-6"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <stat.icon className={`w-8 h-8 ${stat.color}`} />
+                  <stat.icon className={`w-6 h-6 md:w-8 md:h-8 ${stat.color}`} />
                 </div>
-                <p className="text-3xl font-display mb-1">{stat.value}</p>
+                <p className="text-2xl md:text-3xl font-display mb-1">{stat.value}</p>
                 <p className="text-sm text-muted-foreground uppercase tracking-wider">
                   {stat.title}
                 </p>

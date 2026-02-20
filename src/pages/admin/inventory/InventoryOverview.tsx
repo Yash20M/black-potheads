@@ -55,74 +55,74 @@ const InventoryOverview = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-display text-4xl mb-2">Inventory Overview</h1>
-          <p className="text-muted-foreground">Track and manage your product stock</p>
+          <h1 className="font-display text-3xl sm:text-4xl mb-2">Inventory Overview</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">Track and manage your product stock</p>
         </div>
-        <Button variant="hero" onClick={loadData}>
+        <Button variant="hero" onClick={loadData} size="sm" className="w-full sm:w-auto">
           <RefreshCw size={18} />
-          Refresh
+          <span className="ml-2">Refresh</span>
         </Button>
       </div>
 
       {/* Summary Cards */}
       {summary && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Total Products</CardTitle>
+              <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{summary.totalProducts || 0}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {products.reduce((sum: number, p: any) => sum + (p.stock || 0), 0)} units in stock
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-xl sm:text-2xl font-bold">{summary.totalProducts || 0}</div>
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+                {products.reduce((sum: number, p: any) => sum + (p.stock || 0), 0)} units
               </p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Low Stock</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-gray-400" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Low Stock</CardTitle>
+              <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-400">
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-xl sm:text-2xl font-bold text-gray-400">
                 {summary.lowStockCount || 0}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Below {lowStockThreshold} units
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+                Below {lowStockThreshold}
               </p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Out of Stock</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-gray-500" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Out of Stock</CardTitle>
+              <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-500">
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-xl sm:text-2xl font-bold text-gray-500">
                 {summary.outOfStockCount || 0}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Needs restocking
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+                Needs restock
               </p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Inventory Value</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Inventory Value</CardTitle>
+              <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-xl sm:text-2xl font-bold">
                 ₹{summary.totalStockValue?.toLocaleString() || 0}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Total stock value
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+                Total value
               </p>
             </CardContent>
           </Card>
@@ -171,89 +171,173 @@ const InventoryOverview = () => {
         </Select>
       </div>
 
-      {/* Products Table */}
+      {/* Products Table - Desktop */}
       {loading ? (
         <div className="text-center py-12">Loading...</div>
       ) : (
-        <div className="bg-card border border-border overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-secondary">
-              <tr>
-                <th className="text-left p-4 font-medium">Image</th>
-                <th className="text-left p-4 font-medium">Product</th>
-                <th className="text-left p-4 font-medium">Category</th>
-                <th className="text-left p-4 font-medium">Stock</th>
-                <th className="text-left p-4 font-medium">Status</th>
-                <th className="text-right p-4 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredProducts.map((product: any) => {
-                // Calculate stock status
-                const getStockStatus = (stock: number) => {
-                  if (stock === 0) return { label: 'Out of Stock', color: 'text-gray-500' };
-                  if (stock <= 5) return { label: 'Critical', color: 'text-gray-500' };
-                  if (stock <= lowStockThreshold) return { label: 'Low Stock', color: 'text-gray-400' };
-                  return { label: 'In Stock', color: 'text-gray-300' };
-                };
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-card border border-border overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-secondary">
+                  <tr>
+                    <th className="text-left p-4 font-medium">Image</th>
+                    <th className="text-left p-4 font-medium">Product</th>
+                    <th className="text-left p-4 font-medium">Category</th>
+                    <th className="text-left p-4 font-medium">Stock</th>
+                    <th className="text-left p-4 font-medium">Status</th>
+                    <th className="text-right p-4 font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProducts.map((product: any) => {
+                    const getStockStatus = (stock: number) => {
+                      if (stock === 0) return { label: 'Out of Stock', color: 'text-gray-500' };
+                      if (stock <= 5) return { label: 'Critical', color: 'text-gray-500' };
+                      if (stock <= lowStockThreshold) return { label: 'Low Stock', color: 'text-gray-400' };
+                      return { label: 'In Stock', color: 'text-gray-300' };
+                    };
 
-                const status = getStockStatus(product.stock);
-                // Handle both object format {url: "..."} and string format
-                const productImage = product.images?.[0]?.url || product.images?.[0] || product.image;
+                    const status = getStockStatus(product.stock);
+                    const productImage = product.images?.[0]?.url || product.images?.[0] || product.image;
 
-                return (
-                  <tr key={product._id} className="border-t border-border">
-                    <td className="p-4">
+                    return (
+                      <tr key={product._id} className="border-t border-border">
+                        <td className="p-4">
+                          {productImage ? (
+                            <img
+                              src={productImage}
+                              alt={product.name}
+                              className="w-16 h-16 object-cover rounded"
+                              onError={(e) => {
+                                e.currentTarget.src = '/placeholder.svg';
+                              }}
+                            />
+                          ) : (
+                            <div className="w-16 h-16 bg-secondary flex items-center justify-center text-xs text-muted-foreground rounded">
+                              No Image
+                            </div>
+                          )}
+                        </td>
+                        <td className="p-4">
+                          <div>
+                            <p className="font-medium">{product.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {product.sizes?.join(', ')}
+                            </p>
+                          </div>
+                        </td>
+                        <td className="p-4">{product.category}</td>
+                        <td className="p-4">
+                          <span className={`font-medium ${status.color}`}>{product.stock}</span>
+                        </td>
+                        <td className="p-4">
+                          <span className={`text-sm font-medium ${status.color}`}>
+                            {status.label}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center justify-end gap-2">
+                            <StockUpdateDialog product={product} onUpdate={loadData} />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {filteredProducts.map((product: any) => {
+              const getStockStatus = (stock: number) => {
+                if (stock === 0) return { label: 'Out of Stock', color: 'text-gray-500', bgColor: 'bg-gray-500/10' };
+                if (stock <= 5) return { label: 'Critical', color: 'text-gray-500', bgColor: 'bg-gray-500/10' };
+                if (stock <= lowStockThreshold) return { label: 'Low Stock', color: 'text-gray-400', bgColor: 'bg-gray-400/10' };
+                return { label: 'In Stock', color: 'text-gray-300', bgColor: 'bg-gray-300/10' };
+              };
+
+              const status = getStockStatus(product.stock);
+              const productImage = product.images?.[0]?.url || product.images?.[0] || product.image;
+
+              return (
+                <motion.div
+                  key={product._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-card border border-border rounded-lg p-4"
+                >
+                  <div className="flex gap-4">
+                    {/* Product Image */}
+                    <div className="flex-shrink-0">
                       {productImage ? (
                         <img
                           src={productImage}
                           alt={product.name}
-                          className="w-16 h-16 object-cover rounded"
+                          className="w-20 h-20 object-cover rounded"
                           onError={(e) => {
                             e.currentTarget.src = '/placeholder.svg';
                           }}
                         />
                       ) : (
-                        <div className="w-16 h-16 bg-secondary flex items-center justify-center text-xs text-muted-foreground rounded">
+                        <div className="w-20 h-20 bg-secondary flex items-center justify-center text-xs text-muted-foreground rounded">
                           No Image
                         </div>
                       )}
-                    </td>
-                    <td className="p-4">
-                      <div>
-                        <p className="font-medium">{product.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {product.sizes?.join(', ')}
-                        </p>
+                    </div>
+
+                    {/* Product Info */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-base truncate">{product.name}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {product.category}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Sizes: {product.sizes?.join(', ')}
+                      </p>
+                      
+                      {/* Stock Info */}
+                      <div className="flex items-center gap-3 mt-3">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Stock</p>
+                          <p className={`text-lg font-bold ${status.color}`}>
+                            {product.stock}
+                          </p>
+                        </div>
+                        <div className={`px-3 py-1 rounded-full ${status.bgColor}`}>
+                          <span className={`text-xs font-medium ${status.color}`}>
+                            {status.label}
+                          </span>
+                        </div>
                       </div>
-                    </td>
-                    <td className="p-4">{product.category}</td>
-                    <td className="p-4">
-                      <span className={`font-medium ${status.color}`}>{product.stock}</span>
-                    </td>
-                    <td className="p-4">
-                      <span className={`text-sm font-medium ${status.color}`}>
-                        {status.label}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <StockUpdateDialog product={product} onUpdate={loadData} />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                    </div>
+                  </div>
+
+                  {/* Action Button */}
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <StockUpdateDialog product={product} onUpdate={loadData} fullWidth />
+                  </div>
+                </motion.div>
+              );
+            })}
+
+            {filteredProducts.length === 0 && (
+              <div className="text-center py-12 text-muted-foreground">
+                No products found
+              </div>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
 };
 
 // Stock Update Dialog Component
-const StockUpdateDialog = ({ product, onUpdate }: any) => {
+const StockUpdateDialog = ({ product, onUpdate, fullWidth = false }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [stock, setStock] = useState('');
   const [operation, setOperation] = useState<'set' | 'add' | 'subtract'>('set');
@@ -290,14 +374,14 @@ const StockUpdateDialog = ({ product, onUpdate }: any) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" className={fullWidth ? 'w-full' : ''}>
           <RefreshCw size={16} />
           Update Stock
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-[95vw] sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Update Stock - {product.name}</DialogTitle>
+          <DialogTitle className="text-base sm:text-lg">Update Stock - {product.name}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
