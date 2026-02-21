@@ -13,29 +13,6 @@ export const Footer = () => {
   return (
     <footer className="bg-card border-t border-border">
       <div className="container mx-auto px-6 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-2xl mx-auto text-center mb-16"
-        >
-          <h3 className="font-display text-4xl md:text-5xl mb-4">JOIN THE DARKNESS</h3>
-          <p className="text-muted-foreground mb-8">
-            Subscribe for exclusive drops, early access, and 10% off your first order.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 bg-background border border-border px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-            />
-            <Button variant="hero">
-              Subscribe
-              <ArrowRight size={18} />
-            </Button>
-          </div>
-        </motion.div>
-
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-16 border-b border-border">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">

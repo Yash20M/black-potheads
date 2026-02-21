@@ -76,7 +76,7 @@ const Index = () => {
     <div className="min-h-screen bg-black">
       {/* ===== 3D ROTATING HERO IMAGE ===== */}
       <section 
-        className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-black"
+        className="relative h-[70vh] sm:h-[75vh] md:h-[80vh] lg:h-[85vh] w-full overflow-hidden flex items-center justify-center bg-black"
         style={{ perspective: '1000px' }}
       >
         {/* Pure Black Background Layer */}
@@ -85,7 +85,7 @@ const Index = () => {
         {/* 3D Rotating Image Container */}
         <motion.div
           ref={imageRef}
-          className="relative w-full max-w-4xl h-[70vh] mx-auto"
+          className="relative w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl h-[50vh] sm:h-[60vh] md:h-[65vh] lg:h-[70vh] mx-auto px-4 sm:px-0"
           style={{
             rotateX,
             rotateY,
@@ -150,7 +150,7 @@ const Index = () => {
 
         {/* Instruction Text */}
         <motion.div
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 text-center"
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 text-center hidden md:block"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1 }}

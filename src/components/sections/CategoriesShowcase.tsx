@@ -76,7 +76,7 @@ export const CategoriesShowcase = () => {
         {/* Carousel Container */}
         <div className="relative max-w-5xl mx-auto">
           {/* Main Carousel */}
-          <div className="relative h-[450px] sm:h-[500px] md:h-[550px] lg:h-[600px] xl:h-[650px] overflow-hidden">
+          <div className="relative h-[350px] sm:h-[400px] md:h-[450px] lg:h-[500px] xl:h-[550px] overflow-hidden">
             <motion.div
               key={currentIndex}
               custom={direction}

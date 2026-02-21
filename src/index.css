@@ -159,6 +159,15 @@
   ::-webkit-scrollbar-thumb { background: hsl(0 0% 20%); border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: hsl(0 0% 30%); }
 
+  /* Hide scrollbar for horizontal scroll */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   .vertical-text {
     writing-mode: vertical-rl;
     text-orientation: mixed;

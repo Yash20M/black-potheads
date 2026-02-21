@@ -4,7 +4,7 @@ const brandWords = ['SKULLS', 'GOTHIC', 'TRIBAL', 'GRAFFITI', 'TATTOO', 'REBELLI
 
 export const BrandMarquee = () => {
   return (
-    <section className="py-16 bg-card border-y border-border overflow-hidden">
+    <section className="py-8 bg-card border-y border-border overflow-hidden">
       <div className="flex">
         <motion.div
           animate={{ x: [0, -1920] }}

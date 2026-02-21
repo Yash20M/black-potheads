@@ -55,23 +55,23 @@ const collections = [
 
 const CollectionsPage = () => {
   return (
-    <div className="min-h-screen pt-20 bg-white">
-      <section className="py-16 bg-white border-b border-gray-200">
+    <div className="min-h-screen pt-20 bg-black">
+      <section className="py-16 bg-black border-b border-gray-800">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <span className="text-sm uppercase tracking-widest text-gray-600 mb-4 block">
+            <span className="text-sm uppercase tracking-widest text-gray-400 mb-4 block">
               Explore Our
             </span>
-            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-black">COLLECTIONS</h1>
+            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-white">COLLECTIONS</h1>
           </motion.div>
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-black">
         <div className="container mx-auto px-6">
           <div className="space-y-24">
             {collections.map((collection, index) => {
@@ -91,14 +91,14 @@ const CollectionsPage = () => {
                   {/* Image Section */}
                   <Link 
                     to={`/shop?collection=${collection.id}`}
-                    className={`relative h-[400px] sm:h-[450px] lg:h-[600px] overflow-hidden group ${
+                    className={`relative h-[350px] sm:h-[400px] lg:h-[500px] overflow-hidden group ${
                       !isEven ? 'lg:order-2' : 'lg:order-1'
                     }`}
                   >
                     <motion.img
                       src={collection.image}
                       alt={collection.title}
-                      className="w-full h-full object-contain sm:object-cover"
+                      className="w-full h-full object-contain"
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.6 }}
                     />
@@ -113,7 +113,7 @@ const CollectionsPage = () => {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.2 }}
-                      className="text-sm uppercase tracking-widest text-gray-600 mb-4 block"
+                      className="text-sm uppercase tracking-widest text-gray-400 mb-4 block"
                     >
                       {collection.subtitle}
                     </motion.span>
@@ -123,7 +123,7 @@ const CollectionsPage = () => {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.3 }}
-                      className="font-display text-5xl md:text-6xl lg:text-7xl mb-6 text-black"
+                      className="font-display text-5xl md:text-6xl lg:text-7xl mb-6 text-white"
                     >
                       {collection.title.toUpperCase()}
                     </motion.h2>
@@ -133,7 +133,7 @@ const CollectionsPage = () => {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.4 }}
-                      className="text-gray-700 text-lg mb-6 max-w-xl leading-relaxed"
+                      className="text-gray-300 text-lg mb-6 max-w-xl leading-relaxed"
                     >
                       {collection.description}
                     </motion.p>
@@ -148,8 +148,8 @@ const CollectionsPage = () => {
                     >
                       {collection.features.map((feature, idx) => (
                         <div key={idx} className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 bg-black"></div>
-                          <span className="text-sm text-gray-600 uppercase tracking-wide">{feature}</span>
+                          <div className="w-1.5 h-1.5 bg-white"></div>
+                          <span className="text-sm text-gray-400 uppercase tracking-wide">{feature}</span>
                         </div>
                       ))}
                     </motion.div>
@@ -162,13 +162,13 @@ const CollectionsPage = () => {
                     >
                       <Link 
                         to={`/shop?collection=${collection.id}`}
-                        className={`group inline-flex items-center gap-3 bg-black text-white px-8 py-4 uppercase text-sm tracking-wider font-bold hover:bg-gray-900 transition-all duration-300 relative overflow-hidden ${
+                        className={`group inline-flex items-center gap-3 bg-white text-black px-8 py-4 uppercase text-sm tracking-wider font-bold hover:bg-gray-200 transition-all duration-300 relative overflow-hidden ${
                           !isEven ? 'lg:flex-row-reverse' : ''
                         }`}
                       >
                         <span className="relative z-10">Shop Collection</span>
                         <ArrowRight size={20} className="relative z-10 group-hover:translate-x-1 transition-transform" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-gray-800 to-black transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-white transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
                       </Link>
                     </motion.div>
                   </div>

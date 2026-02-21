@@ -155,7 +155,111 @@ const ProductDetailPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Left side - Images section */}
             <div className="lg:sticky lg:top-24 lg:self-start h-fit">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Mobile Slider View */}
+              <div className="lg:hidden">
+                <div 
+                  className="relative aspect-[3/4] bg-gray-50 overflow-hidden"
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                >
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={selectedImage}
+                      src={product.images[selectedImage] || product.image}
+                      alt={`${product.name} ${selectedImage + 1}`}
+                      initial={{ opacity: 0, x: 100 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -100 }}
+                      transition={{ duration: 0.3 }}
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://via.placeholder.com/400x500?text=No+Image';
+                      }}
+                      className="w-full h-full object-cover"
+                    />
+                  </AnimatePresence>
+
+                  {/* Badges */}
+                  {product.isNew && (
+                    <span className="absolute top-4 left-4 bg-black text-white px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold z-10">New</span>
+                  )}
+                  {product.isSale && (
+                    <span className="absolute top-4 left-4 bg-white text-black px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold border-2 border-black z-10">Sale</span>
+                  )}
+
+                  {/* Navigation Arrows */}
+                  {product.images.length > 1 && (
+                    <>
+                      <button
+                        onClick={handlePrevImage}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors z-10"
+                      >
+                        <ChevronLeft size={20} className="text-black" />
+                      </button>
+                      <button
+                        onClick={handleNextImage}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors z-10"
+                      >
+                        <ChevronRight size={20} className="text-black" />
+                      </button>
+                    </>
+                  )}
+
+                  {/* Dots Indicator */}
+                  {product.images.length > 1 && (
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                      {product.images.map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            setSelectedImage(idx);
+                            setImageError(false);
+                          }}
+                          className={cn(
+                            'transition-all border border-white',
+                            selectedImage === idx 
+                              ? 'w-8 h-2 bg-white' 
+                              : 'w-2 h-2 bg-white/50'
+                          )}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Thumbnail Preview */}
+                {product.images.length > 1 && (
+                  <div className="flex gap-2 mt-4 overflow-x-auto scrollbar-hide px-1">
+                    {product.images.map((img, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setSelectedImage(idx);
+                          setImageError(false);
+                        }}
+                        className={cn(
+                          'flex-shrink-0 w-16 h-20 border-2 transition-all overflow-hidden',
+                          selectedImage === idx 
+                            ? 'border-black' 
+                            : 'border-gray-200 opacity-60 hover:opacity-100'
+                        )}
+                      >
+                        <img
+                          src={img}
+                          alt={`Thumbnail ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://via.placeholder.com/80x100?text=No+Image';
+                          }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop Grid View */}
+              <div className="hidden lg:grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* First image - Fixed on left */}
                 {product.images[0] && (
                   <motion.div

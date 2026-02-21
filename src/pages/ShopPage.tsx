@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ProductCard } from '@/components/products/ProductCard';
 import { Category, Product, normalizeProduct, ApiProduct } from '@/types/product';
@@ -65,6 +65,8 @@ const ShopPage = () => {
   );
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const categoryRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Update active category when URL param changes
   useEffect(() => {
@@ -72,6 +74,24 @@ const ShopPage = () => {
       setActiveCategory(collectionParam as Category);
     }
   }, [collectionParam]);
+
+  // Scroll active button into view horizontally only
+  useEffect(() => {
+    const activeButton = categoryRefs.current[activeCategory];
+    const container = scrollContainerRef.current;
+    
+    if (activeButton && container) {
+      const buttonLeft = activeButton.offsetLeft;
+      const buttonWidth = activeButton.offsetWidth;
+      const containerWidth = container.offsetWidth;
+      const scrollLeft = buttonLeft - (containerWidth / 2) + (buttonWidth / 2);
+      
+      container.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth',
+      });
+    }
+  }, [activeCategory]);
 
   // Get current collection details
   const currentCollection = activeCategory !== 'all' 
@@ -168,27 +188,31 @@ const ShopPage = () => {
         <div className="container mx-auto px-6">
           {/* Category Filter */}
           <motion.div
+            ref={scrollContainerRef}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-wrap justify-center gap-3 mb-12"
+            className="mb-12 overflow-x-auto scrollbar-hide"
           >
-            {categories.map((category) => (
-              <motion.button
-                key={category.id}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleCategoryChange(category.id as Category)}
-                className={cn(
-                  'px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 border-2',
-                  activeCategory === category.id
-                    ? 'bg-black text-white border-black'
-                    : 'bg-white border-black text-black hover:bg-black hover:text-white'
-                )}
-              >
-                {category.label}
-              </motion.button>
-            ))}
+            <div className="flex md:flex-wrap md:justify-center gap-3 min-w-max md:min-w-0 px-4 md:px-0">
+              {categories.map((category) => (
+                <motion.button
+                  key={category.id}
+                  ref={(el) => (categoryRefs.current[category.id] = el)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleCategoryChange(category.id as Category)}
+                  className={cn(
+                    'px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 border-2 whitespace-nowrap',
+                    activeCategory === category.id
+                      ? 'bg-black text-white border-black'
+                      : 'bg-white border-black text-black hover:bg-black hover:text-white'
+                  )}
+                >
+                  {category.label}
+                </motion.button>
+              ))}
+            </div>
           </motion.div>
 
           {/* Products Count */}
