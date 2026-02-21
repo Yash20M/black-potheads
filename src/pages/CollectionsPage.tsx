@@ -91,14 +91,14 @@ const CollectionsPage = () => {
                   {/* Image Section */}
                   <Link 
                     to={`/shop?collection=${collection.id}`}
-                    className={`relative h-[500px] lg:h-[600px] overflow-hidden group ${
+                    className={`relative h-[400px] sm:h-[450px] lg:h-[600px] overflow-hidden group ${
                       !isEven ? 'lg:order-2' : 'lg:order-1'
                     }`}
                   >
                     <motion.img
                       src={collection.image}
                       alt={collection.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain sm:object-cover"
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.6 }}
                     />

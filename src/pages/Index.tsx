@@ -1,15 +1,13 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/products/ProductCard';
-import heroDark from '@/assets/hero-dark.jpg';
 import { BrandMarquee } from '@/components/sections/BrandMarquee';
 import { StatsSection } from '@/components/sections/StatsSection';
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
 import { FeaturesSection } from '@/components/sections/FeaturesSection';
 import { NewsletterSection } from '@/components/sections/NewsletterSection';
-import { InstagramSection } from '@/components/sections/InstagramSection';
 import { LookbookSection } from '@/components/sections/LookbookSection';
 import { AboutBrandSection } from '@/components/sections/AboutBrandSection';
 import { CategoriesShowcase } from '@/components/sections/CategoriesShowcase';
@@ -18,7 +16,7 @@ import { ProcessSection } from '@/components/sections/ProcessSection';
 import { VideoSection } from '@/components/sections/VideoSection';
 import { ScrollingText } from '@/components/sections/ScrollingText';
 import { UpcomingDrop } from '@/components/sections/UpcomingDrop';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { productApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { Product, normalizeProduct, ApiProduct } from '@/types/product';
@@ -26,6 +24,36 @@ import { Product, normalizeProduct, ApiProduct } from '@/types/product';
 const Index = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const imageRef = useRef<HTMLDivElement>(null);
+
+  // Mouse position tracking for 3D effect
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  // Smooth spring animation for mouse movement with full 360 rotation - slower and smoother
+  const springConfig = { damping: 40, stiffness: 80 };
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [180, -180]), springConfig);
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-180, 180]), springConfig);
+
+  // Handle mouse move for 3D rotation - only on image
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imageRef.current) return;
+    
+    const rect = imageRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const x = (e.clientX - centerX) / (rect.width / 2);
+    const y = (e.clientY - centerY) / (rect.height / 2);
+    
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
 
   useEffect(() => {
     loadFeaturedProducts();
@@ -45,79 +73,91 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen">
-      {/* ===== SIMPLE HERO SECTION ===== */}
-      <section className="relative h-screen w-full overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <img
-            src={heroDark}
-            alt="Black Potheads Hero"
-            className="w-full h-full object-cover"
-          />
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-black/60" />
-        </div>
-
-        {/* Hero Content */}
-        <div className="relative h-full flex items-center justify-center z-10">
-          <div className="text-center px-6 max-w-5xl">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <h1 className="font-display text-[5rem] md:text-[9rem] lg:text-[13rem] leading-[0.85] tracking-tight">
-                <span className="block text-white">BLACK</span>
-                <span className="block text-gradient">POTHEADS</span>
-              </h1>
-            </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-gray-300 text-base md:text-lg lg:text-xl mt-8 max-w-md mx-auto font-light tracking-wide"
-            >
-              Premium streetwear for the bold. Not for the faint-hearted.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="mt-10"
-            >
-              <Button variant="hero" size="lg" asChild>
-                <Link to="/shop" className="group">
-                  Shop Now
-                  <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Side labels */}
+    <div className="min-h-screen bg-black">
+      {/* ===== 3D ROTATING HERO IMAGE ===== */}
+      <section 
+        className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-black"
+        style={{ perspective: '1000px' }}
+      >
+        {/* Pure Black Background Layer */}
+        <div className="absolute inset-0 bg-black -z-10" />
+        
+        {/* 3D Rotating Image Container */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="absolute left-6 top-1/2 -translate-y-1/2 hidden xl:block z-10"
+          ref={imageRef}
+          className="relative w-full max-w-4xl h-[70vh] mx-auto"
+          style={{
+            rotateX,
+            rotateY,
+            transformStyle: 'preserve-3d',
+          }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
         >
-          <span className="text-[10px] uppercase tracking-[0.4em] text-white/30 vertical-text">
-            Premium Streetwear
-          </span>
+          {/* Main Image with Black Background */}
+          <motion.div
+            className="relative w-full h-full bg-black"
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.4 }}
+          >
+            <img
+              src="/homeimg.jpeg"
+              alt="Black Potheads"
+              className="w-full h-full object-cover"
+              style={{
+                filter: 'brightness(1.2) contrast(1.4) saturate(1.1)',
+                mixBlendMode: 'lighten',
+              }}
+            />
+          </motion.div>
+
+          {/* Floating particles effect */}
+          <motion.div
+            className="absolute -inset-20 pointer-events-none"
+            animate={{
+              rotate: 360,
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          >
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 bg-white/20 rounded-full"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                }}
+                animate={{
+                  y: [0, -30, 0],
+                  opacity: [0.2, 0.5, 0.2],
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                }}
+              />
+            ))}
+          </motion.div>
         </motion.div>
+
+        {/* Instruction Text */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="absolute right-6 top-1/2 -translate-y-1/2 hidden xl:block z-10"
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 1 }}
         >
-          <span className="text-[10px] uppercase tracking-[0.4em] text-white/30 vertical-text">
-            Est. 2024
-          </span>
+          <p className="text-white/60 text-sm uppercase tracking-[0.3em]">
+            Move your cursor to explore
+          </p>
         </motion.div>
       </section>
 
@@ -209,8 +249,7 @@ const Index = () => {
       <UpcomingDrop />
       <StatsSection />
       <TestimonialsSection />
-      {/* <InstagramSection /> */}
-      <NewsletterSection />
+      {/* <NewsletterSection /> */}
     </div>
   );
 };
