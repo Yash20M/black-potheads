@@ -8,6 +8,7 @@ import { Layout } from "@/components/layout/Layout";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { PageLoader } from "@/components/ui/loader";
 import { LoadingBar } from "@/components/ui/loading-bar";
+import OfferModal from "@/components/OfferModal";
 
 // Eager load critical pages (checkout is critical for conversions)
 import CheckoutPage from "./pages/CheckoutPage";
@@ -24,7 +25,9 @@ const Login = lazy(() => import("./pages/auth/Login"));
 const Register = lazy(() => import("./pages/auth/Register"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const OrdersPage = lazy(() => import("./pages/OrdersPage"));
+const OrderDetailPage = lazy(() => import("./pages/OrderDetailPage"));
 const WishlistPage = lazy(() => import("./pages/WishlistPage"));
+const TestOffersPage = lazy(() => import("./pages/TestOffersPage"));
 
 // Admin pages
 const AdminLayout = lazy(() => import("@/components/layout/AdminLayout"));
@@ -32,7 +35,9 @@ const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminProducts = lazy(() => import("./pages/admin/AdminProducts"));
 const AdminOrders = lazy(() => import("./pages/admin/AdminOrders"));
-const AdminQR = lazy(() => import("./pages/admin/AdminQR"));
+const AdminOrderDetail = lazy(() => import("./pages/admin/AdminOrderDetail"));
+const AdminOffers = lazy(() => import("./pages/admin/AdminOffers"));
+const AdminOfferForm = lazy(() => import("./pages/admin/AdminOfferForm"));
 const InventoryOverview = lazy(() => import("./pages/admin/inventory/InventoryOverview"));
 const InventoryAlerts = lazy(() => import("./pages/admin/inventory/InventoryAlerts"));
 const InventoryReports = lazy(() => import("./pages/admin/inventory/InventoryReports"));
@@ -58,6 +63,7 @@ const App = () => (
       <BrowserRouter>
         <LoadingBar />
         <ScrollToTop />
+        <OfferModal />
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route element={<Layout />}>
@@ -72,7 +78,9 @@ const App = () => (
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/orders" element={<OrdersPage />} />
+              <Route path="/orders/:orderId" element={<OrderDetailPage />} />
               <Route path="/wishlist" element={<WishlistPage />} />
+              <Route path="/test-offers" element={<TestOffersPage />} />
             </Route>
             
             {/* Admin Routes */}
@@ -81,10 +89,13 @@ const App = () => (
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="products" element={<AdminProducts />} />
               <Route path="orders" element={<AdminOrders />} />
+              <Route path="orders/:orderId" element={<AdminOrderDetail />} />
+              <Route path="offers" element={<AdminOffers />} />
+              <Route path="offers/create" element={<AdminOfferForm />} />
+              <Route path="offers/edit/:offerId" element={<AdminOfferForm />} />
               <Route path="inventory/overview" element={<InventoryOverview />} />
               <Route path="inventory/alerts" element={<InventoryAlerts />} />
               <Route path="inventory/reports" element={<InventoryReports />} />
-              <Route path="qr" element={<AdminQR />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

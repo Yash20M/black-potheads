@@ -1,24 +1,37 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, CreditCard, Truck } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, CreditCard, Truck, CheckCircle, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
-import { orderApi, qrApi } from '@/lib/api';
+import { orderApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+
+// Declare Razorpay on window object
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { items, getTotalPrice, clearCart, syncWithBackend } = useCartStore();
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
-  const [qrImage, setQrImage] = useState<string | null>(null);
-  const [showQR, setShowQR] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [orderDetails, setOrderDetails] = useState<any>(null);
 
   const [formData, setFormData] = useState({
     line1: '',
@@ -28,6 +41,18 @@ const CheckoutPage = () => {
     country: 'India',
     paymentMethod: 'COD',
   });
+
+  useEffect(() => {
+    // Load Razorpay script
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   useEffect(() => {
     // Don't redirect if order was just placed
@@ -44,20 +69,7 @@ const CheckoutPage = () => {
       navigate('/shop');
       return;
     }
-
-    loadQR();
   }, [user, items, navigate, orderPlaced]);
-
-  const loadQR = async () => {
-    try {
-      const data: any = await qrApi.get();
-      if (data.qrImage?.url) {
-        setQrImage(data.qrImage.url);
-      }
-    } catch (error) {
-      // QR might not be available
-    }
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -66,15 +78,21 @@ const CheckoutPage = () => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const validateForm = () => {
+    if (!formData.line1 || !formData.city || !formData.state || !formData.pincode) {
+      toast.error('Please fill in all address fields');
+      return false;
+    }
+    return true;
+  };
 
+  const handleCODPayment = async () => {
+    if (!validateForm()) return;
+
+    setLoading(true);
     try {
-      // First, sync cart with backend to ensure backend has all items
+      // Sync cart with backend
       await syncWithBackend();
-      
-      // Small delay to ensure sync completes
       await new Promise(resolve => setTimeout(resolve, 500));
 
       const orderData = {
@@ -86,20 +104,16 @@ const CheckoutPage = () => {
           pincode: formData.pincode,
           country: formData.country,
         },
-        paymentMethod: formData.paymentMethod,
+        paymentMethod: 'COD',
       };
 
       const response: any = await orderApi.create(orderData);
       
-      // Set flag to prevent "cart is empty" message
       setOrderPlaced(true);
-      
-      // Clear cart and show success message
+      setOrderDetails(response.order);
       await clearCart();
-      toast.success('Order placed successfully!');
-      
-      // Navigate to orders page
-      navigate(`/orders`);
+      toast.success('Order confirmed successfully!');
+      setShowSuccessModal(true);
     } catch (error: any) {
       toast.error(error.message || 'Failed to place order');
       console.error('Order creation error:', error);
@@ -108,7 +122,105 @@ const CheckoutPage = () => {
     }
   };
 
+  const handleOnlinePayment = async () => {
+    if (!validateForm()) return;
+
+    setLoading(true);
+    try {
+      // Sync cart with backend
+      await syncWithBackend();
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Step 1: Create Razorpay order
+      const response: any = await orderApi.createRazorpayOrder({
+        totalAmount: getTotalPrice(),
+        address: {
+          line1: formData.line1,
+          city: formData.city,
+          state: formData.state,
+          pincode: formData.pincode,
+          country: formData.country,
+        },
+      });
+
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to create payment order');
+      }
+
+      // Step 2: Initialize Razorpay checkout
+      const options = {
+        key: response.key,
+        amount: response.razorpayOrder.amount,
+        currency: response.razorpayOrder.currency,
+        name: 'Black Potheads',
+        description: 'T-Shirt Purchase',
+        order_id: response.razorpayOrder.id,
+        handler: async function (razorpayResponse: any) {
+          try {
+            // Step 3: Verify payment
+            const verifyResponse: any = await orderApi.verifyPayment({
+              razorpayOrderId: razorpayResponse.razorpay_order_id,
+              razorpayPaymentId: razorpayResponse.razorpay_payment_id,
+              razorpaySignature: razorpayResponse.razorpay_signature,
+              orderId: response.orderId,
+            });
+
+            if (verifyResponse.success) {
+              setOrderPlaced(true);
+              setOrderDetails(verifyResponse.order);
+              await clearCart();
+              toast.success('Payment successful! Order confirmed.');
+              setShowSuccessModal(true);
+            } else {
+              toast.error('Payment verification failed');
+            }
+          } catch (error: any) {
+            toast.error(error.message || 'Payment verification failed');
+            console.error('Payment verification error:', error);
+          }
+        },
+        prefill: {
+          name: user?.name || '',
+          email: user?.email || '',
+          contact: user?.phone || '',
+        },
+        theme: {
+          color: '#000000',
+        },
+        modal: {
+          ondismiss: function() {
+            setLoading(false);
+            toast.info('Payment cancelled');
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+      setLoading(false);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to initiate payment');
+      console.error('Payment initiation error:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (formData.paymentMethod === 'COD') {
+      await handleCODPayment();
+    } else {
+      await handleOnlinePayment();
+    }
+  };
+
   const totalPrice = getTotalPrice();
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    navigate('/orders');
+  };
 
   return (
     <div className="min-h-screen pt-20 bg-background">
@@ -237,33 +349,16 @@ const CheckoutPage = () => {
                     <input
                       type="radio"
                       name="paymentMethod"
-                      value="UPI"
-                      checked={formData.paymentMethod === 'UPI'}
+                      value="Online"
+                      checked={formData.paymentMethod === 'Online'}
                       onChange={handleChange}
                       className="w-4 h-4"
                     />
                     <div>
-                      <p className="font-medium">UPI Payment</p>
-                      <p className="text-sm text-muted-foreground">Pay via UPI QR code</p>
+                      <p className="font-medium">Online Payment</p>
+                      <p className="text-sm text-muted-foreground">Pay securely via Razorpay (UPI, Cards, Net Banking)</p>
                     </div>
                   </label>
-
-                  {formData.paymentMethod === 'UPI' && qrImage && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      className="p-4 border border-border"
-                    >
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Scan this QR code to complete payment
-                      </p>
-                      <img
-                        src={qrImage}
-                        alt="Payment QR Code"
-                        className="w-64 h-64 mx-auto"
-                      />
-                    </motion.div>
-                  )}
                 </div>
               </div>
 
@@ -274,7 +369,12 @@ const CheckoutPage = () => {
                 className="w-full"
                 disabled={loading}
               >
-                {loading ? 'Placing Order...' : `Place Order - ₹${totalPrice}`}
+                {loading 
+                  ? 'Processing...' 
+                  : formData.paymentMethod === 'COD'
+                    ? `Place Order - ₹${totalPrice}`
+                    : `Pay Now - ₹${totalPrice}`
+                }
               </Button>
             </form>
           </motion.div>
@@ -325,6 +425,116 @@ const CheckoutPage = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="sr-only">Order Confirmed</DialogTitle>
+          </DialogHeader>
+          <AnimatePresence>
+            {showSuccessModal && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="text-center py-6"
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                  className="mb-6"
+                >
+                  <CheckCircle className="w-20 h-20 mx-auto text-green-500" />
+                </motion.div>
+
+                <h2 className="font-display text-3xl mb-2">Order Confirmed!</h2>
+                <p className="text-muted-foreground mb-6">
+                  Thank you for your purchase
+                </p>
+
+                {orderDetails && (
+                  <div className="bg-secondary/50 rounded-lg p-4 mb-6 text-left space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Order ID:</span>
+                      <span className="font-mono text-xs">#{orderDetails._id?.slice(-8)}</span>
+                    </div>
+                    
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Total Amount:</span>
+                      <span className="font-display">₹{orderDetails.totalAmount}</span>
+                    </div>
+
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Payment Method:</span>
+                      <span className="font-medium">
+                        {orderDetails.paymentMethod === 'COD' ? 'Cash on Delivery' : orderDetails.paymentMethod}
+                      </span>
+                    </div>
+
+                    {orderDetails.payment && (
+                      <>
+                        <div className="border-t border-border pt-3 mt-3">
+                          <p className="text-xs text-muted-foreground mb-2">Payment Details</p>
+                        </div>
+                        
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Payment ID:</span>
+                          <span className="font-mono text-xs">
+                            {orderDetails.payment.razorpayPaymentId?.slice(-10)}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Status:</span>
+                          <span className="text-green-500 font-medium capitalize">
+                            {orderDetails.payment.status}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Amount Paid:</span>
+                          <span className="font-display">
+                            ₹{orderDetails.payment.amount}
+                          </span>
+                        </div>
+                      </>
+                    )}
+
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Status:</span>
+                      <span className="font-medium">{orderDetails.status}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  <Button
+                    variant="hero"
+                    className="w-full"
+                    onClick={handleCloseSuccessModal}
+                  >
+                    <Package className="mr-2" size={18} />
+                    View My Orders
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      setShowSuccessModal(false);
+                      navigate('/shop');
+                    }}
+                  >
+                    Continue Shopping
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

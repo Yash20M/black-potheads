@@ -154,8 +154,55 @@ export const orderApi = {
       body: JSON.stringify(data),
     }),
 
+  createRazorpayOrder: (data: {
+    totalAmount: number;
+    address: {
+      line1: string;
+      city: string;
+      state: string;
+      pincode: string;
+      country: string;
+    };
+  }) =>
+    apiFetch('/api/v1/orders/create-razorpay-order', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  verifyPayment: (data: {
+    razorpayOrderId: string;
+    razorpayPaymentId: string;
+    razorpaySignature: string;
+    orderId: string;
+  }) =>
+    apiFetch('/api/v1/orders/verify-payment', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
   getAll: (page = 1, limit = 10) =>
     apiFetch(`/api/v1/orders?page=${page}&limit=${limit}`),
+
+  getAllWithFilters: (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string;
+    paymentMethod?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.status) queryParams.append('status', params.status);
+    if (params?.paymentMethod) queryParams.append('paymentMethod', params.paymentMethod);
+    if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
+    if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder);
+    
+    return apiFetch(`/api/v1/orders?${queryParams.toString()}`);
+  },
 
   getById: (id: string) =>
     apiFetch(`/api/v1/orders/${id}`),
@@ -170,11 +217,26 @@ export const orderApi = {
     apiFetch(`/api/v1/orders/${id}`, {
       method: 'DELETE',
     }),
+
+  cancel: (id: string) =>
+    apiFetch(`/api/v1/orders/${id}/cancel`, {
+      method: 'POST',
+    }),
 };
 
 // QR Code API
 export const qrApi = {
   get: () => apiFetch('/api/v1/get-qr'),
+};
+
+// Offers APIs
+export const offersApi = {
+  // User endpoints
+  getActive: (category?: string) =>
+    apiFetch(`/api/v1/offers/active${category ? `?category=${category}` : ''}`),
+  
+  getById: (id: string) =>
+    apiFetch(`/api/v1/offers/${id}`),
 };
 
 // Admin APIs
@@ -243,6 +305,11 @@ export const adminApi = {
 
     getStatistics: () =>
       apiFetch('/api/admin/order-statistics', {}, true),
+
+    cleanupAbandoned: () =>
+      apiFetch('/api/admin/cleanup-abandoned-orders', {
+        method: 'POST',
+      }, true),
   },
 
   // QR Code
@@ -251,6 +318,46 @@ export const adminApi = {
       apiFetch('/api/admin/add-qr', {
         method: 'POST',
         body: formData,
+      }, true),
+  },
+
+  // Offers Management
+  offers: {
+    getAll: (params?: {
+      page?: number;
+      limit?: number;
+      category?: string;
+      isActive?: boolean;
+    }) => {
+      const queryParams = new URLSearchParams();
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.category) queryParams.append('category', params.category);
+      if (params?.isActive !== undefined) queryParams.append('isActive', params.isActive.toString());
+      
+      return apiFetch(`/api/admin/offers?${queryParams.toString()}`, {}, true);
+    },
+
+    create: (formData: FormData) =>
+      apiFetch('/api/admin/offers', {
+        method: 'POST',
+        body: formData,
+      }, true),
+
+    update: (id: string, formData: FormData) =>
+      apiFetch(`/api/admin/offers/${id}`, {
+        method: 'PUT',
+        body: formData,
+      }, true),
+
+    delete: (id: string) =>
+      apiFetch(`/api/admin/offers/${id}`, {
+        method: 'DELETE',
+      }, true),
+
+    toggle: (id: string) =>
+      apiFetch(`/api/admin/offers/${id}/toggle`, {
+        method: 'PATCH',
       }, true),
   },
 

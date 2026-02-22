@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { adminApi } from '@/lib/api';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import {
   Select,
   SelectContent,
@@ -12,15 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { TableSkeleton } from '@/components/ui/loader';
 
 const AdminOrders = () => {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -29,8 +25,7 @@ const AdminOrders = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [cleaningUp, setCleaningUp] = useState(false);
 
   // Debounce search term
   useEffect(() => {
@@ -87,14 +82,23 @@ const AdminOrders = () => {
     }
   };
 
-  const viewOrderDetails = async (orderId: string) => {
+  const handleCleanupAbandoned = async () => {
+    if (!confirm('This will cancel all pending online payment orders that failed or were abandoned. Continue?')) return;
+
+    setCleaningUp(true);
     try {
-      const data: any = await adminApi.orders.getById(orderId);
-      setSelectedOrder(data.order);
-      setIsDialogOpen(true);
+      const response: any = await adminApi.orders.cleanupAbandoned();
+      toast.success(`Cleaned up ${response.cleanedCount} abandoned orders`);
+      loadOrders(); // Refresh the list
     } catch (error: any) {
-      toast.error('Failed to load order details');
+      toast.error('Failed to cleanup abandoned orders');
+    } finally {
+      setCleaningUp(false);
     }
+  };
+
+  const viewOrderDetails = (orderId: string) => {
+    navigate(`/admin/orders/${orderId}`);
   };
 
   const getStatusColor = (status: string) => {
@@ -115,8 +119,19 @@ const AdminOrders = () => {
   return (
     <div>
       <div className="mb-6 md:mb-8">
-        <h1 className="font-display text-3xl md:text-4xl mb-2">Orders</h1>
-        <p className="text-muted-foreground text-sm md:text-base">Manage customer orders</p>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="font-display text-3xl md:text-4xl mb-2">Orders</h1>
+            <p className="text-muted-foreground text-sm md:text-base">Manage customer orders</p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={handleCleanupAbandoned}
+            disabled={cleaningUp}
+          >
+            {cleaningUp ? 'Cleaning...' : 'Cleanup Abandoned Orders'}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -183,7 +198,9 @@ const AdminOrders = () => {
               </thead>
               <tbody>
                 {orders.map((order) => (
-                  <tr key={order._id} className="border-t border-border">
+                  <tr key={order._id} className={`border-t border-border ${
+                    order.status === 'Pending' ? 'bg-yellow-500/10' : ''
+                  }`}>
                     <td className="p-4 font-mono text-sm">
                       {order._id.slice(-8)}
                     </td>
@@ -198,9 +215,14 @@ const AdminOrders = () => {
                     <td className="p-4">{order.items?.length || 0}</td>
                     <td className="p-4">₹{order.totalAmount}</td>
                     <td className="p-4">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
-                        {order.status}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
+                          {order.status}
+                        </span>
+                        {order.status === 'Pending' && (
+                          <span className="text-xs text-yellow-500 font-medium">⚠️ Needs Attention</span>
+                        )}
+                      </div>
                     </td>
                     <td className="p-4 text-sm text-muted-foreground">
                       {new Date(order.createdAt).toLocaleDateString()}
@@ -269,127 +291,6 @@ const AdminOrders = () => {
           )}
         </>
       )}
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Order Details</DialogTitle>
-          </DialogHeader>
-          {selectedOrder && (
-            <div className="space-y-6">
-              {/* Order Info */}
-              <div className="grid grid-cols-2 gap-4 p-4 bg-secondary rounded">
-                <div>
-                  <p className="text-sm text-muted-foreground">Order ID</p>
-                  <p className="font-mono">{selectedOrder._id}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Date</p>
-                  <p>{new Date(selectedOrder.createdAt).toLocaleString()}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Status</p>
-                  <p className="font-medium">{selectedOrder.status}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Payment Method</p>
-                  <p>{selectedOrder.paymentMethod}</p>
-                </div>
-              </div>
-
-              {/* Customer Information */}
-              <div>
-                <h3 className="font-medium mb-3 text-lg">Customer Information</h3>
-                <div className="space-y-2 p-4 bg-secondary rounded">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Name</p>
-                    <p className="font-medium">{selectedOrder.user?.name || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Email</p>
-                    <p>{selectedOrder.user?.email || 'N/A'}</p>
-                  </div>
-                  {selectedOrder.user?.phone && (
-                    <div>
-                      <p className="text-sm text-muted-foreground">Phone</p>
-                      <p>{selectedOrder.user.phone}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Shipping Address */}
-              <div>
-                <h3 className="font-medium mb-3 text-lg">Shipping Address</h3>
-                <div className="p-4 bg-secondary rounded">
-                  {selectedOrder.address ? (
-                    <div className="space-y-1">
-                      <p>{selectedOrder.address.line1}</p>
-                      <p>
-                        {selectedOrder.address.city}
-                        {selectedOrder.address.state && `, ${selectedOrder.address.state}`}
-                      </p>
-                      <p>
-                        {selectedOrder.address.pincode}
-                        {selectedOrder.address.country && `, ${selectedOrder.address.country}`}
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground">No address provided</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Order Items */}
-              <div>
-                <h3 className="font-medium mb-3 text-lg">Order Items</h3>
-                <div className="space-y-3">
-                  {selectedOrder.items && selectedOrder.items.length > 0 ? (
-                    selectedOrder.items.map((item: any, index: number) => (
-                      <div key={index} className="flex gap-4 p-4 bg-secondary rounded">
-                        {/* Product Image */}
-                        {item.product?.images?.[0] && (
-                          <div className="w-20 h-20 bg-background rounded overflow-hidden flex-shrink-0">
-                            <img
-                              src={typeof item.product.images[0] === 'string' 
-                                ? item.product.images[0] 
-                                : item.product.images[0].url}
-                              alt={item.product.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        )}
-                        
-                        {/* Product Details */}
-                        <div className="flex-1">
-                          <p className="font-medium">{item.product?.name || 'Product'}</p>
-                          <p className="text-sm text-muted-foreground">
-                            Category: {item.category}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Size: {item.size} | Quantity: {item.quantity}
-                          </p>
-                          <p className="text-sm font-medium mt-1">
-                            ₹{item.price} × {item.quantity} = ₹{item.price * item.quantity}
-                          </p>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-muted-foreground p-4 bg-secondary rounded">No items</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Order Total */}
-              <div className="flex justify-between items-center font-display text-2xl pt-4 border-t-2 border-border">
-                <span>Total Amount</span>
-                <span className="text-primary">₹{selectedOrder.totalAmount}</span>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

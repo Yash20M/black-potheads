@@ -1,28 +1,47 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Package, User, Heart, Settings, Eye } from 'lucide-react';
+import { Package, User, Heart, Settings, Eye, Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/store/authStore';
 import { orderApi } from '@/lib/api';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/loader';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const OrdersPage = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
+  
+  // Filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setPage(1); // Reset to first page on search
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   useEffect(() => {
     if (!user) {
@@ -31,13 +50,23 @@ const OrdersPage = () => {
       return;
     }
     loadOrders();
-  }, [user, navigate, page]);
+  }, [user, navigate, page, debouncedSearchTerm, statusFilter, paymentMethodFilter]);
 
   const loadOrders = async () => {
+    setLoading(true);
     try {
-      const data: any = await orderApi.getAll(page, 10);
+      const data: any = await orderApi.getAllWithFilters({
+        page,
+        limit: 10,
+        search: debouncedSearchTerm || undefined,
+        status: statusFilter && statusFilter !== 'all' ? statusFilter : undefined,
+        paymentMethod: paymentMethodFilter && paymentMethodFilter !== 'all' ? paymentMethodFilter : undefined,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+      });
       setOrders(data.orders || []);
       setTotalPages(data.totalPages || 1);
+      setTotalOrders(data.totalOrders || 0);
     } catch (error: any) {
       toast.error('Failed to load orders');
     } finally {
@@ -45,27 +74,47 @@ const OrdersPage = () => {
     }
   };
 
-  const viewOrderDetails = async (orderId: string) => {
+  const viewOrderDetails = (orderId: string) => {
+    navigate(`/orders/${orderId}`);
+  };
+
+  const cancelOrder = async (orderId: string) => {
+    if (!confirm('Are you sure you want to cancel this order?')) return;
+
+    setCancellingOrderId(orderId);
     try {
-      const data: any = await orderApi.getById(orderId);
-      setSelectedOrder(data.order);
-      setIsDialogOpen(true);
+      await orderApi.cancel(orderId);
+      toast.success('Order cancelled successfully');
+      loadOrders(); // Refresh the list
     } catch (error: any) {
-      toast.error('Failed to load order details');
+      toast.error(error.message || 'Failed to cancel order');
+    } finally {
+      setCancellingOrderId(null);
     }
   };
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      'Pending': 'text-gray-400',
-      'Processing': 'text-gray-300',
-      'Shipped': 'text-gray-200',
-      'Out for Delivery': 'text-gray-400',
-      'Delivered': 'text-gray-300',
-      'Cancelled': 'text-gray-500',
+      'Pending': 'text-yellow-500',
+      'Processing': 'text-blue-500',
+      'Shipped': 'text-purple-500',
+      'Out for Delivery': 'text-orange-500',
+      'Delivered': 'text-green-500',
+      'Cancelled': 'text-red-500',
     };
     return colors[status] || 'text-muted-foreground';
   };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('');
+    setPaymentMethodFilter('');
+    setPage(1);
+  };
+
+  const hasActiveFilters = searchTerm || statusFilter || paymentMethodFilter;
+
+  const statuses = ['Pending', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'];
 
   if (!user) return null;
 
@@ -124,6 +173,78 @@ const OrdersPage = () => {
             transition={{ delay: 0.1 }}
             className="lg:col-span-2"
           >
+            {/* Filters Section */}
+            <div className="mb-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">
+                  {totalOrders} {totalOrders === 1 ? 'order' : 'orders'} found
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  <Filter size={16} className="mr-2" />
+                  {showFilters ? 'Hide Filters' : 'Show Filters'}
+                </Button>
+              </div>
+
+              {showFilters && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-card border border-border rounded"
+                >
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                    <Input
+                      placeholder="Search by Order ID or Amount..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      {statuses.map((status) => (
+                        <SelectItem key={status} value={status}>
+                          {status}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={paymentMethodFilter} onValueChange={setPaymentMethodFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Filter by payment" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Payment Methods</SelectItem>
+                      <SelectItem value="COD">Cash on Delivery</SelectItem>
+                      <SelectItem value="Online">Online Payment</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {hasActiveFilters && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={clearFilters}
+                      className="md:col-span-3"
+                    >
+                      Clear Filters
+                    </Button>
+                  )}
+                </motion.div>
+              )}
+            </div>
+
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <Spinner size="lg" />
@@ -207,15 +328,47 @@ const OrdersPage = () => {
                         <div>
                           <p className="text-sm text-muted-foreground">Total Amount</p>
                           <p className="font-display text-xl">₹{order.totalAmount}</p>
+                          {order.paymentMethod === 'Online' && order.payment && (
+                            <>
+                              {order.payment.status === 'captured' ? (
+                                <p className="text-xs text-green-500 mt-1">
+                                  ✓ Paid via Razorpay
+                                </p>
+                              ) : (
+                                <p className="text-xs text-yellow-500 mt-1">
+                                  ⚠ Payment {order.payment.status}
+                                </p>
+                              )}
+                            </>
+                          )}
+                          {order.paymentMethod === 'COD' && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Cash on Delivery
+                            </p>
+                          )}
                         </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => viewOrderDetails(order._id)}
-                        >
-                          <Eye size={16} className="mr-2" />
-                          View Details
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => viewOrderDetails(order._id)}
+                          >
+                            <Eye size={16} className="mr-2" />
+                            View Details
+                          </Button>
+                          {order.status === 'Pending' && 
+                           order.paymentMethod === 'Online' && 
+                           order.payment?.status !== 'captured' && (
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => cancelOrder(order._id)}
+                              disabled={cancellingOrderId === order._id}
+                            >
+                              {cancellingOrderId === order._id ? 'Cancelling...' : 'Cancel Order'}
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </motion.div>
                   ))}
@@ -247,99 +400,6 @@ const OrdersPage = () => {
           </motion.div>
         </div>
       </div>
-
-      {/* Order Details Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Order Details</DialogTitle>
-          </DialogHeader>
-          {selectedOrder && (
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Order ID</p>
-                <p className="font-mono">{selectedOrder._id}</p>
-              </div>
-
-              <div>
-                <p className="text-sm text-muted-foreground">Order Date</p>
-                <p>
-                  {new Date(selectedOrder.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-sm text-muted-foreground">Status</p>
-                <p className={`font-medium ${getStatusColor(selectedOrder.status)}`}>
-                  {selectedOrder.status}
-                </p>
-              </div>
-
-              <div>
-                <h3 className="font-medium mb-2">Shipping Address</h3>
-                <p>{selectedOrder.address?.line1}</p>
-                <p>{selectedOrder.address?.city}, {selectedOrder.address?.state}</p>
-                <p>{selectedOrder.address?.pincode}, {selectedOrder.address?.country}</p>
-              </div>
-
-              <div>
-                <h3 className="font-medium mb-2">Order Items</h3>
-                <div className="space-y-3">
-                  {selectedOrder.items?.map((item: any, index: number) => {
-                    const imageUrl = item.product?.images?.[0]
-                      ? typeof item.product.images[0] === 'string'
-                        ? item.product.images[0]
-                        : item.product.images[0]?.url
-                      : 'https://via.placeholder.com/400x500?text=No+Image';
-                    
-                    return (
-                      <div key={index} className="flex gap-4 border-b pb-3">
-                        <img
-                          src={imageUrl}
-                          alt={item.product?.name}
-                          className="w-20 h-20 object-cover bg-secondary"
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://via.placeholder.com/400x500?text=No+Image';
-                          }}
-                        />
-                        <div className="flex-1">
-                          <p className="font-medium">{item.product?.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            Category: {item.category}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Size: {item.size} | Quantity: {item.quantity}
-                          </p>
-                          <p className="text-sm font-medium mt-1">
-                            ₹{item.price} × {item.quantity} = ₹{item.price * item.quantity}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="flex justify-between font-display text-xl pt-4 border-t">
-                <span>Total</span>
-                <span>₹{selectedOrder.totalAmount}</span>
-              </div>
-
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  Payment Method: {selectedOrder.paymentMethod}
-                </p>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

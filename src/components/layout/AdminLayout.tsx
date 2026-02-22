@@ -1,6 +1,6 @@
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, Package, ShoppingCart, LogOut, QrCode, Warehouse, ChevronDown, ChevronRight, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, LogOut, Warehouse, ChevronDown, ChevronRight, Menu, X, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
 import { useAdminNotificationStore } from '@/store/adminNotificationStore';
@@ -63,7 +63,7 @@ const AdminLayout = () => {
     { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/admin/products', label: 'Products', icon: Package },
     { path: '/admin/orders', label: 'Orders', icon: ShoppingCart },
-    { path: '/admin/qr', label: 'QR Code', icon: QrCode },
+    { path: '/admin/offers', label: 'Offers', icon: Tag },
   ];
 
   const inventoryItems = [
