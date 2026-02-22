@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
 import { cn } from '@/lib/utils';
 import { ProductCard } from '@/components/products/ProductCard';
+import { ProductReviews } from '@/components/ProductReviews';
 import { productApi } from '@/lib/api';
 import { Product, normalizeProduct, ApiProduct } from '@/types/product';
 import { toast } from 'sonner';
@@ -674,6 +675,9 @@ const ProductDetailPage = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* Product Reviews Section */}
+      {product && <ProductReviews productId={product.id} />}
 
       {relatedProducts.length > 0 && (
         <section className="py-16 bg-gray-50">

@@ -239,6 +239,50 @@ export const offersApi = {
     apiFetch(`/api/v1/offers/${id}`),
 };
 
+// Reviews APIs
+export const reviewsApi = {
+  // User endpoints
+  create: (data: { productId: string; rating: number; comment: string }) =>
+    apiFetch('/api/v1/reviews', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  getByProduct: (productId: string, params?: {
+    page?: number;
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: string;
+  }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
+    if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder);
+    
+    return apiFetch(`/api/v1/reviews/product/${productId}?${queryParams.toString()}`);
+  },
+
+  getMyReviews: (params?: { page?: number; limit?: number }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    
+    return apiFetch(`/api/v1/reviews/my-reviews?${queryParams.toString()}`);
+  },
+
+  update: (reviewId: string, data: { rating?: number; comment?: string }) =>
+    apiFetch(`/api/v1/reviews/${reviewId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  delete: (reviewId: string) =>
+    apiFetch(`/api/v1/reviews/${reviewId}`, {
+      method: 'DELETE',
+    }),
+};
+
 // Admin APIs
 export const adminApi = {
   login: (data: { email: string; password: string }) =>
@@ -358,6 +402,32 @@ export const adminApi = {
     toggle: (id: string) =>
       apiFetch(`/api/admin/offers/${id}/toggle`, {
         method: 'PATCH',
+      }, true),
+  },
+
+  // Reviews Management
+  reviews: {
+    getAll: (params?: {
+      page?: number;
+      limit?: number;
+      rating?: number;
+      productId?: string;
+      isVerifiedPurchase?: boolean;
+    }) => {
+      const queryParams = new URLSearchParams();
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.rating) queryParams.append('rating', params.rating.toString());
+      if (params?.productId) queryParams.append('productId', params.productId);
+      if (params?.isVerifiedPurchase !== undefined) 
+        queryParams.append('isVerifiedPurchase', params.isVerifiedPurchase.toString());
+      
+      return apiFetch(`/api/admin/reviews?${queryParams.toString()}`, {}, true);
+    },
+
+    delete: (reviewId: string) =>
+      apiFetch(`/api/admin/reviews/${reviewId}`, {
+        method: 'DELETE',
       }, true),
   },
 
