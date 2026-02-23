@@ -7,6 +7,9 @@ import { cn } from '@/lib/utils';
 import { productApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { SkeletonCard } from '@/components/ui/loader';
+import { AnimatedDamru } from '@/components/Animateddamru';
+import TrishulDamruImg from '@/assets/Trishul-Damru.png';
+import MushroomsImg from '@/assets/mushrooms.png';
 
 const categories = [
   { id: 'all', label: 'All' },
@@ -144,16 +147,228 @@ const ShopPage = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center"
+            className="text-center relative"
           >
             {currentCollection ? (
               <>
                 <span className="text-sm uppercase tracking-[0.3em] text-gray-400 mb-4 block">
                   {currentCollection.subtitle}
                 </span>
-                <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-white mb-6">
-                  {currentCollection.title.toUpperCase()}
-                </h1>
+                <div className="relative mb-6">
+                  {activeCategory === 'Shiva' && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.5, rotate: -180, y: 0 }}
+                      animate={{ 
+                        opacity: [0, 0.4, 0.4, 0], 
+                        scale: [0.5, 1, 1, 1], 
+                        rotate: [-180, 0, 0, 0],
+                        y: [0, 0, 0, -200]
+                      }}
+                      transition={{ 
+                        delay: 0.3,
+                        duration: 3.5,
+                        times: [0, 0.25, 0.7, 1],
+                        ease: "easeInOut"
+                      }}
+                      className="absolute inset-0 flex justify-center items-center pointer-events-none"
+                      style={{
+                        filter: 'brightness(1.5) contrast(1.2)',
+                      }}
+                    >
+                      <motion.img 
+                        src={TrishulDamruImg} 
+                        alt="Trishul and Damru" 
+                        className="h-64 md:h-80 lg:h-96 w-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+                        animate={{
+                          y: [0, -10, 0],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: 2,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    </motion.div>
+                  )}
+                  {activeCategory === 'Shrooms' && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.5, rotate: -180, y: 0 }}
+                      animate={{ 
+                        opacity: [0, 0.4, 0.4, 0], 
+                        scale: [0.5, 1, 1, 1], 
+                        rotate: [-180, 0, 0, 0],
+                        y: [0, 0, 0, -200]
+                      }}
+                      transition={{ 
+                        delay: 0.3,
+                        duration: 3.5,
+                        times: [0, 0.25, 0.7, 1],
+                        ease: "easeInOut"
+                      }}
+                      className="absolute inset-0 flex justify-center items-center pointer-events-none"
+                      style={{
+                        filter: 'brightness(1.5) contrast(1.2)',
+                      }}
+                    >
+                      <motion.img 
+                        src={MushroomsImg} 
+                        alt="Psychedelic Mushrooms" 
+                        className="h-64 md:h-80 lg:h-96 w-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+                        animate={{
+                          y: [0, -10, 0],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: 2,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    </motion.div>
+                  )}
+                  {activeCategory === 'LSD' && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.5, rotate: -180, y: 0 }}
+                      animate={{ 
+                        opacity: [0, 0.4, 0.4, 0], 
+                        scale: [0.5, 1, 1, 1], 
+                        rotate: [-180, 0, 0, 0],
+                        y: [0, 0, 0, -200]
+                      }}
+                      transition={{ 
+                        delay: 0.3,
+                        duration: 3.5,
+                        times: [0, 0.25, 0.7, 1],
+                        ease: "easeInOut"
+                      }}
+                      className="absolute inset-0 flex justify-center items-center pointer-events-none"
+                      style={{
+                        filter: 'brightness(1.5) contrast(1.2)',
+                      }}
+                    >
+                      <motion.img 
+                        src="/LSD.PNG" 
+                        alt="LSD" 
+                        className="h-64 md:h-80 lg:h-96 w-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+                        animate={{
+                          y: [0, -10, 0],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: 2,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    </motion.div>
+                  )}
+                  {activeCategory === 'Chakras' && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.5, rotate: -180, y: 0 }}
+                      animate={{ 
+                        opacity: [0, 0.4, 0.4, 0], 
+                        scale: [0.5, 1, 1, 1], 
+                        rotate: [-180, 0, 0, 0],
+                        y: [0, 0, 0, -200]
+                      }}
+                      transition={{ 
+                        delay: 0.3,
+                        duration: 3.5,
+                        times: [0, 0.25, 0.7, 1],
+                        ease: "easeInOut"
+                      }}
+                      className="absolute inset-0 flex justify-center items-center pointer-events-none"
+                      style={{
+                        filter: 'brightness(1.5) contrast(1.2)',
+                      }}
+                    >
+                      <motion.img 
+                        src="/Chakras.PNG" 
+                        alt="Chakras" 
+                        className="h-64 md:h-80 lg:h-96 w-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+                        animate={{
+                          y: [0, -10, 0],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: 2,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    </motion.div>
+                  )}
+                  {activeCategory === 'Dark' && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.5, rotate: -180, y: 0 }}
+                      animate={{ 
+                        opacity: [0, 0.4, 0.4, 0], 
+                        scale: [0.5, 1, 1, 1], 
+                        rotate: [-180, 0, 0, 0],
+                        y: [0, 0, 0, -200]
+                      }}
+                      transition={{ 
+                        delay: 0.3,
+                        duration: 3.5,
+                        times: [0, 0.25, 0.7, 1],
+                        ease: "easeInOut"
+                      }}
+                      className="absolute inset-0 flex justify-center items-center pointer-events-none"
+                      style={{
+                        filter: 'brightness(1.5) contrast(1.2)',
+                      }}
+                    >
+                      <motion.img 
+                        src="/Dark.PNG" 
+                        alt="Dark" 
+                        className="h-64 md:h-80 lg:h-96 w-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+                        animate={{
+                          y: [0, -10, 0],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: 2,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    </motion.div>
+                  )}
+                  {activeCategory === 'Rick n Morty' && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.5, rotate: -180, y: 0 }}
+                      animate={{ 
+                        opacity: [0, 0.4, 0.4, 0], 
+                        scale: [0.5, 1, 1, 1], 
+                        rotate: [-180, 0, 0, 0],
+                        y: [0, 0, 0, -200]
+                      }}
+                      transition={{ 
+                        delay: 0.3,
+                        duration: 3.5,
+                        times: [0, 0.25, 0.7, 1],
+                        ease: "easeInOut"
+                      }}
+                      className="absolute inset-0 flex justify-center items-center pointer-events-none"
+                      style={{
+                        filter: 'brightness(1.5) contrast(1.2)',
+                      }}
+                    >
+                      <motion.img 
+                        src="/Rick-N-Morty.PNG" 
+                        alt="Rick and Morty" 
+                        className="h-64 md:h-80 lg:h-96 w-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+                        animate={{
+                          y: [0, -10, 0],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: 2,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    </motion.div>
+                  )}
+                  <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-white relative z-10">
+                    {currentCollection.title.toUpperCase()}
+                  </h1>
+                </div>
                 <p className="text-gray-300 text-lg max-w-3xl mx-auto mb-8 leading-relaxed">
                   {currentCollection.description}
                 </p>
@@ -242,6 +457,8 @@ const ShopPage = () => {
           </div>
         </div>
       </section>
+
+
     </div>
   );
 };
