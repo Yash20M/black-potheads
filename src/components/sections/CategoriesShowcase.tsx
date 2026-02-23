@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+
 const categories = [
   { name: 'SHIVA', image: '/Shiva.PNG' },
   { name: 'SHROOMS', image: '/Shrooms.PNG' },
@@ -65,18 +66,18 @@ export const CategoriesShowcase = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12 md:mb-16"
+          className="text-center mb-8 md:mb-12"
         >
-          <span className="text-sm uppercase tracking-widest text-gray-400 mb-4 block">
+          <span className="text-xs sm:text-sm uppercase tracking-widest text-gray-400 mb-2 sm:mb-4 block">
             Browse By
           </span>
-          <h2 className="font-display text-5xl md:text-7xl text-white">CATEGORIES</h2>
+          <h2 className="font-display text-4xl sm:text-5xl md:text-7xl text-white">CATEGORIES</h2>
         </motion.div>
 
         {/* Carousel Container */}
         <div className="relative max-w-5xl mx-auto">
           {/* Main Carousel */}
-          <div className="relative h-[350px] sm:h-[400px] md:h-[450px] lg:h-[500px] xl:h-[550px] overflow-hidden">
+          <div className="relative h-[280px] xs:h-[300px] sm:h-[320px] md:h-[360px] lg:h-[400px] overflow-hidden mb-12 sm:mb-16 md:mb-20">
             <motion.div
               key={currentIndex}
               custom={direction}
@@ -89,15 +90,15 @@ export const CategoriesShowcase = () => {
                 opacity: { duration: 0.4 },
                 scale: { duration: 0.4 },
               }}
-              className="absolute inset-0 flex items-center justify-center"
+              className="absolute inset-0 flex items-start justify-center pt-2 sm:pt-4"
             >
-              <Link to={`/shop?collection=${categories[currentIndex].name}`} className="w-full h-full">
+              <Link to={`/shop?collection=${categories[currentIndex].name}`} className="w-full h-full px-12 sm:px-16 md:px-4">
                 <div className="relative h-full group cursor-pointer">
                   {/* Image */}
                   <motion.img
                     src={categories[currentIndex].image}
                     alt={categories[currentIndex].name}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain object-top"
                     whileHover={{ scale: 1.05 }}
                     transition={{ duration: 0.6 }}
                   />
@@ -106,12 +107,12 @@ export const CategoriesShowcase = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
 
                   {/* Category Name */}
-                  <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 md:bottom-8 md:left-8 md:right-8">
+                  <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 md:bottom-6 md:left-6 md:right-6">
                     <motion.h3
                       initial={{ y: 20, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.2 }}
-                      className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl text-white leading-tight"
+                      className="font-display text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white leading-tight"
                     >
                       {categories[currentIndex].name}
                     </motion.h3>
@@ -124,30 +125,30 @@ export const CategoriesShowcase = () => {
           {/* Navigation Arrows */}
           <button
             onClick={handlePrev}
-            className="absolute left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
+            className="absolute left-0 sm:left-2 md:left-4 lg:left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
             aria-label="Previous"
           >
-            <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
+            <ChevronLeft size={18} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
           </button>
 
           <button
             onClick={handleNext}
-            className="absolute right-4 md:right-6 lg:right-8 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
+            className="absolute right-0 sm:right-2 md:right-4 lg:right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
             aria-label="Next"
           >
-            <ChevronRight size={20} className="sm:w-6 sm:h-6" />
+            <ChevronRight size={18} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
           </button>
 
           {/* Dots Navigation */}
-          <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-2 sm:gap-3">
+          <div className="absolute -bottom-8 sm:-bottom-10 md:-bottom-12 left-1/2 -translate-x-1/2 z-10 flex gap-1.5 sm:gap-2 md:gap-3">
             {categories.map((_, index) => (
               <button
                 key={index}
                 onClick={() => handleDotClick(index)}
                 className={`transition-all duration-300 ${
                   index === currentIndex
-                    ? 'w-8 sm:w-10 md:w-12 h-1.5 sm:h-2 bg-white'
-                    : 'w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white/50 hover:bg-white/80'
+                    ? 'w-6 sm:w-8 md:w-10 lg:w-12 h-1 sm:h-1.5 md:h-2 bg-white'
+                    : 'w-1 sm:w-1.5 md:w-2 h-1 sm:h-1.5 md:h-2 bg-white/50 hover:bg-white/80'
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
@@ -156,14 +157,14 @@ export const CategoriesShowcase = () => {
         </div>
 
         {/* Thumbnail Preview */}
-        <div className="mt-6 sm:mt-8 md:mt-12 max-w-6xl mx-auto grid grid-cols-6 gap-1.5 sm:gap-2 md:gap-4 px-2 sm:px-4">
+        <div className="mt-12 sm:mt-16 md:mt-20 max-w-6xl mx-auto grid grid-cols-6 gap-1 sm:gap-1.5 md:gap-2 lg:gap-4 px-0 sm:px-2 md:px-4">
           {categories.map((category, index) => (
             <motion.button
               key={category.name}
               onClick={() => handleDotClick(index)}
-              className={`relative h-16 sm:h-20 md:h-24 overflow-hidden transition-all duration-300 ${
+              className={`relative h-12 xs:h-14 sm:h-16 md:h-20 lg:h-24 overflow-hidden transition-all duration-300 ${
                 index === currentIndex
-                  ? 'ring-2 ring-white scale-105'
+                  ? 'ring-1 sm:ring-2 ring-white scale-105'
                   : 'opacity-60 hover:opacity-100'
               }`}
               whileHover={{ scale: 1.05 }}

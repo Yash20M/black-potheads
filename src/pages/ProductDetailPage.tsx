@@ -260,14 +260,20 @@ const ProductDetailPage = () => {
               </div>
 
               {/* Desktop Grid View */}
-              <div className="hidden lg:grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className={cn(
+                "hidden lg:grid gap-4",
+                product.images.length === 1 ? "grid-cols-1 max-w-xl mx-auto" : "grid-cols-1 lg:grid-cols-2"
+              )}>
                 {/* First image - Fixed on left */}
                 {product.images[0] && (
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="relative aspect-[3/4] bg-gray-50 overflow-hidden group cursor-zoom-in lg:col-span-1"
+                    className={cn(
+                      "relative aspect-[3/4] bg-gray-50 overflow-hidden group cursor-zoom-in",
+                      product.images.length === 1 ? "lg:col-span-1" : "lg:col-span-1"
+                    )}
                     onClick={() => {
                       setSelectedImage(0);
                       setIsZoomed(true);

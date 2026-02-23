@@ -104,7 +104,7 @@ const OfferModal = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/70 z-50 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/70 z-40 backdrop-blur-sm"
             onClick={handleClose}
           />
 
@@ -114,7 +114,7 @@ const OfferModal = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', duration: 0.5 }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+            className="fixed inset-0 z-40 flex items-center justify-center p-4 pt-20"
           >
             <div className="relative bg-card border-2 border-primary rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
               {/* Close Button */}
@@ -148,25 +148,25 @@ const OfferModal = () => {
                 </div>
 
                 {/* Offer Details */}
-                <div className="md:p-6 p-2 space-y-4">
+                <div className="p-4 md:p-6 space-y-3 md:space-y-4">
                   <div>
-                    <h2 className="font-display text-3xl mb-2">{currentOffer.name}</h2>
-                    <p className="text-muted-foreground">{currentOffer.description}</p>
+                    <h2 className="font-display text-xl md:text-3xl mb-2">{currentOffer.name}</h2>
+                    <p className="text-muted-foreground text-sm md:text-base">{currentOffer.description}</p>
                   </div>
 
                   {/* Price Info */}
-                  <div className="flex items-center gap-4 p-4 bg-secondary rounded-lg">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 md:p-4 bg-secondary rounded-lg">
                     <div>
-                      <p className="text-sm text-muted-foreground line-through">
+                      <p className="text-xs md:text-sm text-muted-foreground line-through">
                         ₹{currentOffer.originalPrice}
                       </p>
-                      <p className="font-display text-3xl text-primary">
+                      <p className="font-display text-2xl md:text-3xl text-primary">
                         ₹{currentOffer.discountedPrice}
                       </p>
                     </div>
-                    <div className="ml-auto text-right">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock size={16} />
+                    <div className="sm:ml-auto text-left sm:text-right">
+                      <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+                        <Clock size={14} className="md:w-4 md:h-4" />
                         {calculateTimeLeft(currentOffer.validUntil)}
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">
@@ -183,19 +183,17 @@ const OfferModal = () => {
                   )}
 
                   {/* Actions */}
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <Button
                       variant="hero"
-                      size="lg"
-                      className="flex-1 md:text-base text-sm md:h-11 h-9"
+                      className="flex-1 h-10 md:h-11 text-sm md:text-base font-medium"
                       onClick={handleShopNow}
                     >
                       Shop Now
                     </Button>
                     <Button
                       variant="outline"
-                      size="lg"
-                      className="md:text-base text-sm md:h-11 h-9"
+                      className="h-10 md:h-11 text-sm md:text-base font-medium sm:min-w-[140px]"
                       onClick={handleClose}
                     >
                       Maybe Later
