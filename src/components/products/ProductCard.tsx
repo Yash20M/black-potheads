@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion';
 import { useState, useCallback, memo } from 'react';
-import { Plus, Eye, Heart } from 'lucide-react';
+import { Plus, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { useCartStore } from '@/store/cartStore';
@@ -9,7 +8,6 @@ import { useAuthStore } from '@/store/authStore';
 import { wishlistApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { OptimizedImage } from '@/components/ui/optimized-image';
 
 interface ProductCardProps {
   product: Product;
@@ -112,13 +110,13 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
             )}
           </div>
 
-          {/* Overlay - Always visible on mobile, hover on desktop */}
+          {/* Overlay - Only visible on desktop hover, hidden on mobile */}
           <div
-            className="absolute inset-0 bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center gap-4 p-4 transition-opacity duration-300"
-            style={{ opacity: isHovered ? 1 : 0 }}
+            className="hidden md:flex absolute inset-0 bg-black/90 backdrop-blur-sm flex-col items-center justify-center gap-3 sm:gap-4 p-3 sm:p-4 transition-opacity duration-300 pointer-events-none"
+            style={{ opacity: isHovered ? 1 : 0, pointerEvents: isHovered ? 'auto' : 'none' }}
           >
             {/* Size Selector */}
-            <div className="flex flex-wrap gap-2 justify-center" onClick={(e) => e.preventDefault()}>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center pointer-events-auto" onClick={(e) => e.preventDefault()}>
               {product.sizes.map((size) => (
                 <button
                   key={size}
@@ -128,7 +126,7 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
                     setSelectedSize(size);
                   }}
                   className={cn(
-                    'w-10 h-10 border-2 text-sm font-bold transition-all active:scale-95 transform',
+                    'w-8 h-8 sm:w-10 sm:h-10 border-2 text-xs sm:text-sm font-bold transition-all active:scale-95 transform',
                     selectedSize === size
                       ? 'bg-white text-black border-white'
                       : 'bg-transparent border-white text-white hover:bg-white hover:text-black'
@@ -140,7 +138,7 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 pointer-events-auto">
               <button
                 onClick={handleAddToCart}
                 disabled={!product.stock || product.stock === 0}
@@ -167,31 +165,31 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
         </div>
 
         {/* Product Info */}
-        <div className="space-y-1">
-          <h3 className="font-medium text-sm uppercase tracking-wider line-clamp-1 text-black group-hover:text-gray-700 transition-colors">
+        <div className="space-y-0.5 sm:space-y-1">
+          <h3 className="font-medium text-xs sm:text-sm uppercase tracking-wider line-clamp-2 sm:line-clamp-1 text-black group-hover:text-gray-700 transition-colors">
             {product.name}
           </h3>
-          <div className="flex items-center gap-2">
-            <span className="font-display text-xl text-black">₹{product.price}</span>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="font-display text-lg sm:text-xl text-black">₹{product.price}</span>
             {product.originalPrice && (
-              <span className="text-gray-500 line-through text-sm">
+              <span className="text-gray-500 line-through text-xs sm:text-sm">
                 ₹{product.originalPrice}
               </span>
             )}
           </div>
           {/* Stock Status */}
           {product.stock !== undefined && (
-            <div className="flex items-center gap-1 text-xs">
+            <div className="flex items-center gap-1 text-[10px] sm:text-xs">
               {product.stock > 0 ? (
                 <>
-                  <div className="w-1.5 h-1.5 rounded-full bg-gray-600"></div>
+                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-gray-600"></div>
                   <span className="text-gray-600">
                     {product.stock <= 5 ? `Only ${product.stock} left` : 'In Stock'}
                   </span>
                 </>
               ) : (
                 <>
-                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
+                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-gray-400"></div>
                   <span className="text-gray-400">Out of Stock</span>
                 </>
               )}

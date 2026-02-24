@@ -219,46 +219,51 @@ const CheckoutPage = () => {
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    navigate('/orders');
+    // Redirect to specific order details page if order ID exists
+    if (orderDetails?._id) {
+      navigate(`/orders/${orderDetails._id}`);
+    } else {
+      navigate('/orders');
+    }
   };
 
   return (
     <div className="min-h-screen pt-20 bg-background">
       <div className="bg-card border-b border-border">
-        <div className="container mx-auto px-6 py-4">
-          <Link to="/shop" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft size={18} />
-            <span className="text-sm uppercase tracking-wider">Back to Shop</span>
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <Link to="/shop" className="inline-flex items-center gap-1.5 sm:gap-2 text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft size={16} className="sm:w-[18px] sm:h-[18px]" />
+            <span className="text-xs sm:text-sm uppercase tracking-wider">Back to Shop</span>
           </Link>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="font-display text-4xl md:text-5xl mb-12"
+          className="font-display text-3xl sm:text-4xl md:text-5xl mb-8 sm:mb-12"
         >
           CHECKOUT
         </motion.h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           {/* Checkout Form */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="bg-card border border-border p-6">
-                <h2 className="font-display text-2xl mb-6 flex items-center gap-2">
-                  <Truck size={24} />
-                  Shipping Address
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+              <div className="bg-card border border-border p-4 sm:p-6">
+                <h2 className="font-display text-xl sm:text-2xl mb-4 sm:mb-6 flex items-center gap-2">
+                  <Truck size={20} className="sm:w-6 sm:h-6" />
+                  <span className="text-base sm:text-2xl">Shipping Address</span>
                 </h2>
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div>
-                    <Label htmlFor="line1">Address Line</Label>
+                    <Label htmlFor="line1" className="text-sm">Address Line</Label>
                     <Input
                       id="line1"
                       name="line1"
@@ -266,12 +271,13 @@ const CheckoutPage = () => {
                       onChange={handleChange}
                       required
                       placeholder="123 Main Street"
+                      className="text-sm sm:text-base"
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                      <Label htmlFor="city">City</Label>
+                      <Label htmlFor="city" className="text-sm">City</Label>
                       <Input
                         id="city"
                         name="city"
@@ -279,11 +285,12 @@ const CheckoutPage = () => {
                         onChange={handleChange}
                         required
                         placeholder="Mumbai"
+                        className="text-sm sm:text-base"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="state">State</Label>
+                      <Label htmlFor="state" className="text-sm">State</Label>
                       <Input
                         id="state"
                         name="state"
@@ -291,6 +298,7 @@ const CheckoutPage = () => {
                         onChange={handleChange}
                         required
                         placeholder="Maharashtra"
+                        className="text-sm sm:text-base"
                       />
                     </div>
                   </div>
@@ -516,7 +524,7 @@ const CheckoutPage = () => {
                     onClick={handleCloseSuccessModal}
                   >
                     <Package className="mr-2" size={18} />
-                    View My Orders
+                    View Order Details
                   </Button>
                   
                   <Button

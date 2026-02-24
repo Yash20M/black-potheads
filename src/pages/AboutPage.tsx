@@ -24,7 +24,7 @@ const AboutPage = () => {
   return (
     <div className="min-h-screen pt-20">
       {/* Hero */}
-      <section ref={heroRef} className="relative h-[70vh] overflow-hidden">
+      <section ref={heroRef} className="relative h-[50vh] md:h-[60vh] lg:h-[70vh] overflow-hidden">
         <motion.div style={{ y: heroY }} className="absolute inset-0">
           <img src={heroImage} alt="About Black Potheads" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-background/70" />

@@ -291,6 +291,12 @@ export const adminApi = {
       body: JSON.stringify(data),
     }),
 
+  changePassword: (data: { currentPassword: string; newPassword: string; confirmPassword: string }) =>
+    apiFetch('/api/admin/change-password', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }, true),
+
   // Products
   products: {
     create: (formData: FormData) =>

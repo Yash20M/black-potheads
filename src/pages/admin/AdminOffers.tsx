@@ -184,23 +184,25 @@ const AdminOffers = () => {
                           size="sm"
                           onClick={() => handleToggle(offer._id)}
                           title={offer.isActive ? 'Deactivate' : 'Activate'}
+                          className="h-9 w-9 p-0 lg:h-7 lg:w-7"
                         >
-                          <Power size={16} />
+                          <Power size={16} className="lg:w-3.5 lg:h-3.5" />
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => navigate(`/admin/offers/edit/${offer._id}`)}
+                          className="h-9 w-9 p-0 lg:h-7 lg:w-7"
                         >
-                          <Edit size={16} />
+                          <Edit size={16} className="lg:w-3.5 lg:h-3.5" />
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleDelete(offer._id)}
-                          className="text-destructive hover:text-destructive"
+                          className="text-destructive hover:text-destructive h-9 w-9 p-0 lg:h-7 lg:w-7"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={16} className="lg:w-3.5 lg:h-3.5" />
                         </Button>
                       </div>
                     </td>

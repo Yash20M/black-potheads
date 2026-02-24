@@ -183,8 +183,9 @@ const OrdersPage = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowFilters(!showFilters)}
+                  className="h-9 sm:h-10 text-xs sm:text-sm px-3 sm:px-4"
                 >
-                  <Filter size={16} className="mr-2" />
+                  <Filter size={14} className="mr-1.5 sm:mr-2 sm:w-4 sm:h-4" />
                   {showFilters ? 'Hide Filters' : 'Show Filters'}
                 </Button>
               </div>
@@ -352,8 +353,9 @@ const OrdersPage = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => viewOrderDetails(order._id)}
+                            className="h-9 sm:h-10 text-xs sm:text-sm px-3 sm:px-4"
                           >
-                            <Eye size={16} className="mr-2" />
+                            <Eye size={14} className="mr-1.5 sm:mr-2 sm:w-4 sm:h-4" />
                             View Details
                           </Button>
                           {order.status === 'Pending' && 
@@ -364,6 +366,7 @@ const OrdersPage = () => {
                               size="sm"
                               onClick={() => cancelOrder(order._id)}
                               disabled={cancellingOrderId === order._id}
+                              className="h-9 sm:h-10 text-xs sm:text-sm px-3 sm:px-4"
                             >
                               {cancellingOrderId === order._id ? 'Cancelling...' : 'Cancel Order'}
                             </Button>

@@ -110,7 +110,7 @@ const TrendingProductCard = ({ product, index }: { product: Product; index: numb
   };
 
   const gridClasses = ['lg:col-span-7 lg:row-span-2', 'lg:col-span-5', 'lg:col-span-5', 'lg:col-span-12'];
-  const heights = ['h-[500px] lg:h-full', 'h-[300px]', 'h-[300px]', 'h-[400px]'];
+  const heights = ['h-[350px] md:h-[400px] lg:h-[450px] xl:h-[500px]', 'h-[250px] md:h-[280px] lg:h-[300px]', 'h-[250px] md:h-[280px] lg:h-[300px]', 'h-[280px] md:h-[320px] lg:h-[350px]'];
 
   return (
     <motion.div
@@ -126,7 +126,7 @@ const TrendingProductCard = ({ product, index }: { product: Product; index: numb
         <motion.img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover max-h-[550px]"
           animate={{ scale: isHovered ? 1.1 : 1 }}
           transition={{ duration: 0.6 }}
         />

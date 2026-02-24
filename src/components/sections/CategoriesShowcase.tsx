@@ -77,7 +77,7 @@ export const CategoriesShowcase = () => {
         {/* Carousel Container */}
         <div className="relative max-w-5xl mx-auto">
           {/* Main Carousel */}
-          <div className="relative h-[280px] xs:h-[300px] sm:h-[320px] md:h-[360px] lg:h-[400px] overflow-hidden mb-12 sm:mb-16 md:mb-20">
+          <div className="relative h-[280px] xs:h-[300px] sm:h-[320px] md:h-[340px] lg:h-[380px] xl:h-[420px] overflow-hidden mb-16 sm:mb-20 md:mb-24">
             <motion.div
               key={currentIndex}
               custom={direction}
@@ -98,7 +98,7 @@ export const CategoriesShowcase = () => {
                   <motion.img
                     src={categories[currentIndex].image}
                     alt={categories[currentIndex].name}
-                    className="w-full h-full object-contain object-top"
+                    className="w-full h-full object-contain object-top max-h-[400px] lg:max-h-[450px] xl:max-h-[500px]"
                     whileHover={{ scale: 1.05 }}
                     transition={{ duration: 0.6 }}
                   />
@@ -140,15 +140,15 @@ export const CategoriesShowcase = () => {
           </button>
 
           {/* Dots Navigation */}
-          <div className="absolute -bottom-8 sm:-bottom-10 md:-bottom-12 left-1/2 -translate-x-1/2 z-10 flex gap-1.5 sm:gap-2 md:gap-3">
+          <div className="absolute -bottom-10 sm:-bottom-12 md:-bottom-14 lg:-bottom-16 left-1/2 -translate-x-1/2 z-10 flex gap-1 sm:gap-1.5 md:gap-2 lg:gap-3">
             {categories.map((_, index) => (
               <button
                 key={index}
                 onClick={() => handleDotClick(index)}
-                className={`transition-all duration-300 ${
+                className={`transition-all duration-300 rounded-full ${
                   index === currentIndex
-                    ? 'w-6 sm:w-8 md:w-10 lg:w-12 h-1 sm:h-1.5 md:h-2 bg-white'
-                    : 'w-1 sm:w-1.5 md:w-2 h-1 sm:h-1.5 md:h-2 bg-white/50 hover:bg-white/80'
+                    ? 'w-4 sm:w-6 md:w-8 lg:w-10 xl:w-12 h-[2px] sm:h-1 md:h-1.5 lg:h-2 bg-white'
+                    : 'w-[2px] sm:w-1 md:w-1.5 lg:w-2 h-[2px] sm:h-1 md:h-1.5 lg:h-2 bg-white/50 hover:bg-white/80'
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
@@ -157,7 +157,7 @@ export const CategoriesShowcase = () => {
         </div>
 
         {/* Thumbnail Preview */}
-        <div className="mt-12 sm:mt-16 md:mt-20 max-w-6xl mx-auto grid grid-cols-6 gap-1 sm:gap-1.5 md:gap-2 lg:gap-4 px-0 sm:px-2 md:px-4">
+        <div className="mt-20 sm:mt-24 md:mt-28 lg:mt-32 max-w-6xl mx-auto grid grid-cols-6 gap-1 sm:gap-1.5 md:gap-2 lg:gap-4 px-0 sm:px-2 md:px-4">
           {categories.map((category, index) => (
             <motion.button
               key={category.name}

@@ -108,9 +108,9 @@ const AdminReviews = () => {
         <Button
           variant="outline"
           onClick={() => setShowFilters(!showFilters)}
-          className="mb-4"
+          className="mb-4 h-9 sm:h-10 text-xs sm:text-sm px-3 sm:px-4"
         >
-          <Filter size={16} className="mr-2" />
+          <Filter size={14} className="mr-1.5 sm:mr-2 sm:w-4 sm:h-4" />
           {showFilters ? 'Hide Filters' : 'Show Filters'}
         </Button>
 
@@ -268,9 +268,9 @@ const AdminReviews = () => {
                   variant="destructive"
                   size="sm"
                   onClick={() => handleDeleteReview(review._id)}
-                  className="flex-shrink-0"
+                  className="flex-shrink-0 h-9 lg:h-8 text-xs lg:text-xs px-3 lg:px-2.5"
                 >
-                  <Trash2 size={16} className="mr-2" />
+                  <Trash2 size={16} className="mr-2 lg:w-3.5 lg:h-3.5 lg:mr-1.5" />
                   Delete
                 </Button>
               </div>

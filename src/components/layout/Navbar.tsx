@@ -45,10 +45,10 @@ export const Navbar = () => {
       <nav className="container mx-auto px-6 h-20 flex items-center justify-between">
         {/* Logo with image */}
         <motion.div style={{ scale: logoScale }}>
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3">
             <motion.div 
               style={{ rotate: skullRotate }} 
-              className="relative w-16 h-16 flex items-center justify-center"
+              className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-14 lg:h-14 flex items-center justify-center"
             >
               <motion.div
                 style={{ opacity: glowOpacity }}
@@ -57,17 +57,17 @@ export const Navbar = () => {
                 <img 
                   src={isHomePage ? "/logo.png" : "/white_logo.png"}
                   alt="Black Potheads Logo" 
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain max-h-14"
                 />
               </motion.div>
               <img 
                 src={isHomePage ? "/logo.png" : "/white_logo.png"}
                 alt="Black Potheads Logo" 
-                className="w-full h-full object-contain relative z-10"
+                className="w-full h-full object-contain relative z-10 max-h-14"
               />
             </motion.div>
             <span className={cn(
-              'font-display text-2xl tracking-wider',
+              'font-display text-lg sm:text-xl md:text-2xl lg:text-xl tracking-wider hidden xs:block',
               isHomePage ? 'text-white' : 'text-black'
             )}>
               BLACK POTHEADS
@@ -102,17 +102,17 @@ export const Navbar = () => {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             className={cn(
-              'p-2 transition-colors',
+              'p-1.5 sm:p-2 transition-colors',
               isHomePage ? 'text-white hover:text-gray-300' : 'text-black hover:text-gray-600'
             )}
             aria-label="Search"
           >
-            <Search size={20} />
+            <Search size={18} className="sm:w-5 sm:h-5" />
           </motion.button>
 
           {user ? (
@@ -122,18 +122,18 @@ export const Navbar = () => {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   className={cn(
-                    'p-2 transition-colors relative',
+                    'p-1.5 sm:p-2 transition-colors relative',
                     isHomePage ? 'text-white hover:text-gray-300' : 'text-black hover:text-gray-600'
                   )}
                   aria-label="Wishlist"
                 >
-                  <Heart size={20} />
+                  <Heart size={18} className="sm:w-5 sm:h-5" />
                   {wishlistCount > 0 && (
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       className={cn(
-                        'absolute -top-1 -right-1 w-5 h-5 text-xs flex items-center justify-center font-bold',
+                        'absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 text-[10px] sm:text-xs flex items-center justify-center font-bold',
                         isHomePage ? 'bg-white text-black' : 'bg-black text-white'
                       )}
                     >
@@ -147,12 +147,12 @@ export const Navbar = () => {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   className={cn(
-                    'p-2 transition-colors',
+                    'p-1.5 sm:p-2 transition-colors',
                     isHomePage ? 'text-white hover:text-gray-300' : 'text-black hover:text-gray-600'
                   )}
                   aria-label="Profile"
                 >
-                  <User size={20} />
+                  <User size={18} className="sm:w-5 sm:h-5" />
                 </motion.button>
               </Link>
               <motion.button
@@ -160,7 +160,7 @@ export const Navbar = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={logout}
                 className={cn(
-                  'text-xs uppercase tracking-wider px-3 py-1 border transition-colors',
+                  'text-[10px] sm:text-xs uppercase tracking-wider px-2 py-1 sm:px-3 sm:py-1 border transition-colors',
                   isHomePage 
                     ? 'border-white text-white hover:bg-white hover:text-black' 
                     : 'border-black text-black hover:bg-black hover:text-white'
@@ -207,18 +207,18 @@ export const Navbar = () => {
             whileTap={{ scale: 0.9 }}
             onClick={toggleCart}
             className={cn(
-              'p-2 transition-colors relative',
+              'p-1.5 sm:p-2 transition-colors relative',
               isHomePage ? 'text-white hover:text-gray-300' : 'text-black hover:text-gray-600'
             )}
             aria-label="Cart"
           >
-            <ShoppingBag size={20} />
+            <ShoppingBag size={18} className="sm:w-5 sm:h-5" />
             {totalItems > 0 && (
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 className={cn(
-                  'absolute -top-1 -right-1 w-5 h-5 text-xs flex items-center justify-center font-bold',
+                  'absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 text-[10px] sm:text-xs flex items-center justify-center font-bold',
                   isHomePage ? 'bg-white text-black' : 'bg-black text-white'
                 )}
               >
@@ -233,12 +233,12 @@ export const Navbar = () => {
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className={cn(
-              'p-2 md:hidden',
+              'p-1.5 sm:p-2 md:hidden',
               isHomePage ? 'text-white' : 'text-black'
             )}
             aria-label="Menu"
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isMenuOpen ? <X size={22} className="sm:w-6 sm:h-6" /> : <Menu size={22} className="sm:w-6 sm:h-6" />}
           </motion.button>
         </div>
       </nav>
@@ -259,7 +259,7 @@ export const Navbar = () => {
           !isMenuOpen && 'pointer-events-none'
         )}
       >
-        <div className="container mx-auto px-6 py-6 flex flex-col gap-4">
+        <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col gap-3 sm:gap-4">
           {navLinks.map((link, index) => (
             <motion.div
               key={link.label}
@@ -271,7 +271,7 @@ export const Navbar = () => {
                 to={link.href}
                 onClick={() => setIsMenuOpen(false)}
                 className={cn(
-                  'text-2xl font-display uppercase tracking-wider py-2 border-b block',
+                  'text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b block',
                   isHomePage 
                     ? 'text-white border-gray-800' 
                     : 'text-black border-gray-200'
@@ -286,7 +286,7 @@ export const Navbar = () => {
             <>
               <Link to="/wishlist" onClick={() => setIsMenuOpen(false)}>
                 <div className={cn(
-                  'text-2xl font-display uppercase tracking-wider py-2 border-b flex items-center justify-between',
+                  'text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b flex items-center justify-between',
                   isHomePage 
                     ? 'text-white border-gray-800' 
                     : 'text-black border-gray-200'
@@ -294,7 +294,7 @@ export const Navbar = () => {
                   Wishlist
                   {wishlistCount > 0 && (
                     <span className={cn(
-                      'text-sm px-2 py-1',
+                      'text-xs sm:text-sm px-2 py-1',
                       isHomePage ? 'bg-white text-black' : 'bg-black text-white'
                     )}>
                       {wishlistCount}
@@ -304,7 +304,7 @@ export const Navbar = () => {
               </Link>
               <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
                 <div className={cn(
-                  'text-2xl font-display uppercase tracking-wider py-2 border-b',
+                  'text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b',
                   isHomePage 
                     ? 'text-white border-gray-800' 
                     : 'text-black border-gray-200'
@@ -318,7 +318,7 @@ export const Navbar = () => {
                   setIsMenuOpen(false);
                 }}
                 className={cn(
-                  'text-2xl font-display uppercase tracking-wider py-2 border-b text-left',
+                  'text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b text-left',
                   isHomePage 
                     ? 'text-white border-gray-800' 
                     : 'text-black border-gray-200'
@@ -331,7 +331,7 @@ export const Navbar = () => {
             <>
               <Link to="/login" onClick={() => setIsMenuOpen(false)}>
                 <div className={cn(
-                  'text-2xl font-display uppercase tracking-wider py-2 border-b',
+                  'text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b',
                   isHomePage 
                     ? 'text-white border-gray-800' 
                     : 'text-black border-gray-200'
@@ -341,7 +341,7 @@ export const Navbar = () => {
               </Link>
               <Link to="/register" onClick={() => setIsMenuOpen(false)}>
                 <div className={cn(
-                  'text-2xl font-display uppercase tracking-wider py-2 border-b',
+                  'text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b',
                   isHomePage 
                     ? 'text-white border-gray-800' 
                     : 'text-black border-gray-200'

@@ -83,49 +83,49 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen pt-20 bg-background">
-      <div className="container mx-auto px-6 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="font-display text-4xl md:text-5xl mb-12"
+          className="font-display text-3xl sm:text-4xl md:text-5xl mb-8 sm:mb-12"
         >
           MY ACCOUNT
         </motion.h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Sidebar */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
+            className="space-y-2 sm:space-y-4"
           >
             <Link to="/profile">
-              <div className="bg-card border border-primary p-4 flex items-center gap-3">
-                <User size={20} />
-                <span className="font-medium">Profile</span>
+              <div className="bg-card border border-primary p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+                <User size={18} className="sm:w-5 sm:h-5" />
+                <span className="font-medium text-sm sm:text-base">Profile</span>
               </div>
             </Link>
 
             <Link to="/orders">
-              <div className="bg-card border border-border hover:border-primary transition-colors p-4 flex items-center gap-3">
-                <Package size={20} />
-                <span className="font-medium">My Orders</span>
+              <div className="bg-card border border-border hover:border-primary transition-colors p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+                <Package size={18} className="sm:w-5 sm:h-5" />
+                <span className="font-medium text-sm sm:text-base">My Orders</span>
               </div>
             </Link>
 
             <Link to="/wishlist">
-              <div className="bg-card border border-border hover:border-primary transition-colors p-4 flex items-center gap-3">
-                <Heart size={20} />
-                <span className="font-medium">Wishlist</span>
+              <div className="bg-card border border-border hover:border-primary transition-colors p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+                <Heart size={18} className="sm:w-5 sm:h-5" />
+                <span className="font-medium text-sm sm:text-base">Wishlist</span>
               </div>
             </Link>
 
             <button
               onClick={logout}
-              className="w-full bg-card border border-border hover:border-destructive transition-colors p-4 flex items-center gap-3 text-left"
+              className="w-full bg-card border border-border hover:border-destructive transition-colors p-3 sm:p-4 flex items-center gap-2 sm:gap-3 text-left"
             >
-              <Settings size={20} />
-              <span className="font-medium">Logout</span>
+              <Settings size={18} className="sm:w-5 sm:h-5" />
+              <span className="font-medium text-sm sm:text-base">Logout</span>
             </button>
           </motion.div>
 
@@ -137,17 +137,18 @@ const ProfilePage = () => {
             className="lg:col-span-2"
           >
             {loadingProfile ? (
-              <div className="bg-card border border-border p-8 text-center">
-                <p className="text-muted-foreground">Loading profile...</p>
+              <div className="bg-card border border-border p-4 sm:p-8 text-center">
+                <p className="text-muted-foreground text-sm sm:text-base">Loading profile...</p>
               </div>
             ) : (
-              <div className="bg-card border border-border p-8">
-                <div className="flex items-center justify-between mb-8">
-                  <h2 className="font-display text-3xl">Profile Information</h2>
+              <div className="bg-card border border-border p-4 sm:p-8">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+                  <h2 className="font-display text-2xl sm:text-3xl">Profile Information</h2>
                   {!editing && (
                     <Button
                       variant="outline"
                       onClick={() => setEditing(true)}
+                      className="w-full sm:w-auto text-sm"
                     >
                       Edit Profile
                     </Button>
@@ -155,20 +156,21 @@ const ProfilePage = () => {
                 </div>
 
                 {editing ? (
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                  <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                     <div>
-                      <Label htmlFor="name">Name</Label>
+                      <Label htmlFor="name" className="text-sm sm:text-base">Name</Label>
                       <Input
                         id="name"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
                         required
+                        className="text-sm sm:text-base"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email" className="text-sm sm:text-base">Email</Label>
                       <Input
                         id="email"
                         name="email"
@@ -176,14 +178,16 @@ const ProfilePage = () => {
                         value={formData.email}
                         onChange={handleChange}
                         required
+                        className="text-sm sm:text-base"
                       />
                     </div>
 
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                       <Button
                         type="submit"
                         variant="hero"
                         disabled={loading}
+                        className="w-full sm:w-auto text-sm"
                       >
                         {loading ? 'Saving...' : 'Save Changes'}
                       </Button>
@@ -197,33 +201,34 @@ const ProfilePage = () => {
                             email: profileData?.email || '',
                           });
                         }}
+                        className="w-full sm:w-auto text-sm"
                       >
                         Cancel
                       </Button>
                     </div>
                   </form>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-4 sm:space-y-6">
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Name</p>
-                      <p className="text-lg">{profileData?.name || 'N/A'}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-1">Name</p>
+                      <p className="text-base sm:text-lg break-words">{profileData?.name || 'N/A'}</p>
                     </div>
 
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Email</p>
-                      <p className="text-lg">{profileData?.email || 'N/A'}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-1">Email</p>
+                      <p className="text-base sm:text-lg break-all">{profileData?.email || 'N/A'}</p>
                     </div>
 
                     {profileData?.phone && (
                       <div>
-                        <p className="text-sm text-muted-foreground mb-1">Phone</p>
-                        <p className="text-lg">{profileData.phone}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-1">Phone</p>
+                        <p className="text-base sm:text-lg">{profileData.phone}</p>
                       </div>
                     )}
 
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Member Since</p>
-                      <p className="text-lg">
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-1">Member Since</p>
+                      <p className="text-base sm:text-lg">
                         {profileData?.createdAt
                           ? new Date(profileData.createdAt).toLocaleDateString('en-US', {
                               year: 'numeric',

@@ -5,6 +5,11 @@ export const CustomCursor = () => {
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
   const [isDarkBackground, setIsDarkBackground] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     const moveCursor = (e: MouseEvent) => {
@@ -47,9 +52,12 @@ export const CustomCursor = () => {
     return true;
   };
 
-  // Hide on touch devices
-  const isTouchDevice = typeof window !== 'undefined' && 'ontouchstart' in window;
-  if (isTouchDevice) return null;
+  // Hide on touch devices and mobile
+  if (!isMounted) return null;
+  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  
+  if (isTouchDevice || isMobile) return null;
 
   const logoSrc = isDarkBackground ? '/logo.png' : '/white_logo.png';
 
@@ -76,7 +84,11 @@ export const CustomCursor = () => {
         />
       </motion.div>
 
-      <style>{`* { cursor: none !important; }`}</style>
+      <style>{`
+        @media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+          * { cursor: none !important; }
+        }
+      `}</style>
     </>
   );
 };

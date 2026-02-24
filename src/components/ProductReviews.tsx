@@ -390,17 +390,17 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
                         <div className="flex gap-2 sm:ml-4">
                           <button
                             onClick={() => startEdit(review)}
-                            className="p-2 md:p-2.5 border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors rounded"
+                            className="p-2 md:p-2.5 lg:p-2 border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors rounded"
                             title="Edit review"
                           >
-                            <Edit2 size={18} className="sm:w-5 sm:h-5" />
+                            <Edit2 size={18} className="sm:w-5 sm:h-5 lg:w-4 lg:h-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteReview(review._id)}
-                            className="p-2 md:p-2.5 border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors rounded"
+                            className="p-2 md:p-2.5 lg:p-2 border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors rounded"
                             title="Delete review"
                           >
-                            <Trash2 size={18} className="sm:w-5 sm:h-5" />
+                            <Trash2 size={18} className="sm:w-5 sm:h-5 lg:w-4 lg:h-4" />
                           </button>
                         </div>
                       )}

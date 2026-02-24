@@ -201,8 +201,9 @@ const AdminProducts = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => viewProductDetails(product)}
+                          className="h-9 w-9 p-0 lg:h-7 lg:w-7"
                         >
-                          <Eye size={16} />
+                          <Eye size={16} className="lg:w-3.5 lg:h-3.5" />
                         </Button>
                         <Button
                           variant="outline"
@@ -211,15 +212,17 @@ const AdminProducts = () => {
                             setEditingProduct(product);
                             setIsDialogOpen(true);
                           }}
+                          className="h-9 w-9 p-0 lg:h-7 lg:w-7"
                         >
-                          <Edit size={16} />
+                          <Edit size={16} className="lg:w-3.5 lg:h-3.5" />
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleDelete(product._id)}
+                          className="h-9 w-9 p-0 lg:h-7 lg:w-7"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={16} className="lg:w-3.5 lg:h-3.5" />
                         </Button>
                       </div>
                     </td>

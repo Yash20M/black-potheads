@@ -1,9 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Plus, X, ZoomIn, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Plus, X, ZoomIn, Check, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
+import { useWishlistStore } from '@/store/wishlistStore';
+import { useAuthStore } from '@/store/authStore';
+import { wishlistApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { ProductCard } from '@/components/products/ProductCard';
 import { ProductReviews } from '@/components/ProductReviews';
@@ -23,7 +26,11 @@ const ProductDetailPage = () => {
   const [imageError, setImageError] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
   const { addItem, openCart } = useCartStore();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlistStore();
+  const { user } = useAuthStore();
+  const inWishlist = product ? isInWishlist(product.id) : false;
 
   useEffect(() => {
     if (id) {
@@ -96,6 +103,32 @@ const ProductDetailPage = () => {
     }
   };
 
+  const handleToggleWishlist = async () => {
+    if (!product) return;
+
+    if (!user) {
+      toast.error('Please login to add items to wishlist');
+      return;
+    }
+
+    setIsTogglingWishlist(true);
+    try {
+      await wishlistApi.add(product.id);
+      
+      if (inWishlist) {
+        removeFromWishlist(product.id);
+        toast.success('Removed from wishlist');
+      } else {
+        addToWishlist(product.id);
+        toast.success('Added to wishlist');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update wishlist');
+    } finally {
+      setIsTogglingWishlist(false);
+    }
+  };
+
   const handlePrevImage = () => {
     if (!product) return;
     setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
@@ -141,19 +174,19 @@ const ProductDetailPage = () => {
   return (
     <div className="min-h-screen pt-20 bg-white">
       <div className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-            <Link to="/shop" className="inline-flex items-center gap-2 text-gray-600 hover:text-black transition-colors">
-              <ArrowLeft size={18} />
-              <span className="text-sm uppercase tracking-[0.2em]">Back to Shop</span>
+            <Link to="/shop" className="inline-flex items-center gap-1.5 sm:gap-2 text-gray-600 hover:text-black transition-colors">
+              <ArrowLeft size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <span className="text-xs sm:text-sm uppercase tracking-[0.15em] sm:tracking-[0.2em]">Back to Shop</span>
             </Link>
           </motion.div>
         </div>
       </div>
 
-      <section className="py-8 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+      <section className="py-6 sm:py-8 bg-white">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
             {/* Left side - Images section */}
             <div className="lg:sticky lg:top-24 lg:self-start h-fit">
               {/* Mobile Slider View */}
@@ -182,10 +215,10 @@ const ProductDetailPage = () => {
 
                   {/* Badges */}
                   {product.isNew && (
-                    <span className="absolute top-4 left-4 bg-black text-white px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold z-10">New</span>
+                    <span className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-black text-white px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-bold z-10">New</span>
                   )}
                   {product.isSale && (
-                    <span className="absolute top-4 left-4 bg-white text-black px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold border-2 border-black z-10">Sale</span>
+                    <span className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-white text-black px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-bold border-2 border-black z-10">Sale</span>
                   )}
 
                   {/* Navigation Arrows */}
@@ -193,22 +226,22 @@ const ProductDetailPage = () => {
                     <>
                       <button
                         onClick={handlePrevImage}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors z-10"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors z-10"
                       >
-                        <ChevronLeft size={20} className="text-black" />
+                        <ChevronLeft size={18} className="sm:w-5 sm:h-5 text-black" />
                       </button>
                       <button
                         onClick={handleNextImage}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors z-10"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors z-10"
                       >
-                        <ChevronRight size={20} className="text-black" />
+                        <ChevronRight size={18} className="sm:w-5 sm:h-5 text-black" />
                       </button>
                     </>
                   )}
 
                   {/* Dots Indicator */}
                   {product.images.length > 1 && (
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                    <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 z-10">
                       {product.images.map((_, idx) => (
                         <button
                           key={idx}
@@ -219,8 +252,8 @@ const ProductDetailPage = () => {
                           className={cn(
                             'transition-all border border-white',
                             selectedImage === idx 
-                              ? 'w-8 h-2 bg-white' 
-                              : 'w-2 h-2 bg-white/50'
+                              ? 'w-6 h-1.5 sm:w-8 sm:h-2 bg-white' 
+                              : 'w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/50'
                           )}
                         />
                       ))}
@@ -230,7 +263,7 @@ const ProductDetailPage = () => {
 
                 {/* Thumbnail Preview */}
                 {product.images.length > 1 && (
-                  <div className="flex gap-2 mt-4 overflow-x-auto scrollbar-hide px-1">
+                  <div className="flex gap-2 mt-3 sm:mt-4 overflow-x-auto scrollbar-hide px-1">
                     {product.images.map((img, idx) => (
                       <button
                         key={idx}
@@ -239,7 +272,7 @@ const ProductDetailPage = () => {
                           setImageError(false);
                         }}
                         className={cn(
-                          'flex-shrink-0 w-16 h-20 border-2 transition-all overflow-hidden',
+                          'flex-shrink-0 w-14 h-16 sm:w-16 sm:h-20 border-2 transition-all overflow-hidden',
                           selectedImage === idx 
                             ? 'border-black' 
                             : 'border-gray-200 opacity-60 hover:opacity-100'
@@ -412,16 +445,34 @@ const ProductDetailPage = () => {
                 </div>
               </div>
 
-              {/* Add to Cart Button */}
-              <div className="mb-6">
+              {/* Add to Cart and Wishlist Buttons */}
+              <div className="mb-6 flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <Button 
                   variant="default" 
                   size="lg" 
-                  className="w-full bg-black hover:bg-gray-800 text-white uppercase tracking-[0.15em] h-14 text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="w-full sm:flex-1 bg-black hover:bg-gray-800 text-white uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
                   onClick={handleAddToCart}
                   disabled={!product.stock || product.stock === 0}
                 >
                   {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className={cn(
+                    "w-full sm:w-auto h-11 sm:h-14 px-4 sm:px-4 border-2 transition-colors flex items-center justify-center gap-2 sm:gap-0",
+                    inWishlist
+                      ? "bg-black border-black text-white hover:bg-gray-800"
+                      : "border-black text-black hover:bg-black hover:text-white"
+                  )}
+                  onClick={handleToggleWishlist}
+                  disabled={isTogglingWishlist}
+                  aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+                >
+                  <Heart size={18} className={inWishlist ? 'fill-current' : ''} />
+                  <span className="sm:hidden text-xs uppercase tracking-wider">
+                    {inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                  </span>
                 </Button>
               </div>
 

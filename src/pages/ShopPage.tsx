@@ -142,8 +142,8 @@ const ShopPage = () => {
   return (
     <div className="min-h-screen pt-20 bg-white">
       {/* Page Header */}
-      <section className="py-20 bg-black border-b border-gray-800">
-        <div className="container mx-auto px-6">
+      <section className="py-12 sm:py-16 md:py-20 bg-black border-b border-gray-800">
+        <div className="container mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -151,10 +151,10 @@ const ShopPage = () => {
           >
             {currentCollection ? (
               <>
-                <span className="text-sm uppercase tracking-[0.3em] text-gray-400 mb-4 block">
+                <span className="text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-gray-400 mb-3 sm:mb-4 block">
                   {currentCollection.subtitle}
                 </span>
-                <div className="relative mb-6">
+                <div className="relative mb-4 sm:mb-6">
                   {activeCategory === 'Shiva' && (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.5, rotate: -180, y: 0 }}
@@ -365,21 +365,21 @@ const ShopPage = () => {
                       />
                     </motion.div>
                   )}
-                  <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-white relative z-10">
+                  <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white relative z-10 px-4">
                     {currentCollection.title.toUpperCase()}
                   </h1>
                 </div>
-                <p className="text-gray-300 text-lg max-w-3xl mx-auto mb-8 leading-relaxed">
+                <p className="text-gray-300 text-sm sm:text-base md:text-lg max-w-3xl mx-auto mb-6 sm:mb-8 leading-relaxed px-4">
                   {currentCollection.description}
                 </p>
-                <div className="flex flex-wrap justify-center gap-4 mt-8">
+                <div className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 mt-6 sm:mt-8 px-4">
                   {currentCollection.highlights.map((highlight, index) => (
                     <motion.span
                       key={index}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 + index * 0.1 }}
-                      className="px-4 py-2 bg-white/10 backdrop-blur-sm text-white text-sm uppercase tracking-wider border border-white/20"
+                      className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/10 backdrop-blur-sm text-white text-xs sm:text-sm uppercase tracking-wider border border-white/20"
                     >
                       {highlight}
                     </motion.span>
@@ -388,10 +388,10 @@ const ShopPage = () => {
               </>
             ) : (
               <>
-                <span className="text-sm uppercase tracking-[0.3em] text-gray-400 mb-4 block">
+                <span className="text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-gray-400 mb-3 sm:mb-4 block">
                   Browse Our
                 </span>
-                <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-white">SHOP</h1>
+                <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white">SHOP</h1>
               </>
             )}
           </motion.div>
@@ -399,17 +399,17 @@ const ShopPage = () => {
       </section>
 
       {/* Products Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-6">
+      <section className="py-12 sm:py-16 bg-white">
+        <div className="container mx-auto px-4 sm:px-6">
           {/* Category Filter */}
           <motion.div
             ref={scrollContainerRef}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mb-12 overflow-x-auto scrollbar-hide"
+            className="mb-8 sm:mb-12 overflow-x-auto scrollbar-hide"
           >
-            <div className="flex md:flex-wrap md:justify-center gap-3 min-w-max md:min-w-0 px-4 md:px-0">
+            <div className="flex md:flex-wrap md:justify-center gap-2 sm:gap-3 min-w-max md:min-w-0 px-2 sm:px-4 md:px-0">
               {categories.map((category) => (
                 <motion.button
                   key={category.id}
@@ -418,7 +418,7 @@ const ShopPage = () => {
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleCategoryChange(category.id as Category)}
                   className={cn(
-                    'px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 border-2 whitespace-nowrap',
+                    'px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-3 text-xs sm:text-sm md:text-sm uppercase tracking-[0.15em] sm:tracking-[0.18em] md:tracking-[0.2em] transition-all duration-300 border-2 whitespace-nowrap',
                     activeCategory === category.id
                       ? 'bg-black text-white border-black'
                       : 'bg-white border-black text-black hover:bg-black hover:text-white'
@@ -434,13 +434,13 @@ const ShopPage = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-gray-600 text-sm mb-8 text-center"
+            className="text-gray-600 text-xs sm:text-sm mb-6 sm:mb-8 text-center"
           >
             {productsCountText}
           </motion.p>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             {loading ? (
               Array(8).fill(null).map((_, index) => (
                 <SkeletonCard key={index} />
