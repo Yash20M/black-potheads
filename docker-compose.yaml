@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: shiva-store-frontend
     ports:
-      - "80:80"
+      - "8080:80"
     environment:
       - NODE_ENV=production
     restart: unless-stopped
