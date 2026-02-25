@@ -82,20 +82,29 @@ const AboutPage = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <span className="text-sm uppercase tracking-widest text-primary mb-4 block">The Beginning</span>
+              <span className="text-sm uppercase tracking-widest text-primary mb-4 block">The Story</span>
               <h2 className="font-display text-5xl md:text-6xl mb-8">
-                STARTED IN A<br /><span className="text-accent-gradient">GARAGE. 2020.</span>
+                🌌 BLACK POTHEADS<br /><span className="text-accent-gradient">ORIGIN</span>
               </h2>
-              <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
-                Black Potheads was born from frustration. Frustration with generic streetwear, 
-                cookie-cutter designs, and brands that play it safe. We wanted something darker, 
-                rawer, more real.
-              </p>
-              <p className="text-muted-foreground text-lg leading-relaxed">
-                What started as screen-printing tees in a garage has grown into a movement. 
-                We collaborate with underground artists, tattoo designers, and graffiti writers 
-                to create prints that speak louder than words.
-              </p>
+              <div className="text-muted-foreground text-lg leading-relaxed space-y-4 font-light italic">
+                <p>Before it was fabric,<br />it was frequency.</p>
+                <p>Before it was a logo,<br />it was a pulse on a dark dancefloor.</p>
+                <p>Black Potheads was born in the space between bass drops —<br />
+                that moment when the kick fades,<br />
+                the sky turns indigo,<br />
+                and thousands move like one organism.</p>
+                <p>It didn't begin in fashion.<br />It began in expansion.</p>
+                <p>In forests lit by UV mandalas.<br />
+                In sunrise sets where time dissolved.<br />
+                In conversations about consciousness at 5AM<br />
+                when reality felt optional.</p>
+                <p>We didn't create clothes.<br />We created a reminder.</p>
+                <p>A reminder of that feeling<br />
+                when ego melts<br />
+                when sound becomes geometry<br />
+                when black isn't darkness —<br />
+                but the infinite void before creation.</p>
+              </div>
             </motion.div>
           </div>
         </div>

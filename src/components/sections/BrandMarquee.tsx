@@ -1,6 +1,14 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
-const brandWords = ['SKULLS', 'GOTHIC', 'TRIBAL', 'GRAFFITI', 'TATTOO', 'REBELLION', 'DARKNESS', 'CHAOS'];
+const collections = [
+  { name: 'SHIVA', slug: 'Shiva' },
+  { name: 'SHROOMS', slug: 'Shrooms' },
+  { name: 'LSD', slug: 'LSD' },
+  { name: 'CHAKRAS', slug: 'Chakras' },
+  { name: 'DARK', slug: 'Dark' },
+  { name: 'RICK N MORTY', slug: 'Rick n Morty' },
+];
 
 export const BrandMarquee = () => {
   return (
@@ -11,11 +19,14 @@ export const BrandMarquee = () => {
           transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
           className="flex shrink-0"
         >
-          {[...brandWords, ...brandWords].map((word, i) => (
+          {[...collections, ...collections].map((collection, i) => (
             <div key={i} className="mx-4 md:mx-12 flex items-center justify-center">
-              <span className="font-display text-xl md:text-4xl lg:text-5xl text-muted-foreground/20 hover:text-primary/60 transition-colors duration-300 cursor-default whitespace-nowrap">
-                {word}
-              </span>
+              <Link 
+                to={`/shop?collection=${collection.slug}`}
+                className="font-display text-xl md:text-4xl lg:text-5xl text-muted-foreground/20 hover:text-primary/60 transition-colors duration-300 cursor-pointer whitespace-nowrap"
+              >
+                {collection.name}
+              </Link>
             </div>
           ))}
         </motion.div>
@@ -24,11 +35,14 @@ export const BrandMarquee = () => {
           transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
           className="flex shrink-0"
         >
-          {[...brandWords, ...brandWords].map((word, i) => (
+          {[...collections, ...collections].map((collection, i) => (
             <div key={i} className="mx-4 md:mx-12 flex items-center justify-center">
-              <span className="font-display text-xl md:text-4xl lg:text-5xl text-muted-foreground/20 hover:text-primary/60 transition-colors duration-300 cursor-default whitespace-nowrap">
-                {word}
-              </span>
+              <Link 
+                to={`/shop?collection=${collection.slug}`}
+                className="font-display text-xl md:text-4xl lg:text-5xl text-muted-foreground/20 hover:text-primary/60 transition-colors duration-300 cursor-pointer whitespace-nowrap"
+              >
+                {collection.name}
+              </Link>
             </div>
           ))}
         </motion.div>

@@ -113,12 +113,12 @@ const ProductDetailPage = () => {
 
     setIsTogglingWishlist(true);
     try {
-      await wishlistApi.add(product.id);
-      
       if (inWishlist) {
+        await wishlistApi.remove(product.id);
         removeFromWishlist(product.id);
         toast.success('Removed from wishlist');
       } else {
+        await wishlistApi.add(product.id);
         addToWishlist(product.id);
         toast.success('Added to wishlist');
       }
@@ -460,7 +460,7 @@ const ProductDetailPage = () => {
                   variant="outline"
                   size="lg"
                   className={cn(
-                    "w-full sm:w-auto h-11 sm:h-14 px-4 sm:px-4 border-2 transition-colors flex items-center justify-center gap-2 sm:gap-0",
+                    "w-full sm:w-auto h-11 sm:h-14 border-2 transition-colors",
                     inWishlist
                       ? "bg-black border-black text-white hover:bg-gray-800"
                       : "border-black text-black hover:bg-black hover:text-white"
@@ -469,10 +469,12 @@ const ProductDetailPage = () => {
                   disabled={isTogglingWishlist}
                   aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
                 >
-                  <Heart size={18} className={inWishlist ? 'fill-current' : ''} />
-                  <span className="sm:hidden text-xs uppercase tracking-wider">
-                    {inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
-                  </span>
+                  <div className="flex items-center justify-center gap-2">
+                    <Heart size={16} className={cn("sm:w-[18px] sm:h-[18px]", inWishlist ? 'fill-current' : '')} />
+                    <span className="sm:hidden text-xs uppercase tracking-wider">
+                      {inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                    </span>
+                  </div>
                 </Button>
               </div>
 

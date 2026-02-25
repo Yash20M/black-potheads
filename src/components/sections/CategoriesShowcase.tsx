@@ -1,184 +1,251 @@
-import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-
 const categories = [
-  { name: 'SHIVA', image: '/Shiva.PNG' },
-  { name: 'SHROOMS', image: '/Shrooms.PNG' },
-  { name: 'LSD', image: '/LSD.PNG' },
-  { name: 'CHAKRAS', image: '/Chakras.PNG' },
-  { name: 'DARK', image: '/Dark.PNG' },
-  { name: 'RICK N MORTY', image: '/Rick-N-Morty.PNG' },
+  { name: 'SHIVA', image: '/Shiva.PNG', slug: 'Shiva' },
+  { name: 'SHROOMS', image: '/Shrooms.PNG', slug: 'Shrooms' },
+  { name: 'LSD', image: '/LSD.PNG', slug: 'LSD' },
+  { name: 'CHAKRAS', image: '/Chakras.PNG', slug: 'Chakras' },
+  { name: 'DARK', image: '/Dark.PNG', slug: 'Dark' },
+  { name: 'RICK N MORTY', image: '/Rick-N-Morty.PNG', slug: 'Rick n Morty' },
 ];
+
+// Positions: -1 = left behind, 0 = center front, 1 = right behind
+const getCardStyle = (position: number) => {
+  switch (position) {
+    case 0: // Center — front
+      return {
+        x: '0%',
+        z: 0,
+        rotateY: 0,
+        scale: 1,
+        opacity: 1,
+        zIndex: 20,
+      };
+    case -1: // Left — behind
+      return {
+        x: '-70%',
+        z: -250,
+        rotateY: 38,
+        scale: 0.80,
+        opacity: 0.75,
+        zIndex: 10,
+      };
+    case 1: // Right — behind
+      return {
+        x: '70%',
+        z: -250,
+        rotateY: -38,
+        scale: 0.80,
+        opacity: 0.75,
+        zIndex: 10,
+      };
+    default: // Hidden
+      return {
+        x: '0%',
+        z: -400,
+        rotateY: 0,
+        scale: 0.5,
+        opacity: 0,
+        zIndex: 0,
+      };
+  }
+};
 
 export const CategoriesShowcase = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
-  // Auto-play carousel every 3 seconds
-  useEffect(() => {
-    const timer = setInterval(() => {
-      handleNext();
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [currentIndex]);
+  const mod = (n: number, m: number) => ((n % m) + m) % m;
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % categories.length);
-  };
+    setCurrentIndex((prev) => mod(prev + 1, categories.length));
+  }, []);
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     setDirection(-1);
-    setCurrentIndex((prev) => (prev - 1 + categories.length) % categories.length);
-  };
+    setCurrentIndex((prev) => mod(prev - 1, categories.length));
+  }, []);
 
-  const handleDotClick = (index: number) => {
-    setDirection(index > currentIndex ? 1 : -1);
-    setCurrentIndex(index);
-  };
+  useEffect(() => {
+    const timer = setInterval(handleNext, 4000);
+    return () => clearInterval(timer);
+  }, [handleNext]);
 
-  const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0,
-      scale: 0.8,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1,
-    },
-    exit: (direction: number) => ({
-      x: direction > 0 ? -1000 : 1000,
-      opacity: 0,
-      scale: 0.8,
-    }),
+  // Each card gets a position relative to currentIndex: -1, 0, 1, or hidden
+  const getPosition = (index: number): number | null => {
+    const diff = mod(index - currentIndex, categories.length);
+    if (diff === 0) return 0;                              // center
+    if (diff === 1) return 1;                              // right
+    if (diff === categories.length - 1) return -1;        // left
+    return null;                                           // hidden
   };
 
   return (
-    <section className="py-20 md:py-32 bg-black overflow-hidden">
-      <div className="w-full px-4 md:px-8 lg:px-12">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-8 md:mb-12"
-        >
-          <span className="text-xs sm:text-sm uppercase tracking-widest text-gray-400 mb-2 sm:mb-4 block">
-            Browse By
-          </span>
-          <h2 className="font-display text-4xl sm:text-5xl md:text-7xl text-white">CATEGORIES</h2>
-        </motion.div>
+    <section className="w-full py-16 flex flex-col items-center gap-10 bg-black overflow-hidden">
+      {/* Header */}
+      <div className="text-center">
+        <p className="text-white/50 tracking-[0.3em] text-xs uppercase mb-1">Browse By</p>
+        <h2 className="text-white text-4xl md:text-5xl font-bold tracking-widest uppercase">
+          Categories
+        </h2>
+      </div>
 
-        {/* Carousel Container */}
-        <div className="relative max-w-5xl mx-auto">
-          {/* Main Carousel */}
-          <div className="relative h-[280px] xs:h-[300px] sm:h-[320px] md:h-[340px] lg:h-[380px] xl:h-[420px] overflow-hidden mb-16 sm:mb-20 md:mb-24">
-            <motion.div
-              key={currentIndex}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                x: { type: 'spring', stiffness: 300, damping: 30 },
-                opacity: { duration: 0.4 },
-                scale: { duration: 0.4 },
-              }}
-              className="absolute inset-0 flex items-start justify-center pt-2 sm:pt-4"
-            >
-              <Link to={`/shop?collection=${categories[currentIndex].name}`} className="w-full h-full px-12 sm:px-16 md:px-4">
-                <div className="relative h-full group cursor-pointer">
+      {/* 3D Carousel Stage */}
+      <div
+        className="relative w-full max-w-3xl h-[420px] md:h-[560px] flex items-center justify-center"
+        style={{ perspective: '1400px' }}
+      >
+        <div
+          className="relative w-full h-full flex items-center justify-center"
+          style={{ transformStyle: 'preserve-3d' }}
+        >
+          {categories.map((category, index) => {
+            const position = getPosition(index);
+            if (position === null) return null;
+
+            const style = getCardStyle(position);
+            const isCenter = position === 0;
+
+            return (
+              <motion.div
+                key={category.slug}
+                className="absolute"
+                style={{
+                  width: '320px',
+                  height: '440px',
+                  transformStyle: 'preserve-3d',
+                  zIndex: style.zIndex,
+                  cursor: isCenter ? 'default' : 'pointer',
+                }}
+                animate={{
+                  x: style.x,
+                  z: style.z,
+                  rotateY: style.rotateY,
+                  scale: style.scale,
+                  opacity: style.opacity,
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.32, 0.72, 0, 1],
+                }}
+                onClick={() => {
+                  if (position === 1) handleNext();
+                  if (position === -1) handlePrev();
+                }}
+              >
+                <Link
+                  to={`/category/${category.slug}`}
+                  onClick={(e) => !isCenter && e.preventDefault()}
+                  className="block w-full h-full rounded-2xl overflow-hidden relative"
+                  style={{
+                    boxShadow: isCenter
+                      ? '0 30px 80px rgba(0,0,0,0.8), 0 0 0 2px rgba(255,255,255,0.85), 0 0 30px rgba(255,255,255,0.15)'
+                      : '0 15px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.25)',
+                  }}
+                >
                   {/* Image */}
-                  <motion.img
-                    src={categories[currentIndex].image}
-                    alt={categories[currentIndex].name}
-                    className="w-full h-full object-contain object-top max-h-[400px] lg:max-h-[450px] xl:max-h-[500px]"
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.6 }}
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="w-full h-full object-cover"
                   />
 
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
 
-                  {/* Category Name */}
-                  <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 md:bottom-6 md:left-6 md:right-6">
-                    <motion.h3
-                      initial={{ y: 20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                      className="font-display text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white leading-tight"
-                    >
-                      {categories[currentIndex].name}
-                    </motion.h3>
+                  {/* Category name */}
+                  <div className="absolute bottom-0 left-0 right-0 p-5">
+                    <h3 className="text-white text-xl font-bold tracking-widest uppercase">
+                      {category.name}
+                    </h3>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          </div>
 
-          {/* Navigation Arrows */}
-          <button
-            onClick={handlePrev}
-            className="absolute left-0 sm:left-2 md:left-4 lg:left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
-            aria-label="Previous"
-          >
-            <ChevronLeft size={18} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
-          </button>
+                  {/* Active glow border */}
+                  {isCenter && (
+                    <div className="absolute inset-0 rounded-2xl ring-2 ring-white/60 pointer-events-none" />
+                  )}
 
-          <button
-            onClick={handleNext}
-            className="absolute right-0 sm:right-2 md:right-4 lg:right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
-            aria-label="Next"
-          >
-            <ChevronRight size={18} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
-          </button>
-
-          {/* Dots Navigation */}
-          <div className="absolute -bottom-10 sm:-bottom-12 md:-bottom-14 lg:-bottom-16 left-1/2 -translate-x-1/2 z-10 flex gap-1 sm:gap-1.5 md:gap-2 lg:gap-3">
-            {categories.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => handleDotClick(index)}
-                className={`transition-all duration-300 rounded-full ${
-                  index === currentIndex
-                    ? 'w-4 sm:w-6 md:w-8 lg:w-10 xl:w-12 h-[2px] sm:h-1 md:h-1.5 lg:h-2 bg-white'
-                    : 'w-[2px] sm:w-1 md:w-1.5 lg:w-2 h-[2px] sm:h-1 md:h-1.5 lg:h-2 bg-white/50 hover:bg-white/80'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
+                  {/* Side card hint arrow */}
+                  {!isCenter && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-2xl">
+                      <div className="text-white/60 text-3xl">
+                        {position === -1 ? '‹' : '›'}
+                      </div>
+                    </div>
+                  )}
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
+      </div>
 
-        {/* Thumbnail Preview */}
-        <div className="mt-20 sm:mt-24 md:mt-28 lg:mt-32 max-w-6xl mx-auto grid grid-cols-6 gap-1 sm:gap-1.5 md:gap-2 lg:gap-4 px-0 sm:px-2 md:px-4">
-          {categories.map((category, index) => (
-            <motion.button
-              key={category.name}
-              onClick={() => handleDotClick(index)}
-              className={`relative h-12 xs:h-14 sm:h-16 md:h-20 lg:h-24 overflow-hidden transition-all duration-300 ${
+      {/* Arrow navigation */}
+      <div className="flex items-center gap-6">
+        <button
+          onClick={handlePrev}
+          className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+          aria-label="Previous"
+        >
+          <ChevronLeft size={20} />
+        </button>
+
+        {/* Dot indicators */}
+        <div className="flex items-center gap-2">
+          {categories.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                setDirection(index > currentIndex ? 1 : -1);
+                setCurrentIndex(index);
+              }}
+              className={`transition-all duration-300 rounded-full ${
                 index === currentIndex
-                  ? 'ring-1 sm:ring-2 ring-white scale-105'
-                  : 'opacity-60 hover:opacity-100'
+                  ? 'w-8 h-2 bg-white'
+                  : 'w-2 h-2 bg-white/40 hover:bg-white/70'
               }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <img
-                src={category.image}
-                alt={category.name}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/40" />
-            </motion.button>
+              aria-label={`Go to slide ${index + 1}`}
+            />
           ))}
         </div>
+
+        <button
+          onClick={handleNext}
+          className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+          aria-label="Next"
+        >
+          <ChevronRight size={20} />
+        </button>
+      </div>
+
+      {/* Thumbnail strip */}
+      <div className="flex gap-2 md:gap-3 px-4">
+        {categories.map((category, index) => (
+          <motion.button
+            key={category.slug}
+            onClick={() => {
+              setDirection(index > currentIndex ? 1 : -1);
+              setCurrentIndex(index);
+            }}
+            className={`relative h-14 w-14 md:h-20 md:w-20 rounded-lg overflow-hidden transition-all duration-300 flex-shrink-0 ${
+              index === currentIndex
+                ? 'ring-2 ring-white scale-105'
+                : 'opacity-50 hover:opacity-90'
+            }`}
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <img
+              src={category.image}
+              alt={category.name}
+              className="w-full h-full object-cover"
+            />
+          </motion.button>
+        ))}
       </div>
     </section>
   );
