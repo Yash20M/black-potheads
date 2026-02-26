@@ -2,7 +2,6 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { Skull, Flame, Eye, Zap } from 'lucide-react';
 import heroImage from '@/assets/hero-dark.jpg';
-import collectionDark from '@/assets/collection-dark.jpg';
 
 const values = [
   { icon: Skull, title: 'UNAPOLOGETIC', description: 'We don\'t water down our vision. Every design is raw, unfiltered, and true to the underground.' },
@@ -57,56 +56,157 @@ const AboutPage = () => {
       </section>
 
       {/* Origin Story */}
-      <section className="py-24 bg-background">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="relative h-[500px] overflow-hidden"
-            >
-              <img src={collectionDark} alt="Our origin" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-r from-background/50 to-transparent" />
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: '80%' }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, delay: 0.3 }}
-                className="absolute bottom-0 left-0 h-2 bg-primary"
-              />
-            </motion.div>
+      <section className="py-24 bg-background relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-10 w-64 h-64 bg-primary rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
 
+        <div className="container mx-auto px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto"
+          >
+            {/* Header */}
+            <div className="text-center mb-16">
+              <motion.span 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-sm uppercase tracking-widest text-primary mb-4 block"
+              >
+                The Story
+              </motion.span>
+              <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="font-display text-5xl md:text-6xl lg:text-7xl mb-4"
+              >
+                🌌 BLACK POTHEADS
+              </motion.h2>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="text-accent-gradient font-display text-4xl md:text-5xl lg:text-6xl"
+              >
+                ORIGIN
+              </motion.div>
+            </div>
+
+            {/* Poetic Content */}
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="space-y-8"
             >
-              <span className="text-sm uppercase tracking-widest text-primary mb-4 block">The Story</span>
-              <h2 className="font-display text-5xl md:text-6xl mb-8">
-                🌌 BLACK POTHEADS<br /><span className="text-accent-gradient">ORIGIN</span>
-              </h2>
-              <div className="text-muted-foreground text-lg leading-relaxed space-y-4 font-light italic">
-                <p>Before it was fabric,<br />it was frequency.</p>
-                <p>Before it was a logo,<br />it was a pulse on a dark dancefloor.</p>
-                <p>Black Potheads was born in the space between bass drops —<br />
-                that moment when the kick fades,<br />
-                the sky turns indigo,<br />
-                and thousands move like one organism.</p>
-                <p>It didn't begin in fashion.<br />It began in expansion.</p>
-                <p>In forests lit by UV mandalas.<br />
-                In sunrise sets where time dissolved.<br />
-                In conversations about consciousness at 5AM<br />
-                when reality felt optional.</p>
-                <p>We didn't create clothes.<br />We created a reminder.</p>
-                <p>A reminder of that feeling<br />
-                when ego melts<br />
-                when sound becomes geometry<br />
-                when black isn't darkness —<br />
-                but the infinite void before creation.</p>
+              <div className="text-center space-y-6">
+                <motion.p 
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4 }}
+                  className="text-2xl md:text-3xl lg:text-4xl font-light italic text-muted-foreground leading-relaxed"
+                >
+                  Before it was fabric,<br />
+                  <span className="text-primary">it was frequency.</span>
+                </motion.p>
+
+                <motion.p 
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.5 }}
+                  className="text-2xl md:text-3xl lg:text-4xl font-light italic text-muted-foreground leading-relaxed"
+                >
+                  Before it was a logo,<br />
+                  <span className="text-primary">it was a pulse on a dark dancefloor.</span>
+                </motion.p>
               </div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6 }}
+                className="bg-card/50 backdrop-blur-sm border border-border p-8 md:p-12 rounded-lg"
+              >
+                <p className="text-xl md:text-2xl font-light italic text-muted-foreground leading-relaxed text-center">
+                  Black Potheads was born in the space between bass drops —<br />
+                  that moment when the kick fades,<br />
+                  the sky turns indigo,<br />
+                  and thousands move like one organism.
+                </p>
+              </motion.div>
+
+              <div className="grid md:grid-cols-2 gap-8 mt-12">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.7 }}
+                  className="bg-secondary/50 backdrop-blur-sm border border-border p-6 md:p-8 rounded-lg hover:border-primary transition-colors"
+                >
+                  <p className="text-lg md:text-xl font-light italic text-muted-foreground leading-relaxed">
+                    It didn't begin in fashion.<br />
+                    <span className="text-primary text-2xl">It began in expansion.</span>
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.8 }}
+                  className="bg-secondary/50 backdrop-blur-sm border border-border p-6 md:p-8 rounded-lg hover:border-primary transition-colors"
+                >
+                  <p className="text-lg md:text-xl font-light italic text-muted-foreground leading-relaxed">
+                    In forests lit by UV mandalas.<br />
+                    In sunrise sets where time dissolved.<br />
+                    In conversations about consciousness at 5AM<br />
+                    when reality felt optional.
+                  </p>
+                </motion.div>
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.9 }}
+                className="text-center mt-12 space-y-6"
+              >
+                <p className="text-2xl md:text-3xl lg:text-4xl font-light italic text-muted-foreground leading-relaxed">
+                  We didn't create clothes.<br />
+                  <span className="text-primary text-3xl md:text-4xl lg:text-5xl">We created a reminder.</span>
+                </p>
+
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 1 }}
+                  className="bg-gradient-to-r from-primary/20 via-purple-500/20 to-primary/20 border border-primary/30 p-8 md:p-12 rounded-lg mt-8"
+                >
+                  <p className="text-xl md:text-2xl font-light italic text-foreground leading-relaxed">
+                    A reminder of that feeling<br />
+                    when <span className="text-primary">ego melts</span><br />
+                    when <span className="text-primary">sound becomes geometry</span><br />
+                    when <span className="text-primary">black isn't darkness</span> —<br />
+                    but the <span className="text-accent-gradient text-2xl md:text-3xl">infinite void before creation.</span>
+                  </p>
+                </motion.div>
+              </motion.div>
             </motion.div>
-          </div>
+          </motion.div>
         </div>
       </section>
 

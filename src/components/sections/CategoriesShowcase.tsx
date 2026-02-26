@@ -85,7 +85,7 @@ export const CategoriesShowcase = () => {
   };
 
   return (
-    <section className="w-full py-16 flex flex-col items-center gap-10 bg-black overflow-hidden">
+    <section className="w-full py-12 md:py-16 flex flex-col items-center gap-8 bg-black overflow-hidden">
       {/* Header */}
       <div className="text-center">
         <p className="text-white/50 tracking-[0.3em] text-xs uppercase mb-1">Browse By</p>
@@ -96,7 +96,7 @@ export const CategoriesShowcase = () => {
 
       {/* 3D Carousel Stage */}
       <div
-        className="relative w-full max-w-3xl h-[420px] md:h-[560px] flex items-center justify-center"
+        className="relative w-full max-w-3xl h-[380px] md:h-[480px] flex items-center justify-center"
         style={{ perspective: '1400px' }}
       >
         <div
@@ -115,8 +115,8 @@ export const CategoriesShowcase = () => {
                 key={category.slug}
                 className="absolute"
                 style={{
-                  width: '320px',
-                  height: '440px',
+                  width: '280px',
+                  height: '380px',
                   transformStyle: 'preserve-3d',
                   zIndex: style.zIndex,
                   cursor: isCenter ? 'default' : 'pointer',
@@ -138,7 +138,7 @@ export const CategoriesShowcase = () => {
                 }}
               >
                 <Link
-                  to={`/category/${category.slug}`}
+                  to={`/shop?collection=${category.slug}`}
                   onClick={(e) => !isCenter && e.preventDefault()}
                   className="block w-full h-full rounded-2xl overflow-hidden relative"
                   style={{
@@ -151,15 +151,15 @@ export const CategoriesShowcase = () => {
                   <img
                     src={category.image}
                     alt={category.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
 
                   {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
                   {/* Category name */}
                   <div className="absolute bottom-0 left-0 right-0 p-5">
-                    <h3 className="text-white text-xl font-bold tracking-widest uppercase">
+                    <h3 className="text-white text-xl font-bold tracking-widest uppercase text-center">
                       {category.name}
                     </h3>
                   </div>
