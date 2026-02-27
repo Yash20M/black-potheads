@@ -11,12 +11,21 @@ const OfferModal = () => {
   const [currentOfferIndex, setCurrentOfferIndex] = useState(0);
   const navigate = useNavigate();
 
-  // Add manual trigger for testing
+  // Load offers on every page load (no session storage check)
+  useEffect(() => {
+    console.log('OfferModal: Component mounted, will load offers in 3 seconds...');
+    const timer = setTimeout(() => {
+      loadOffers();
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []); // Empty dependency array = runs once on mount
+
+  // Manual trigger for testing with Ctrl+O
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === 'o') {
         console.log('OfferModal: Manual trigger (Ctrl+O)');
-        sessionStorage.removeItem('offerModalShown');
         loadOffers();
       }
     };
@@ -25,41 +34,42 @@ const OfferModal = () => {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
+  // Listen for custom force show event
   useEffect(() => {
-    // Check if modal was already shown in this session
-    const modalShown = sessionStorage.getItem('offerModalShown');
-    
-    console.log('OfferModal: Checking if modal should show...', { modalShown });
-    
-    if (!modalShown) {
-      // Show modal after 3 seconds
-      console.log('OfferModal: Will load offers in 3 seconds...');
-      const timer = setTimeout(() => {
-        loadOffers();
-      }, 3000);
+    const handleForceShow = () => {
+      console.log('OfferModal: Force show event received');
+      loadOffers();
+    };
 
-      return () => clearTimeout(timer);
-    } else {
-      console.log('OfferModal: Already shown in this session');
-    }
+    window.addEventListener('forceShowOffers', handleForceShow as EventListener);
+    
+    return () => {
+      window.removeEventListener('forceShowOffers', handleForceShow as EventListener);
+    };
   }, []);
 
   const loadOffers = async () => {
-    console.log('OfferModal: Loading offers...');
+    console.log('OfferModal: Loading offers from API...');
+    
     try {
       const data: any = await offersApi.getActive();
-      console.log('OfferModal: Offers response:', data);
-      
-      if (data.success && data.offers && data.offers.length > 0) {
+      console.log('OfferModal: API response:', data);
+      if (data && data.success && data.offers && data.offers.length > 0) {
         console.log('OfferModal: Found', data.offers.length, 'active offers');
         setOffers(data.offers);
         setIsOpen(true);
-        sessionStorage.setItem('offerModalShown', 'true');
       } else {
         console.log('OfferModal: No active offers found');
+        console.log('OfferModal: Response structure:', JSON.stringify(data));
       }
-    } catch (error) {
+
+
+    } catch (error: any) {
       console.error('OfferModal: Failed to load offers:', error);
+      console.error('OfferModal: Error details:', {
+        message: error.message,
+        status: error.status,
+      });
     }
   };
 
@@ -71,14 +81,6 @@ const OfferModal = () => {
     const currentOffer = offers[currentOfferIndex];
     setIsOpen(false);
     navigate(`/shop?category=${encodeURIComponent(currentOffer.category)}`);
-  };
-
-  const handleNext = () => {
-    setCurrentOfferIndex((prev) => (prev + 1) % offers.length);
-  };
-
-  const handlePrev = () => {
-    setCurrentOfferIndex((prev) => (prev - 1 + offers.length) % offers.length);
   };
 
   const calculateTimeLeft = (validUntil: string) => {
@@ -146,6 +148,7 @@ const OfferModal = () => {
                     {currentOffer.category}
                   </div>
                 </div>
+
 
                 {/* Offer Details */}
                 <div className="p-4 md:p-6 space-y-3 md:space-y-4">
