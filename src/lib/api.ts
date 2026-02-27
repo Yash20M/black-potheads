@@ -1,6 +1,9 @@
 // API Configuration and Helper Functions
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
+// Export API_BASE_URL for use in other files
+export { API_BASE_URL };
+
 // Token management
 export const getToken = () => localStorage.getItem('token');
 export const getAdminToken = () => localStorage.getItem('admin_token');
@@ -231,9 +234,25 @@ export const qrApi = {
 
 // Offers APIs
 export const offersApi = {
-  // User endpoints
-  getActive: (category?: string) =>
-    apiFetch(`/api/v1/offers/active${category ? `?category=${category}` : ''}`),
+  // User endpoints - these should be public (no auth required)
+  getActive: (category?: string) => {
+    // Make a direct fetch call without authentication to ensure no token is sent
+    const url = `${API_BASE_URL}/api/v1/offers/active${category ? `?category=${category}` : ''}`;
+    
+    return fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) {
+          throw new ApiError(response.status, data.message || 'An error occurred');
+        }
+        return data;
+      });
+  },
   
   getById: (id: string) =>
     apiFetch(`/api/v1/offers/${id}`),

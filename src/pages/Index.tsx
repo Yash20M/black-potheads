@@ -317,15 +317,7 @@ const Index = () => {
       </section>
 
       {/* Marquee */}
-      <div className="bg-background/90 backdrop-blur-sm py-3 overflow-hidden border-b border-border/30">
-        <div className="animate-marquee whitespace-nowrap flex">
-          {Array(10).fill(null).map((_, i) => (
-            <span key={i} className="mx-8 font-display text-lg tracking-wider text-muted-foreground">
-              FREE SHIPPING ON ORDERS OVER $100 ✦ NEW DROPS EVERY FRIDAY ✦ BLACK POTHEADS ✦
-            </span>
-          ))}
-        </div>
-      </div>
+     
 
       <BrandMarquee />
       <CategoriesShowcase />

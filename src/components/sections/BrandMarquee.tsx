@@ -12,7 +12,7 @@ const collections = [
 
 export const BrandMarquee = () => {
   return (
-    <section className="py-3 md:py-8 bg-card border-y border-border overflow-hidden">
+    <section className="py-2 md:py-3 bg-card border-y border-border overflow-hidden">
       <div className="flex">
         <motion.div
           animate={{ x: [0, -1920] }}
@@ -20,10 +20,10 @@ export const BrandMarquee = () => {
           className="flex shrink-0"
         >
           {[...collections, ...collections].map((collection, i) => (
-            <div key={i} className="mx-4 md:mx-12 flex items-center justify-center">
+            <div key={i} className="mx-3 md:mx-8 flex items-center justify-center">
               <Link 
                 to={`/shop?collection=${collection.slug}`}
-                className="font-display text-xl md:text-4xl lg:text-5xl text-muted-foreground/20 hover:text-primary/60 transition-colors duration-300 cursor-pointer whitespace-nowrap"
+                className="font-display text-lg md:text-2xl lg:text-3xl text-muted-foreground/20 hover:text-primary/60 transition-colors duration-300 cursor-pointer whitespace-nowrap"
               >
                 {collection.name}
               </Link>
@@ -36,10 +36,10 @@ export const BrandMarquee = () => {
           className="flex shrink-0"
         >
           {[...collections, ...collections].map((collection, i) => (
-            <div key={i} className="mx-4 md:mx-12 flex items-center justify-center">
+            <div key={i} className="mx-3 md:mx-8 flex items-center justify-center">
               <Link 
                 to={`/shop?collection=${collection.slug}`}
-                className="font-display text-xl md:text-4xl lg:text-5xl text-muted-foreground/20 hover:text-primary/60 transition-colors duration-300 cursor-pointer whitespace-nowrap"
+                className="font-display text-lg md:text-2xl lg:text-3xl text-muted-foreground/20 hover:text-primary/60 transition-colors duration-300 cursor-pointer whitespace-nowrap"
               >
                 {collection.name}
               </Link>

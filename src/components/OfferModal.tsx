@@ -3,23 +3,30 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Tag, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { offersApi } from '@/lib/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const OfferModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [offers, setOffers] = useState<any[]>([]);
   const [currentOfferIndex, setCurrentOfferIndex] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Load offers on every page load (no session storage check)
   useEffect(() => {
+    // Don't show offer modal in admin section
+    if (location.pathname.startsWith('/admin')) {
+      console.log('OfferModal: Skipping - in admin section');
+      return;
+    }
+
     console.log('OfferModal: Component mounted, will load offers in 3 seconds...');
     const timer = setTimeout(() => {
       loadOffers();
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, []); // Empty dependency array = runs once on mount
+  }, [location.pathname]); // Re-run when route changes
 
   // Manual trigger for testing with Ctrl+O
   useEffect(() => {
@@ -50,6 +57,7 @@ const OfferModal = () => {
 
   const loadOffers = async () => {
     console.log('OfferModal: Loading offers from API...');
+    console.log('OfferModal: API URL:', import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000');
     
     try {
       const data: any = await offersApi.getActive();
@@ -70,6 +78,12 @@ const OfferModal = () => {
         message: error.message,
         status: error.status,
       });
+      
+      // If it's a 401 error, the backend needs to be fixed
+      if (error.status === 401) {
+        console.error('OfferModal: BACKEND ISSUE - The /api/v1/offers/active endpoint requires authentication but should be public!');
+        console.error('OfferModal: Please update the backend to allow unauthenticated access to active offers.');
+      }
     }
   };
 
