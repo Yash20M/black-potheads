@@ -114,6 +114,7 @@ const CheckoutPage = () => {
       await clearCart();
       toast.success('Order confirmed successfully!');
       setShowSuccessModal(true);
+      navigate("/orders")
     } catch (error: any) {
       toast.error(error.message || 'Failed to place order');
       console.error('Order creation error:', error);
@@ -171,6 +172,7 @@ const CheckoutPage = () => {
               await clearCart();
               toast.success('Payment successful! Order confirmed.');
               setShowSuccessModal(true);
+              navigate("/orders")
             } else {
               toast.error('Payment verification failed');
             }
@@ -226,6 +228,17 @@ const CheckoutPage = () => {
       navigate('/orders');
     }
   };
+
+  // Auto-redirect to orders page after 5 seconds
+  useEffect(() => {
+    if (showSuccessModal) {
+      const timer = setTimeout(() => {
+        handleCloseSuccessModal();
+      }, 8000); // 8 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessModal]);
 
   return (
     <div className="min-h-screen pt-20 bg-background">
@@ -458,8 +471,11 @@ const CheckoutPage = () => {
                 </motion.div>
 
                 <h2 className="font-display text-3xl mb-2">Order Confirmed!</h2>
-                <p className="text-muted-foreground mb-6">
+                <p className="text-muted-foreground mb-2">
                   Thank you for your purchase
+                </p>
+                <p className="text-xs text-muted-foreground mb-6">
+                  Redirecting to your orders in a few seconds...
                 </p>
 
                 {orderDetails && (
@@ -524,18 +540,7 @@ const CheckoutPage = () => {
                     onClick={handleCloseSuccessModal}
                   >
                     <Package className="mr-2" size={18} />
-                    View Order Details
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => {
-                      setShowSuccessModal(false);
-                      navigate('/shop');
-                    }}
-                  >
-                    Continue Shopping
+                    View Order Details Now
                   </Button>
                 </div>
               </motion.div>

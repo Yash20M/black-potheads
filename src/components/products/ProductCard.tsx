@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/authStore';
 import { wishlistApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { ImageWithSkeleton } from '@/components/ui/image-with-skeleton';
 
 interface ProductCardProps {
   product: Product;
@@ -18,7 +19,6 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
   const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
-  const [imageError, setImageError] = useState(false);
   const { addItem, openCart } = useCartStore();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlistStore();
   const { user } = useAuthStore();
@@ -69,12 +69,6 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
     }
   }, [user, product.id, inWishlist, addToWishlist, removeFromWishlist]);
 
-  const handleImageError = useCallback(() => {
-    setImageError(true);
-  }, []);
-
-  const imageSrc = imageError ? 'https://via.placeholder.com/400x500?text=No+Image' : product.image;
-
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
@@ -84,16 +78,15 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
     >
       <Link to={`/product/${product.id}`}>
         {/* Image Container */}
-        <div className="relative aspect-[3/4] bg-secondary overflow-hidden mb-4">
-          {/* Product Image */}
-          <img
-            src={imageSrc}
+        <div className="relative mb-4">
+          <ImageWithSkeleton
+            src={product.image}
             alt={product.name}
-            onError={handleImageError}
+            aspectRatio="aspect-[3/4]"
+            className="transition-transform duration-400 ease-out"
+            style={{ transform: isHovered ? 'scale(1.08)' : 'scale(1)' }}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-cover transition-transform duration-400 ease-out"
-            style={{ transform: isHovered ? 'scale(1.08)' : 'scale(1)' }}
           />
 
           {/* Badges */}

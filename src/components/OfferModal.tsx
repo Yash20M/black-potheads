@@ -12,7 +12,7 @@ const OfferModal = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Load offers on every page load (no session storage check)
+  // Load offers on every page load
   useEffect(() => {
     // Don't show offer modal in admin section
     if (location.pathname.startsWith('/admin')) {
@@ -62,16 +62,29 @@ const OfferModal = () => {
     try {
       const data: any = await offersApi.getActive();
       console.log('OfferModal: API response:', data);
+      
       if (data && data.success && data.offers && data.offers.length > 0) {
         console.log('OfferModal: Found', data.offers.length, 'active offers');
-        setOffers(data.offers);
-        setIsOpen(true);
+        
+        // Get list of seen offer IDs from session storage
+        const seenOffersJson = sessionStorage.getItem('seenOffers');
+        const seenOffers: string[] = seenOffersJson ? JSON.parse(seenOffersJson) : [];
+        console.log('OfferModal: Previously seen offers:', seenOffers);
+        
+        // Filter out offers that have already been seen in this session
+        const unseenOffers = data.offers.filter((offer: any) => !seenOffers.includes(offer._id));
+        console.log('OfferModal: Unseen offers:', unseenOffers.length);
+        
+        if (unseenOffers.length > 0) {
+          setOffers(unseenOffers);
+          setIsOpen(true);
+        } else {
+          console.log('OfferModal: All offers have been seen in this session');
+        }
       } else {
         console.log('OfferModal: No active offers found');
         console.log('OfferModal: Response structure:', JSON.stringify(data));
       }
-
-
     } catch (error: any) {
       console.error('OfferModal: Failed to load offers:', error);
       console.error('OfferModal: Error details:', {
@@ -87,12 +100,31 @@ const OfferModal = () => {
     }
   };
 
+  const markOfferAsSeen = (offerId: string) => {
+    // Get current list of seen offers
+    const seenOffersJson = sessionStorage.getItem('seenOffers');
+    const seenOffers: string[] = seenOffersJson ? JSON.parse(seenOffersJson) : [];
+    
+    // Add current offer ID if not already in the list
+    if (!seenOffers.includes(offerId)) {
+      seenOffers.push(offerId);
+      sessionStorage.setItem('seenOffers', JSON.stringify(seenOffers));
+      console.log('OfferModal: Marked offer as seen:', offerId);
+    }
+  };
+
   const handleClose = () => {
+    // Mark current offer as seen before closing
+    if (offers[currentOfferIndex]) {
+      markOfferAsSeen(offers[currentOfferIndex]._id);
+    }
     setIsOpen(false);
   };
 
   const handleShopNow = () => {
     const currentOffer = offers[currentOfferIndex];
+    // Mark offer as seen before navigating
+    markOfferAsSeen(currentOffer._id);
     setIsOpen(false);
     navigate(`/shop?category=${encodeURIComponent(currentOffer.category)}`);
   };

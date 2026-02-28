@@ -7,6 +7,7 @@ import { useCartStore } from '@/store/cartStore';
 import { productApi } from '@/lib/api';
 import { Product, normalizeProduct, ApiProduct } from '@/types/product';
 import { toast } from 'sonner';
+import { ImageWithSkeleton } from '@/components/ui/image-with-skeleton';
 
 export const TrendingSection = () => {
   const containerRef = useRef(null);
@@ -123,12 +124,12 @@ const TrendingProductCard = ({ product, index }: { product: Product; index: numb
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link to={`/product/${product.id}`} className={`block ${heights[index]} relative overflow-hidden`}>
-        <motion.img
+        <ImageWithSkeleton
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover max-h-[550px]"
-          animate={{ scale: isHovered ? 1.1 : 1 }}
-          transition={{ duration: 0.6 }}
+          aspectRatio={heights[index]}
+          className="max-h-[550px]"
+          style={{ transform: isHovered ? 'scale(1.1)' : 'scale(1)', transition: 'transform 0.6s' }}
         />
         <motion.div
           className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"
