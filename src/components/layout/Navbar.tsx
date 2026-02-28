@@ -103,17 +103,7 @@ export const Navbar = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className={cn(
-              'p-1.5 sm:p-2 transition-colors',
-              isHomePage ? 'text-white hover:text-gray-300' : 'text-black hover:text-gray-600'
-            )}
-            aria-label="Search"
-          >
-            <Search size={18} className="sm:w-5 sm:h-5" />
-          </motion.button>
+          
 
           {user ? (
             <div className="hidden md:flex items-center gap-2">

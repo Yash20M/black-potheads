@@ -1,5 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { Search, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,13 +13,21 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { TableSkeleton } from '@/components/ui/loader';
+import { Pagination } from '@/components/ui/pagination';
 
 const AdminOrders = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalOrders: 0,
+    limit: 10,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -52,7 +59,21 @@ const AdminOrders = () => {
         search: debouncedSearchTerm || undefined,
       });
       setOrders(data.orders || []);
-      setTotalPages(data.totalPages || 1);
+      
+      // Update pagination state from API response
+      if (data.pagination) {
+        setPagination(data.pagination);
+      } else {
+        // Fallback for older API responses
+        setPagination({
+          currentPage: data.currentPage || page,
+          totalPages: data.totalPages || 1,
+          totalOrders: data.totalOrders || 0,
+          limit: data.limit || 10,
+          hasNextPage: data.hasNextPage || false,
+          hasPrevPage: data.hasPrevPage || false,
+        });
+      }
     } catch (error: any) {
       toast.error('Failed to load orders');
     } finally {
@@ -268,27 +289,15 @@ const AdminOrders = () => {
             </table>
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-              >
-                Previous
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                Page {page} of {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-              >
-                Next
-              </Button>
-            </div>
-          )}
+          <Pagination
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            onPageChange={setPage}
+            hasNextPage={pagination.hasNextPage}
+            hasPrevPage={pagination.hasPrevPage}
+            totalItems={pagination.totalOrders}
+            itemsPerPage={pagination.limit}
+          />
         </>
       )}
     </div>

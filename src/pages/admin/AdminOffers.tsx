@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Plus, Edit, Trash2, Eye, Power } from 'lucide-react';
+import { Plus, Edit, Trash2, Power } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { adminApi } from '@/lib/api';
 import { toast } from 'sonner';
@@ -13,13 +12,21 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { TableSkeleton } from '@/components/ui/loader';
+import { Pagination } from '@/components/ui/pagination';
 
 const AdminOffers = () => {
   const navigate = useNavigate();
   const [offers, setOffers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalOffers: 0,
+    limit: 10,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
@@ -37,7 +44,21 @@ const AdminOffers = () => {
         isActive: statusFilter === 'active' ? true : statusFilter === 'inactive' ? false : undefined,
       });
       setOffers(data.offers || []);
-      setTotalPages(data.totalPages || 1);
+      
+      // Update pagination state from API response
+      if (data.pagination) {
+        setPagination(data.pagination);
+      } else {
+        // Fallback for older API responses
+        setPagination({
+          currentPage: data.currentPage || page,
+          totalPages: data.totalPages || 1,
+          totalOffers: data.totalOffers || 0,
+          limit: data.limit || 10,
+          hasNextPage: data.hasNextPage || false,
+          hasPrevPage: data.hasPrevPage || false,
+        });
+      }
     } catch (error: any) {
       toast.error('Failed to load offers');
     } finally {
@@ -212,29 +233,17 @@ const AdminOffers = () => {
             </table>
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-              >
-                Previous
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                Page {page} of {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-              >
-                Next
-              </Button>
-            </div>
-          )}
+          <Pagination
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            onPageChange={setPage}
+            hasNextPage={pagination.hasNextPage}
+            hasPrevPage={pagination.hasPrevPage}
+            totalItems={pagination.totalOffers}
+            itemsPerPage={pagination.limit}
+          />
 
-          {offers.length === 0 && (
+          {offers.length === 0 && !loading && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">No offers found</p>
             </div>

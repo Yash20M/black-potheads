@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { Plus, Edit, Trash2, Search, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,17 +14,27 @@ import {
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TableSkeleton } from '@/components/ui/loader';
+import { Pagination } from '@/components/ui/pagination';
 
 const AdminProducts = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalProducts: 0,
+    limit: 10,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [viewingProduct, setViewingProduct] = useState<any>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [deleteError, setDeleteError] = useState<any>(null);
+  const [isDeleteErrorDialogOpen, setIsDeleteErrorDialogOpen] = useState(false);
 
   useEffect(() => {
     loadProducts();
@@ -37,7 +46,21 @@ const AdminProducts = () => {
       console.log('Products API Response:', data); // Debug log
       console.log('First product images:', data.products?.[0]?.images); // Debug log
       setProducts(data.products || []);
-      setTotalPages(data.totalPages || 1);
+      
+      // Update pagination state from API response
+      if (data.pagination) {
+        setPagination(data.pagination);
+      } else {
+        // Fallback for older API responses
+        setPagination({
+          currentPage: data.currentPage || page,
+          totalPages: data.totalPages || 1,
+          totalProducts: data.totalProducts || 0,
+          limit: data.limit || 10,
+          hasNextPage: data.hasNextPage || false,
+          hasPrevPage: data.hasPrevPage || false,
+        });
+      }
     } catch (error: any) {
       toast.error('Failed to load products');
       console.error('Load products error:', error);
@@ -54,7 +77,13 @@ const AdminProducts = () => {
       toast.success('Product deleted');
       loadProducts();
     } catch (error: any) {
-      toast.error('Failed to delete product');
+      // Check if error has active orders information
+      if (error.activeOrders && error.activeOrders.length > 0) {
+        setDeleteError(error);
+        setIsDeleteErrorDialogOpen(true);
+      } else {
+        toast.error(error.message || 'Failed to delete product');
+      }
     }
   };
 
@@ -232,29 +261,96 @@ const AdminProducts = () => {
             </table>
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-              >
-                Previous
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                Page {page} of {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-              >
-                Next
-              </Button>
-            </div>
-          )}
+          <Pagination
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            onPageChange={setPage}
+            hasNextPage={pagination.hasNextPage}
+            hasPrevPage={pagination.hasPrevPage}
+            totalItems={pagination.totalProducts}
+            itemsPerPage={pagination.limit}
+          />
         </>
       )}
+
+      {/* Delete Error Dialog - Active Orders */}
+      <Dialog open={isDeleteErrorDialogOpen} onOpenChange={setIsDeleteErrorDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">Cannot Delete Product</DialogTitle>
+          </DialogHeader>
+          {deleteError && (
+            <div className="space-y-4">
+              <div className="bg-destructive/10 border border-destructive/20 p-4 rounded">
+                <p className="text-sm font-medium mb-2">{deleteError.message}</p>
+                {deleteError.hint && (
+                  <p className="text-xs text-muted-foreground">{deleteError.hint}</p>
+                )}
+              </div>
+
+              <div>
+                <h3 className="font-medium mb-3">Active Orders ({deleteError.activeOrders?.length})</h3>
+                <div className="space-y-3">
+                  {deleteError.activeOrders?.map((order: any, index: number) => (
+                    <div
+                      key={order.orderId}
+                      className="bg-card border border-border p-4 rounded space-y-2"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium">Order #{index + 1}</p>
+                          <p className="text-xs font-mono text-muted-foreground">
+                            ID: {order.orderId}
+                          </p>
+                        </div>
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${
+                            order.status === 'Pending'
+                              ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+                              : order.status === 'Processing'
+                              ? 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                              : order.status === 'Shipped'
+                              ? 'bg-purple-500/10 text-purple-500 border-purple-500/20'
+                              : order.status === 'Out for Delivery'
+                              ? 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20'
+                              : 'bg-gray-500/10 text-gray-500 border-gray-500/20'
+                          }`}
+                        >
+                          {order.status}
+                        </span>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Created: {new Date(order.createdAt).toLocaleString()}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setIsDeleteErrorDialogOpen(false);
+                          window.open(`/admin/orders/${order.orderId}`, '_blank');
+                        }}
+                        className="w-full mt-2"
+                      >
+                        View Order Details
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4 border-t">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDeleteErrorDialogOpen(false)}
+                  className="flex-1"
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* View Product Details Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
