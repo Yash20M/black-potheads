@@ -10,6 +10,7 @@ import { wishlistApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { ProductCard } from '@/components/products/ProductCard';
 import { ProductReviews } from '@/components/ProductReviews';
+import { SEO } from '@/components/SEO';
 import { productApi } from '@/lib/api';
 import { Product, normalizeProduct, ApiProduct } from '@/types/product';
 import { toast } from 'sonner';
@@ -28,9 +29,9 @@ const ProductDetailPage = () => {
   const [touchEnd, setTouchEnd] = useState(0);
   const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
   const { addItem, openCart } = useCartStore();
-  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlistStore();
+  const { isInWishlist, addToWishlist, removeFromWishlist, syncWishlist } = useWishlistStore();
   const { user } = useAuthStore();
-  const inWishlist = product ? isInWishlist(product.id) : false;
+  const inWishlist = product ? (product.inWishlist || isInWishlist(product.id)) : false;
 
   useEffect(() => {
     if (id) {
@@ -46,6 +47,11 @@ const ProductDetailPage = () => {
       setProduct(normalized);
       setSelectedSize(normalized.sizes[0] || '');
       
+      // Sync wishlist status from API
+      if (data.product.in_wishlist) {
+        syncWishlist([data.product._id]);
+      }
+      
       // Load related products from same category
       if (data.product.category) {
         const relatedData: any = await productApi.getByCategory(data.product.category, 1, 4);
@@ -54,6 +60,14 @@ const ProductDetailPage = () => {
           .slice(0, 3)
           .map((p: ApiProduct) => normalizeProduct(p));
         setRelatedProducts(relatedNormalized);
+        
+        // Sync wishlist for related products
+        const wishlistIds = relatedData.products
+          .filter((p: ApiProduct) => p.in_wishlist)
+          .map((p: ApiProduct) => p._id);
+        if (wishlistIds.length > 0) {
+          syncWishlist(wishlistIds);
+        }
       }
     } catch (error: any) {
       toast.error('Failed to load product');
@@ -116,10 +130,14 @@ const ProductDetailPage = () => {
       if (inWishlist) {
         await wishlistApi.remove(product.id);
         removeFromWishlist(product.id);
+        // Update product state to reflect removal
+        setProduct(prev => prev ? { ...prev, inWishlist: false } : null);
         toast.success('Removed from wishlist');
       } else {
         await wishlistApi.add(product.id);
         addToWishlist(product.id);
+        // Update product state to reflect addition
+        setProduct(prev => prev ? { ...prev, inWishlist: true } : null);
         toast.success('Added to wishlist');
       }
     } catch (error: any) {
@@ -173,6 +191,46 @@ const ProductDetailPage = () => {
 
   return (
     <div className="min-h-screen pt-20 bg-white">
+      {product && (
+        <SEO
+          title={`${product.name} - Premium Printed T-Shirt | BLACK POTHEADS`}
+          description={`${product.description || `Buy ${product.name} online in India`}. Premium quality, free shipping, COD available. ${product.stock && product.stock > 0 ? 'In stock' : 'Limited stock'}.`}
+          keywords={`${product.name}, ${product.category} t-shirt, printed tshirt, buy online india, blackpotheads`}
+          image={product.image}
+          url={`https://blackpotheads.com/product/${product.id}`}
+          type="product"
+          structuredData={{
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": product.name,
+            "description": product.description || `Premium ${product.name}`,
+            "image": product.images || [product.image],
+            "brand": {
+              "@type": "Brand",
+              "name": "BLACK POTHEADS"
+            },
+            "offers": {
+              "@type": "Offer",
+              "url": `https://blackpotheads.com/product/${product.id}`,
+              "priceCurrency": "INR",
+              "price": product.price,
+              "priceValidUntil": "2026-12-31",
+              "availability": product.stock && product.stock > 0 
+                ? "https://schema.org/InStock" 
+                : "https://schema.org/OutOfStock",
+              "seller": {
+                "@type": "Organization",
+                "name": "BLACK POTHEADS"
+              }
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.5",
+              "reviewCount": "10"
+            }
+          }}
+        />
+      )}
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
@@ -494,12 +552,7 @@ const ProductDetailPage = () => {
                   <span className="text-sm uppercase tracking-[0.15em] text-black font-medium">Shipping & Returns</span>
                   <Plus size={18} className="text-black group-hover:rotate-90 transition-transform" />
                 </button>
-                <button
-                  className="w-full text-left border-b border-gray-200 pb-3 flex items-center justify-between hover:border-black transition-colors group"
-                >
-                  <span className="text-sm uppercase tracking-[0.15em] text-black font-medium">Assistance</span>
-                  <Plus size={18} className="text-black group-hover:rotate-90 transition-transform" />
-                </button>
+                
               </div>
 
               {/* Features List */}

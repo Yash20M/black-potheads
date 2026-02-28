@@ -15,9 +15,11 @@ import { ProcessSection } from '@/components/sections/ProcessSection';
 import { VideoSection } from '@/components/sections/VideoSection';
 import { ScrollingText } from '@/components/sections/ScrollingText';
 import { UpcomingDrop } from '@/components/sections/UpcomingDrop';
+import { SEO } from '@/components/SEO';
 import { useEffect, useState, useRef } from 'react';
 import { productApi } from '@/lib/api';
 import { toast } from 'sonner';
+import { useWishlistStore } from '@/store/wishlistStore';
 import { Product, normalizeProduct, ApiProduct } from '@/types/product';
 
 // ─── WebGL Smoke Fragment Shader ──────────────────────────────────────────────
@@ -216,6 +218,14 @@ const Index = () => {
       const data: any = await productApi.getFeatured(3);
       const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
       setFeaturedProducts(normalized);
+      
+      // Sync wishlist from API response
+      const wishlistIds = data.products
+        .filter((p: ApiProduct) => p.in_wishlist)
+        .map((p: ApiProduct) => p._id);
+      if (wishlistIds.length > 0) {
+        useWishlistStore.getState().syncWishlist(wishlistIds);
+      }
     } catch (error: any) {
       toast.error('Failed to load featured products');
       console.error('Featured products error:', error);
@@ -226,6 +236,31 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-black">
+      <SEO
+        title="BLACK POTHEADS - Premium Printed T-Shirts | Streetwear India"
+        description="Shop premium printed t-shirts online in India. Unique Shiva, psychedelic, gothic & streetwear designs. Free shipping, COD available. 7-day returns. Order now!"
+        keywords="printed t-shirts india, streetwear india, graphic tees, shiva t-shirts, psychedelic clothing, gothic tees, premium cotton tshirts, online tshirt shopping india, blackpotheads, rick and morty tshirts, chakra clothing"
+        url="https://blackpotheads.com/"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Store",
+          "name": "BLACK POTHEADS",
+          "description": "Premium printed t-shirts and streetwear brand in India",
+          "url": "https://blackpotheads.com",
+          "logo": "https://blackpotheads.com/logo.png",
+          "image": "https://blackpotheads.com/homeimg.jpeg",
+          "priceRange": "₹₹",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "IN"
+          },
+          "paymentAccepted": "Cash, Credit Card, Debit Card, UPI, Net Banking",
+          "currenciesAccepted": "INR",
+          "openingHours": "Mo-Su 00:00-23:59",
+          "telephone": "+91-XXXXXXXXXX",
+          "email": "support@blackpotheads.com"
+        }}
+      />
 
       {/* ═══════════════════════════════════════════════════════════════════════
           3D ROTATING HERO

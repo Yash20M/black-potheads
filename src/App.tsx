@@ -28,6 +28,13 @@ const OrdersPage = lazy(() => import("./pages/OrdersPage"));
 const OrderDetailPage = lazy(() => import("./pages/OrderDetailPage"));
 const WishlistPage = lazy(() => import("./pages/WishlistPage"));
 const TestOffersPage = lazy(() => import("./pages/TestOffersPage"));
+const FAQPage = lazy(() => import("./pages/FAQPage"));
+
+// Legal pages
+const TermsPage = lazy(() => import("./pages/legal/TermsPage"));
+const PrivacyPage = lazy(() => import("./pages/legal/PrivacyPage"));
+const RefundPage = lazy(() => import("./pages/legal/RefundPage"));
+const ShippingPage = lazy(() => import("./pages/legal/ShippingPage"));
 
 // Admin pages
 const AdminLayout = lazy(() => import("@/components/layout/AdminLayout"));
@@ -73,6 +80,7 @@ const App = () => (
               <Route path="/shop" element={<ShopPage />} />
               <Route path="/collections" element={<CollectionsPage />} />
               <Route path="/product/:id" element={<ProductDetailPage />} />
+              <Route path="/about" element={<AboutPage />} />
               <Route path="/our-story" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/login" element={<Login />} />
@@ -83,6 +91,13 @@ const App = () => (
               <Route path="/orders/:orderId" element={<OrderDetailPage />} />
               <Route path="/wishlist" element={<WishlistPage />} />
               <Route path="/test-offers" element={<TestOffersPage />} />
+              <Route path="/faq" element={<FAQPage />} />
+              
+              {/* Legal Routes */}
+              <Route path="/legal/terms" element={<TermsPage />} />
+              <Route path="/legal/privacy-policy" element={<PrivacyPage />} />
+              <Route path="/legal/refund-policy" element={<RefundPage />} />
+              <Route path="/legal/shipping-policy" element={<ShippingPage />} />
             </Route>
             
             {/* Admin Routes */}

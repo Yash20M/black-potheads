@@ -1,12 +1,20 @@
 import { motion } from 'framer-motion';
-import { Instagram, Twitter, ArrowRight, Skull } from 'lucide-react';
+import { Instagram, Twitter, Skull } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 
 const footerLinks = {
-  shop: ['All Products', 'Skulls', 'Gothic', 'Tribal', 'Graffiti', 'Tattoo'],
-  support: ['FAQ', 'Shipping', 'Returns', 'Size Guide', 'Contact'],
-  company: ['About Us', 'Careers', 'Press', 'Sustainability'],
+  support: [
+    { label: 'FAQ', path: '/faq' },
+    { label: 'Shipping Policy', path: '/legal/shipping-policy' },
+    { label: 'Refund Policy', path: '/legal/refund-policy' },
+  ],
+  legal: [
+    { label: 'Terms & Conditions', path: '/legal/terms' },
+    { label: 'Privacy Policy', path: '/legal/privacy-policy' },
+  ],
+  company: [
+    { label: 'About Us', path: '/about' },
+  ],
 };
 
 export const Footer = () => {
@@ -24,14 +32,18 @@ export const Footer = () => {
             </p>
             <div className="flex gap-4">
               <motion.a
-                href="#"
+                href="https://instagram.com/blackpotheads"
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.1, y: -2 }}
                 className="w-10 h-10 border border-border flex items-center justify-center hover:border-primary hover:text-primary transition-colors"
               >
                 <Instagram size={18} />
               </motion.a>
               <motion.a
-                href="#"
+                href="https://twitter.com/blackpotheads"
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.1, y: -2 }}
                 className="w-10 h-10 border border-border flex items-center justify-center hover:border-primary hover:text-primary transition-colors"
               >
@@ -41,12 +53,12 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h5 className="font-display text-lg uppercase tracking-wider mb-4">Shop</h5>
+            <h5 className="font-display text-lg uppercase tracking-wider mb-4">Support</h5>
             <ul className="space-y-2">
-              {footerLinks.shop.map((link) => (
-                <li key={link}>
-                  <Link to="/shop" className="text-muted-foreground text-sm hover:text-foreground transition-colors">
-                    {link}
+              {footerLinks.support.map((link) => (
+                <li key={link.label}>
+                  <Link to={link.path} className="text-muted-foreground text-sm hover:text-foreground transition-colors">
+                    {link.label}
                   </Link>
                 </li>
               ))}
@@ -54,12 +66,12 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h5 className="font-display text-lg uppercase tracking-wider mb-4">Support</h5>
+            <h5 className="font-display text-lg uppercase tracking-wider mb-4">Legal</h5>
             <ul className="space-y-2">
-              {footerLinks.support.map((link) => (
-                <li key={link}>
-                  <Link to="/contact" className="text-muted-foreground text-sm hover:text-foreground transition-colors">
-                    {link}
+              {footerLinks.legal.map((link) => (
+                <li key={link.label}>
+                  <Link to={link.path} className="text-muted-foreground text-sm hover:text-foreground transition-colors">
+                    {link.label}
                   </Link>
                 </li>
               ))}
@@ -70,9 +82,9 @@ export const Footer = () => {
             <h5 className="font-display text-lg uppercase tracking-wider mb-4">Company</h5>
             <ul className="space-y-2">
               {footerLinks.company.map((link) => (
-                <li key={link}>
-                  <Link to="/about" className="text-muted-foreground text-sm hover:text-foreground transition-colors">
-                    {link}
+                <li key={link.label}>
+                  <Link to={link.path} className="text-muted-foreground text-sm hover:text-foreground transition-colors">
+                    {link.label}
                   </Link>
                 </li>
               ))}
@@ -85,8 +97,8 @@ export const Footer = () => {
             © 2026 BLACK POTHEADS. All rights reserved.
           </p>
           <div className="flex gap-6 text-muted-foreground text-sm">
-            <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
+            <Link to="/legal/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+            <Link to="/legal/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>

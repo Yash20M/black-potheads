@@ -66,12 +66,42 @@ export const Navbar = () => {
                 className="w-full h-full object-contain relative z-10 max-h-14"
               />
             </motion.div>
-            <span className={cn(
-              'font-display text-lg sm:text-xl md:text-2xl lg:text-xl tracking-wider hidden xs:block',
-              isHomePage ? 'text-white' : 'text-black'
-            )}>
-              BLACK POTHEADS
-            </span>
+            
+            {/* Animated Brand Name with Fancy Font */}
+            <motion.div 
+              className="hidden sm:block relative"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+            >
+              <span 
+                className={cn(
+                  'text-xl sm:text-2xl md:text-3xl lg:text-2xl tracking-[0.15em] font-bold',
+                  'relative inline-block',
+                  isHomePage ? 'text-white' : 'text-black'
+                )}
+                style={{
+                  fontFamily: "'Bebas Neue', 'Impact', sans-serif",
+                  textShadow: isHomePage 
+                    ? '2px 2px 4px rgba(0,0,0,0.3)' 
+                    : '2px 2px 4px rgba(255,255,255,0.3)',
+                  letterSpacing: '0.1em'
+                }}
+              >
+                BLACKPOTHEADS
+              </span>
+              
+              {/* Subtle animated accent line */}
+              <motion.div
+                className={cn(
+                  'absolute -bottom-1 left-0 h-[2px]',
+                  isHomePage ? 'bg-white' : 'bg-black'
+                )}
+                initial={{ width: 0 }}
+                animate={{ width: '100%' }}
+                transition={{ duration: 1, delay: 0.8, ease: "easeInOut" }}
+              />
+            </motion.div>
           </Link>
         </motion.div>
 

@@ -36,6 +36,10 @@ const WishlistPage = () => {
       const data: any = await wishlistApi.get(activeCategory === 'all' ? undefined : activeCategory);
       const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
       setProducts(normalized);
+      
+      // Sync wishlist from API response
+      const wishlistIds = data.products.map((p: ApiProduct) => p._id);
+      useWishlistStore.getState().syncWishlist(wishlistIds);
     } catch (error: any) {
       toast.error('Failed to load wishlist');
       console.error('Wishlist error:', error);

@@ -22,7 +22,7 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
   const { addItem, openCart } = useCartStore();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlistStore();
   const { user } = useAuthStore();
-  const inWishlist = isInWishlist(product.id);
+  const inWishlist = product.inWishlist || isInWishlist(product.id);
 
   const handleAddToCart = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -53,12 +53,12 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
 
     setIsTogglingWishlist(true);
     try {
-      await wishlistApi.add(product.id);
-      
       if (inWishlist) {
+        await wishlistApi.remove(product.id);
         removeFromWishlist(product.id);
         toast.success('Removed from wishlist');
       } else {
+        await wishlistApi.add(product.id);
         addToWishlist(product.id);
         toast.success('Added to wishlist');
       }

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Eye, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
+import { useWishlistStore } from '@/store/wishlistStore';
 import { productApi } from '@/lib/api';
 import { Product, normalizeProduct, ApiProduct } from '@/types/product';
 import { toast } from 'sonner';
@@ -31,6 +32,14 @@ export const TrendingSection = () => {
       const data: any = await productApi.getFeatured(4);
       const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
       setTrendingProducts(normalized);
+      
+      // Sync wishlist from API response
+      const wishlistIds = data.products
+        .filter((p: ApiProduct) => p.in_wishlist)
+        .map((p: ApiProduct) => p._id);
+      if (wishlistIds.length > 0) {
+        useWishlistStore.getState().syncWishlist(wishlistIds);
+      }
     } catch (error: any) {
       toast.error('Failed to load trending products');
       console.error('Trending products error:', error);

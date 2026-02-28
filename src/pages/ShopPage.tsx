@@ -8,6 +8,8 @@ import { productApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { SkeletonCard } from '@/components/ui/loader';
 import { AnimatedDamru } from '@/components/Animateddamru';
+import { useWishlistStore } from '@/store/wishlistStore';
+import { SEO } from '@/components/SEO';
 import TrishulDamruImg from '@/assets/Trishul-Damru.png';
 import MushroomsImg from '@/assets/mushrooms.png';
 
@@ -110,10 +112,22 @@ const ShopPage = () => {
         const data: any = await productApi.getAll(1, 100);
         const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
         setProducts(normalized);
+        
+        // Sync wishlist from API response
+        const wishlistIds = data.products
+          .filter((p: ApiProduct) => p.in_wishlist)
+          .map((p: ApiProduct) => p._id);
+        useWishlistStore.getState().syncWishlist(wishlistIds);
       } else {
         const data: any = await productApi.getByCategory(activeCategory, 1, 50);
         const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
         setProducts(normalized);
+        
+        // Sync wishlist from API response
+        const wishlistIds = data.products
+          .filter((p: ApiProduct) => p.in_wishlist)
+          .map((p: ApiProduct) => p._id);
+        useWishlistStore.getState().syncWishlist(wishlistIds);
       }
     } catch (error: any) {
       toast.error('Failed to load products');
@@ -141,6 +155,24 @@ const ShopPage = () => {
 
   return (
     <div className="min-h-screen pt-20 bg-white">
+      <SEO
+        title={currentCollection 
+          ? `${currentCollection.title} - Premium Printed T-Shirts | BLACK POTHEADS`
+          : 'Shop Premium Printed T-Shirts Online India | BLACK POTHEADS'}
+        description={currentCollection
+          ? currentCollection.description
+          : 'Browse our complete collection of premium printed t-shirts. Shiva, psychedelic, gothic, chakra & Rick and Morty designs. Free shipping, COD available.'}
+        keywords={`${activeCategory} t-shirts, ${activeCategory} clothing india, printed tees, streetwear, graphic tshirts, blackpotheads`}
+        url={`https://blackpotheads.com/shop${activeCategory !== 'all' ? `?collection=${activeCategory}` : ''}`}
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": currentCollection ? currentCollection.title : "Shop All Products",
+          "description": currentCollection ? currentCollection.description : "Browse our complete collection of premium printed t-shirts",
+          "url": `https://blackpotheads.com/shop${activeCategory !== 'all' ? `?collection=${activeCategory}` : ''}`,
+          "numberOfItems": products.length
+        }}
+      />
       {/* Page Header */}
       <section className="py-12 sm:py-16 md:py-20 bg-black border-b border-gray-800">
         <div className="container mx-auto px-4 sm:px-6">

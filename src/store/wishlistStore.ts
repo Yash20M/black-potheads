@@ -7,6 +7,7 @@ interface WishlistState {
   removeFromWishlist: (productId: string) => void;
   isInWishlist: (productId: string) => boolean;
   clearWishlist: () => void;
+  syncWishlist: (productIds: string[]) => void;
 }
 
 export const useWishlistStore = create<WishlistState>()(
@@ -36,6 +37,10 @@ export const useWishlistStore = create<WishlistState>()(
       
       clearWishlist: () => {
         set({ wishlistIds: new Set<string>() });
+      },
+
+      syncWishlist: (productIds: string[]) => {
+        set({ wishlistIds: new Set(productIds) });
       },
     }),
     {
