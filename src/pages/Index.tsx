@@ -7,14 +7,12 @@ import { BrandMarquee } from '@/components/sections/BrandMarquee';
 import { StatsSection } from '@/components/sections/StatsSection';
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
 import { FeaturesSection } from '@/components/sections/FeaturesSection';
-import { LookbookSection } from '@/components/sections/LookbookSection';
 import { AboutBrandSection } from '@/components/sections/AboutBrandSection';
 import { CategoriesShowcase } from '@/components/sections/CategoriesShowcase';
 import { TrendingSection } from '@/components/sections/TrendingSection';
 import { ProcessSection } from '@/components/sections/ProcessSection';
 import { VideoSection } from '@/components/sections/VideoSection';
 import { ScrollingText } from '@/components/sections/ScrollingText';
-import { UpcomingDrop } from '@/components/sections/UpcomingDrop';
 import { SEO } from '@/components/SEO';
 import { useEffect, useState, useRef } from 'react';
 import { productApi } from '@/lib/api';
@@ -88,7 +86,70 @@ void main() {
     float alpha = clamp(1.0 - gradient * 1.6, 0.0, 1.0);
     alpha *= clamp(ins + 0.2, 0.0, 1.0);
 
-    fragColor = vec4(smokeColor, alpha);
+    // ─── HOT COAL EMBERS ───
+    // Create floating orange/red particles that rise through the smoke
+    vec3 finalColor = smokeColor;
+    float emberAlpha = alpha;
+    
+    // Generate multiple ember particles spread across entire width
+    for(int i = 0; i < 20; i++) {
+        float fi = float(i);
+        
+        // Each ember has unique position and timing
+        float emberSeed = fi * 0.618;
+        
+        // Spread embers across full width with better distribution
+        float emberX = fract(sin(emberSeed * 12.9898) * 43758.5453);
+        // Add multiple columns of embers
+        float columnOffset = floor(fi / 4.0) * 0.2;
+        emberX = fract(emberX + columnOffset);
+        
+        float emberSpeed = 0.06 + fract(sin(emberSeed * 78.233) * 43758.5453) * 0.10;
+        float emberSize = 0.01 + fract(sin(emberSeed * 45.164) * 43758.5453) * 0.018;
+        
+        // Ember rises from bottom, loops when reaching top
+        float emberY = fract((time * emberSpeed) + emberSeed);
+        
+        // Add horizontal drift with wider range
+        float drift = sin(time * 0.4 + emberSeed * 6.28) * 0.15;
+        
+        // Map to screen space with aspect ratio correction
+        float aspectRatio = vp.x / vp.y;
+        vec2 emberPos = vec2((emberX * 2.0 - 1.0) * aspectRatio + drift, emberY * 2.0 - 1.0);
+        
+        // Distance from current pixel to ember
+        float dist = length(p - emberPos);
+        
+        // Create glowing ember with soft falloff
+        float ember = smoothstep(emberSize * 3.0, 0.0, dist);
+        
+        // Pulsing glow effect
+        float pulse = 0.7 + 0.3 * sin(time * 3.0 + emberSeed * 6.28);
+        ember *= pulse;
+        
+        // Hot coal color gradient: deep red → bright orange → yellow center
+        vec3 emberCore = vec3(1.0, 0.9, 0.3);    // Bright yellow-white
+        vec3 emberMid = vec3(1.0, 0.4, 0.1);     // Bright orange
+        vec3 emberOuter = vec3(0.8, 0.1, 0.0);   // Deep red
+        
+        float emberGradient = smoothstep(emberSize * 2.0, 0.0, dist);
+        vec3 emberColor = mix(emberOuter, emberMid, emberGradient);
+        emberColor = mix(emberColor, emberCore, pow(emberGradient, 2.0));
+        
+        // Fade embers at top and bottom
+        float fadeFactor = smoothstep(0.0, 0.15, emberY) * smoothstep(1.0, 0.85, emberY);
+        ember *= fadeFactor;
+        
+        // Add glow halo around ember
+        float glow = smoothstep(emberSize * 6.0, emberSize * 2.0, dist) * 0.3;
+        ember = max(ember, glow);
+        
+        // Blend ember into scene
+        finalColor = mix(finalColor, emberColor, ember * 0.9);
+        emberAlpha = max(emberAlpha, ember * 0.8);
+    }
+
+    fragColor = vec4(finalColor, emberAlpha);
 }
 `;
 const VERTEX_SHADER = `#version 300 es
@@ -398,10 +459,8 @@ const Index = () => {
       <TrendingSection />
       <VideoSection />
       <AboutBrandSection />
-      <LookbookSection />
       <ProcessSection />
       <FeaturesSection />
-      <UpcomingDrop />
       <StatsSection />
       <TestimonialsSection />
     </div>

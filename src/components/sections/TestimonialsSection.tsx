@@ -74,7 +74,7 @@ export const TestimonialsSection = () => {
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.15 + 0.4 + i * 0.1 }}
                   >
-                    <Star size={16} className="fill-primary text-primary" />
+                    <Star size={16} className="fill-yellow-400 text-yellow-400" />
                   </motion.div>
                 ))}
               </div>

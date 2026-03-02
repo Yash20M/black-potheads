@@ -43,7 +43,7 @@ export const Navbar = () => {
       )}
     >
       <nav className="container mx-auto px-6 h-20 flex items-center justify-between">
-        {/* Logo with image */}
+        {/* Logo with image and animated text */}
         <motion.div style={{ scale: logoScale }}>
           <Link to="/" className="flex items-center gap-2 sm:gap-3">
             <motion.div 
@@ -67,7 +67,7 @@ export const Navbar = () => {
               />
             </motion.div>
             
-            {/* Animated Brand Name with Fancy Font */}
+            {/* Animated Brand Name */}
             <motion.div 
               className="hidden sm:block relative"
               initial={{ opacity: 0, x: -20 }}
@@ -88,10 +88,29 @@ export const Navbar = () => {
                   letterSpacing: '0.1em'
                 }}
               >
-                BLACKPOTHEADS
+                {'BLACKPOTHEADS'.split('').map((letter, index) => (
+                  <motion.span
+                    key={index}
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      duration: 0.5, 
+                      delay: 0.4 + index * 0.04,
+                    }}
+                    className="inline-block"
+                    // whileHover={{ 
+                    //   scale: 1.15, 
+                    //   color: '#ff0000',
+                    //   textShadow: '0 0 10px rgba(255,0,0,0.8)',
+                    //   transition: { duration: 0.2 }
+                    // }}
+                  >
+                    {letter}
+                  </motion.span>
+                ))}
               </span>
               
-              {/* Subtle animated accent line */}
+              {/* Animated accent line */}
               <motion.div
                 className={cn(
                   'absolute -bottom-1 left-0 h-[2px]',
@@ -99,7 +118,7 @@ export const Navbar = () => {
                 )}
                 initial={{ width: 0 }}
                 animate={{ width: '100%' }}
-                transition={{ duration: 1, delay: 0.8, ease: "easeInOut" }}
+                transition={{ duration: 1, delay: 1.2 }}
               />
             </motion.div>
           </Link>
@@ -133,8 +152,6 @@ export const Navbar = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
-          
-
           {user ? (
             <div className="hidden md:flex items-center gap-2">
               <Link to="/wishlist">
