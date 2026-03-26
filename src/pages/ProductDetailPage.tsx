@@ -792,19 +792,21 @@ const ProductDetailPage = () => {
       {product && <ProductReviews productId={product.id} />}
 
       {relatedProducts.length > 0 && (
-        <section className="py-16 bg-gray-50">
-          <div className="container mx-auto px-6">
+        <section className="py-12 sm:py-16 bg-gray-50">
+          <div className="container mx-auto px-4 sm:px-6">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="font-display text-3xl md:text-4xl mb-12 text-black uppercase tracking-wider"
+              className="font-display text-2xl sm:text-3xl mb-8 sm:mb-10 text-black uppercase tracking-wider"
             >
               You May Also Like
             </motion.h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-5xl mx-auto">
               {relatedProducts.map((p, index) => (
-                <ProductCard key={p.id} product={p} index={index} />
+                <div key={p.id} className="w-full">
+                  <ProductCard product={p} index={index} />
+                </div>
               ))}
             </div>
           </div>

@@ -23,7 +23,7 @@ const InventoryOverview = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [lowStockThreshold, setLowStockThreshold] = useState(10);
 
-  const categories = ['Shiva', 'Shrooms', 'LSD', 'Chakras', 'Dark', 'Rick n Morty'];
+  const categories = ['Shiva', 'Shrooms', 'ACID', 'Chakras', 'Dark', 'Rick n Morty'];
 
   useEffect(() => {
     loadData();

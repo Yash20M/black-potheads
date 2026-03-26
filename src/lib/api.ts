@@ -523,3 +523,50 @@ export const adminApi = {
       apiFetch(`/api/admin/inventory/category/${encodeURIComponent(category)}`, {}, true),
   },
 };
+
+// Video APIs
+export const videoApi = {
+  // Public endpoint - get featured video (no auth required)
+  getFeatured: () => {
+    const url = `${API_BASE_URL}/api/v1/video/featured`;
+    
+    return fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) {
+          throw new ApiError(response.status, data.message || 'An error occurred');
+        }
+        return data;
+      });
+  },
+
+  // Admin endpoints
+  admin: {
+    // Get video details (admin)
+    get: () => apiFetch('/api/admin/video', {}, true),
+
+    // Upload/Update featured video
+    upload: (formData: FormData) =>
+      apiFetch('/api/admin/video/upload', {
+        method: 'POST',
+        body: formData,
+      }, true),
+
+    // Toggle video status
+    toggleStatus: () =>
+      apiFetch('/api/admin/video/toggle-status', {
+        method: 'PATCH',
+      }, true),
+
+    // Delete featured video
+    delete: () =>
+      apiFetch('/api/admin/video', {
+        method: 'DELETE',
+      }, true),
+  },
+};

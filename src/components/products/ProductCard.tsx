@@ -130,26 +130,28 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
               ))}
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3 pointer-events-auto">
+            {/* Action Buttons - Icon Only */}
+            <div className="flex gap-2 pointer-events-auto">
               <button
                 onClick={handleAddToCart}
                 disabled={!product.stock || product.stock === 0}
-                className="flex items-center gap-2 bg-white text-black px-6 py-3 uppercase text-sm tracking-wider font-bold border-2 border-white hover:bg-transparent hover:text-white transition-colors disabled:bg-gray-400 disabled:border-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:hover:text-black active:scale-95 transform"
+                className="flex items-center justify-center w-10 h-10 bg-white text-black border-2 border-white hover:bg-transparent hover:text-white transition-colors disabled:bg-gray-400 disabled:border-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:hover:text-black active:scale-95 transform"
+                aria-label={!product.stock || product.stock === 0 ? 'Out of stock' : 'Add to cart'}
+                title={!product.stock || product.stock === 0 ? 'Out of stock' : 'Add to cart'}
               >
                 <Plus size={18} />
-                {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </button>
               <button
                 onClick={handleToggleWishlist}
                 disabled={isTogglingWishlist}
                 className={cn(
-                  'flex items-center justify-center w-12 h-12 border-2 transition-colors active:scale-95 transform',
+                  'flex items-center justify-center w-10 h-10 border-2 transition-colors active:scale-95 transform',
                   inWishlist
                     ? 'bg-white border-white text-black'
                     : 'border-white bg-transparent text-white hover:bg-white hover:text-black'
                 )}
                 aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+                title={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
               >
                 <Heart size={18} className={inWishlist ? 'fill-current' : ''} />
               </button>

@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 const categories = [
   { name: 'SHIVA', image: '/Shiva.PNG', slug: 'Shiva' },
   { name: 'SHROOMS', image: '/Shrooms.PNG', slug: 'Shrooms' },
-  { name: 'LSD', image: '/LSD.PNG', slug: 'LSD' },
+  { name: 'ACID', image: '/LSD.PNG', slug: 'ACID' },
   { name: 'CHAKRAS', image: '/Chakras.PNG', slug: 'Chakras' },
   { name: 'DARK', image: '/Dark.PNG', slug: 'Dark' },
   { name: 'RICK N MORTY', image: '/Rick-N-Morty.PNG', slug: 'Rick n Morty' },
@@ -23,6 +23,7 @@ const getCardStyle = (position: number) => {
         scale: 1,
         opacity: 1,
         zIndex: 20,
+        filter: 'blur(0px)',
       };
     case -1: // Left — behind
       return {
@@ -32,6 +33,7 @@ const getCardStyle = (position: number) => {
         scale: 0.80,
         opacity: 0.75,
         zIndex: 10,
+        filter: 'blur(3px)',
       };
     case 1: // Right — behind
       return {
@@ -41,6 +43,7 @@ const getCardStyle = (position: number) => {
         scale: 0.80,
         opacity: 0.75,
         zIndex: 10,
+        filter: 'blur(3px)',
       };
     default: // Hidden
       return {
@@ -50,6 +53,7 @@ const getCardStyle = (position: number) => {
         scale: 0.5,
         opacity: 0,
         zIndex: 0,
+        filter: 'blur(5px)',
       };
   }
 };
@@ -127,6 +131,7 @@ export const CategoriesShowcase = () => {
                   rotateY: style.rotateY,
                   scale: style.scale,
                   opacity: style.opacity,
+                  filter: style.filter,
                 }}
                 transition={{
                   duration: 0.7,
@@ -151,7 +156,11 @@ export const CategoriesShowcase = () => {
                   <img
                     src={category.image}
                     alt={category.name}
-                    className="w-full h-full object-contain"
+                    className={`w-full h-full object-contain ${
+                      category.slug === 'Rick n Morty' || category.slug === 'Dark' || category.slug ==='Shrooms'
+                        ? 'scale-75' 
+                        : ''
+                    }`}
                   />
 
                   {/* Gradient overlay */}

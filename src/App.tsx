@@ -46,6 +46,7 @@ const AdminOrderDetail = lazy(() => import("./pages/admin/AdminOrderDetail"));
 const AdminOffers = lazy(() => import("./pages/admin/AdminOffers"));
 const AdminOfferForm = lazy(() => import("./pages/admin/AdminOfferForm"));
 const AdminReviews = lazy(() => import("./pages/admin/AdminReviews"));
+const AdminVideo = lazy(() => import("./pages/admin/AdminVideo"));
 const AdminChangePassword = lazy(() => import("./pages/admin/AdminChangePassword"));
 const InventoryOverview = lazy(() => import("./pages/admin/inventory/InventoryOverview"));
 const InventoryAlerts = lazy(() => import("./pages/admin/inventory/InventoryAlerts"));
@@ -111,6 +112,7 @@ const App = () => (
               <Route path="offers/create" element={<AdminOfferForm />} />
               <Route path="offers/edit/:offerId" element={<AdminOfferForm />} />
               <Route path="reviews" element={<AdminReviews />} />
+              <Route path="video" element={<AdminVideo />} />
               <Route path="change-password" element={<AdminChangePassword />} />
               <Route path="inventory/overview" element={<InventoryOverview />} />
               <Route path="inventory/alerts" element={<InventoryAlerts />} />

@@ -87,7 +87,7 @@ const AboutPage = () => {
                 transition={{ delay: 0.1 }}
                 className="font-display text-5xl md:text-6xl lg:text-7xl mb-4"
               >
-                🌌 BLACK POTHEADS
+                 BLACK POTHEADS
               </motion.h2>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

@@ -135,7 +135,7 @@ const AdminOrders = () => {
   };
 
   const statuses = ['Pending', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'];
-  const categories = ['Shiva', 'Shrooms', 'LSD', 'Chakras', 'Dark', 'Rick n Morty'];
+  const categories = ['Shiva', 'Shrooms', 'ACID', 'Chakras', 'Dark', 'Rick n Morty'];
 
   return (
     <div>

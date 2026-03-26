@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const collections = [
   { name: 'SHIVA', slug: 'Shiva' },
   { name: 'SHROOMS', slug: 'Shrooms' },
-  { name: 'LSD', slug: 'LSD' },
+  { name: 'ACID', slug: 'ACID' },
   { name: 'CHAKRAS', slug: 'Chakras' },
   { name: 'DARK', slug: 'Dark' },
   { name: 'RICK N MORTY', slug: 'Rick n Morty' },

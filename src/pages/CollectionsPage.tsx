@@ -20,10 +20,10 @@ const collections = [
     image: '/Shrooms.PNG',
   },
   {
-    id: 'LSD',
-    title: 'LSD Collection',
+    id: 'ACID',
+    title: 'ACID Collection',
     subtitle: 'Mind Expansion',
-    description: 'Dive into a kaleidoscope of colors and patterns inspired by the psychedelic revolution. Our LSD collection features mesmerizing geometric patterns, optical illusions, and vibrant color combinations that transcend ordinary fashion. Each design is a visual journey, blending sacred geometry with modern street style.',
+    description: 'Dive into a kaleidoscope of colors and patterns inspired by the psychedelic revolution. Our ACID collection features mesmerizing geometric patterns, optical illusions, and vibrant color combinations that transcend ordinary fashion. Each design is a visual journey, blending sacred geometry with modern street style.',
     features: ['Geometric Patterns', 'Optical Illusions', 'Bold Colors', 'Premium Prints'],
     image: '/LSD.PNG',
   },

@@ -92,7 +92,7 @@ const AdminOffers = () => {
     return new Date(validUntil) < new Date();
   };
 
-  const categories = ['Shiva', 'Shrooms', 'LSD', 'Chakras', 'Dark', 'Rick n Morty'];
+  const categories = ['Shiva', 'Shrooms', 'ACID', 'Chakras', 'Dark', 'Rick n Morty'];
 
   return (
     <div>

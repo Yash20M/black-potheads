@@ -17,7 +17,7 @@ const categories = [
   { id: 'all', label: 'All' },
   { id: 'Shiva', label: 'Shiva' },
   { id: 'Shrooms', label: 'Shrooms' },
-  { id: 'LSD', label: 'LSD' },
+  { id: 'ACID', label: 'ACID' },
   { id: 'Chakras', label: 'Chakras' },
   { id: 'Dark', label: 'Dark' },
   { id: 'Rick n Morty', label: 'Rick n Morty' },
@@ -36,10 +36,10 @@ const collectionDetails = {
     description: 'Journey into the mystical world of psychedelic mushrooms with our trippy designs. This collection celebrates consciousness expansion and natural wisdom through vibrant, mind-bending artwork. Featuring colorful mushroom patterns, fractal designs, and nature-inspired motifs that capture the essence of psychedelic experiences. Made for free spirits and consciousness explorers.',
     highlights: ['Vibrant Psychedelic Colors', 'Nature-Inspired Designs', 'Soft Comfortable Fabric', 'Unique Artwork'],
   },
-  'LSD': {
-    title: 'LSD Collection',
+  'ACID': {
+    title: 'ACID Collection',
     subtitle: 'Mind Expansion',
-    description: 'Dive into a kaleidoscope of colors and patterns inspired by the psychedelic revolution. Our LSD collection features mesmerizing geometric patterns, optical illusions, and vibrant color combinations that transcend ordinary fashion. Each design is a visual journey, blending sacred geometry with modern street style. Art that challenges perception and celebrates consciousness.',
+    description: 'Dive into a kaleidoscope of colors and patterns inspired by the psychedelic revolution. Our ACID collection features mesmerizing geometric patterns, optical illusions, and vibrant color combinations that transcend ordinary fashion. Each design is a visual journey, blending sacred geometry with modern street style. Art that challenges perception and celebrates consciousness.',
     highlights: ['Geometric Patterns', 'Optical Illusions', 'Bold Color Palettes', 'Premium Quality Prints'],
   },
   'Chakras': {
@@ -257,7 +257,7 @@ const ShopPage = () => {
                       />
                     </motion.div>
                   )}
-                  {activeCategory === 'LSD' && (
+                  {activeCategory === 'ACID' && (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.5, rotate: -180, y: 0 }}
                       animate={{ 
@@ -279,7 +279,7 @@ const ShopPage = () => {
                     >
                       <motion.img 
                         src="/LSD.PNG" 
-                        alt="LSD" 
+                        alt="ACID" 
                         className="h-64 md:h-80 lg:h-96 w-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
                         animate={{
                           y: [0, -10, 0],

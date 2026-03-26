@@ -13,7 +13,7 @@ const InventoryAlerts = () => {
   const [threshold, setThreshold] = useState(10);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  const categories = ['Shiva', 'Shrooms', 'LSD', 'Chakras', 'Dark', 'Rick n Morty'];
+  const categories = ['Shiva', 'Shrooms', 'ACID', 'Chakras', 'Dark', 'Rick n Morty'];
 
   useEffect(() => {
     loadAlerts();

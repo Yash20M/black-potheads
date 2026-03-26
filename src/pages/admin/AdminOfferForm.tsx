@@ -114,7 +114,7 @@ const AdminOfferForm = () => {
     }
   };
 
-  const categories = ['Shiva', 'Shrooms', 'LSD', 'Chakras', 'Dark', 'Rick n Morty'];
+  const categories = ['Shiva', 'Shrooms', 'ACID', 'Chakras', 'Dark', 'Rick n Morty'];
 
   const calculateDiscountedPrice = () => {
     const price = parseFloat(formData.originalPrice);
