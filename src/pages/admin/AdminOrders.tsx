@@ -227,9 +227,9 @@ const AdminOrders = () => {
                     </td>
                     <td className="p-4">
                       <div>
-                        <p className="font-medium">{order.user?.name}</p>
+                        <p className="font-medium">{order.user?.name || order.guestInfo?.name || 'Guest'}</p>
                         <p className="text-sm text-muted-foreground">
-                          {order.user?.email}
+                          {order.user?.email || order.guestInfo?.email || 'N/A'}
                         </p>
                       </div>
                     </td>

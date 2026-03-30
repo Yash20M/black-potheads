@@ -12,6 +12,9 @@ import OfferModal from "@/components/OfferModal";
 
 // Eager load critical pages (checkout is critical for conversions)
 import CheckoutPage from "./pages/CheckoutPage";
+import GuestCheckoutPage from "./pages/GuestCheckoutPage";
+import GuestOrderConfirmationPage from "./pages/GuestOrderConfirmationPage";
+import TrackOrderPage from "./pages/TrackOrderPage";
 
 // Lazy load other pages for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -87,6 +90,9 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/guest-checkout" element={<GuestCheckoutPage />} />
+              <Route path="/guest-order-confirmation/:orderId" element={<GuestOrderConfirmationPage />} />
+              <Route path="/track-order" element={<TrackOrderPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/orders" element={<OrdersPage />} />
               <Route path="/orders/:orderId" element={<OrderDetailPage />} />

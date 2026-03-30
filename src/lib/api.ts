@@ -183,6 +183,152 @@ export const orderApi = {
       body: JSON.stringify(data),
     }),
 
+  // Guest Order APIs (no authentication required)
+  createGuestOrder: (data: {
+    guestInfo: {
+      name: string;
+      email: string;
+      phone: string;
+    };
+    items: Array<{
+      product: string;
+      category: string;
+      size: string;
+      quantity: number;
+    }>;
+    address: {
+      line1: string;
+      city: string;
+      state: string;
+      pincode: string;
+      country: string;
+    };
+    totalAmount: number;
+    paymentMethod: string;
+  }) => {
+    const url = `${API_BASE_URL}/api/v1/orders/guest/create`;
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    }).then(async (response) => {
+      const result = await response.json();
+      if (!response.ok) {
+        throw new ApiError(response.status, result.message || 'An error occurred');
+      }
+      return result;
+    });
+  },
+
+  createGuestRazorpayOrder: (data: {
+    guestInfo: {
+      name: string;
+      email: string;
+      phone: string;
+    };
+    items: Array<{
+      product: string;
+      category: string;
+      size: string;
+      quantity: number;
+    }>;
+    address: {
+      line1: string;
+      city: string;
+      state: string;
+      pincode: string;
+      country: string;
+    };
+    totalAmount: number;
+  }) => {
+    const url = `${API_BASE_URL}/api/v1/orders/guest/create-razorpay-order`;
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    }).then(async (response) => {
+      const result = await response.json();
+      if (!response.ok) {
+        throw new ApiError(response.status, result.message || 'An error occurred');
+      }
+      return result;
+    });
+  },
+
+  verifyGuestPayment: (data: {
+    razorpayOrderId: string;
+    razorpayPaymentId: string;
+    razorpaySignature: string;
+    orderId: string;
+    guestInfo: {
+      email: string;
+    };
+  }) => {
+    const url = `${API_BASE_URL}/api/v1/orders/guest/verify-payment`;
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    }).then(async (response) => {
+      const result = await response.json();
+      if (!response.ok) {
+        throw new ApiError(response.status, result.message || 'An error occurred');
+      }
+      return result;
+    });
+  },
+
+  trackGuestOrder: (data: {
+    orderId: string;
+    email?: string;
+    phone?: string;
+  }) => {
+    const url = `${API_BASE_URL}/api/v1/orders/guest/track`;
+    // Clean up the data - only send fields that have values
+    const cleanData: any = { orderId: data.orderId };
+    if (data.email && data.email.trim()) cleanData.email = data.email.trim();
+    if (data.phone && data.phone.trim()) cleanData.phone = data.phone.trim();
+    
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cleanData),
+    }).then(async (response) => {
+      const result = await response.json();
+      if (!response.ok) {
+        throw new ApiError(response.status, result.message || 'An error occurred');
+      }
+      return result;
+    });
+  },
+
+  getGuestOrder: (orderId: string, email?: string, phone?: string) => {
+    const params = new URLSearchParams();
+    if (email) params.append('email', email);
+    if (phone) params.append('phone', phone);
+    const url = `${API_BASE_URL}/api/v1/orders/guest/${orderId}?${params.toString()}`;
+    return fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then(async (response) => {
+      const result = await response.json();
+      if (!response.ok) {
+        throw new ApiError(response.status, result.message || 'An error occurred');
+      }
+      return result;
+    });
+  },
+
   getAll: (page = 1, limit = 10) =>
     apiFetch(`/api/v1/orders?page=${page}&limit=${limit}`),
 

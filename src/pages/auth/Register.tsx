@@ -21,11 +21,22 @@ const Register = () => {
 
     try {
       // Register the user
-      await authApi.register({ name, email, password, phone });
-      toast.success('Registration successful! Please login.');
+      const result: any = await authApi.register({ name, email, password, phone });
       
-      // Redirect to login page
-      navigate('/login');
+      // Check if any guest orders were linked
+      if (result.linkedOrders && result.linkedOrders > 0) {
+        toast.success(
+          `Account created! ${result.linkedOrders} previous order(s) linked to your account.`,
+          { duration: 5000 }
+        );
+      } else {
+        toast.success('Registration successful! Please login.');
+      }
+      
+      // Redirect to login page after a short delay
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } catch (error: any) {
       toast.error(error.message || 'Registration failed');
     } finally {
@@ -71,15 +82,15 @@ const Register = () => {
           </div>
 
           <div>
-            <Label htmlFor="phone">Phone</Label>
+            <Label htmlFor="phone">Phone (10 digits)</Label>
             <Input
               id="phone"
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required
-              maxLength={13}
-              placeholder="+91 1234567890"
+              maxLength={10}
+              placeholder="9876543210"
             />
           </div>
 
@@ -106,6 +117,13 @@ const Register = () => {
             {loading ? 'Creating account...' : 'Register'}
           </Button>
         </form>
+
+        {/* Order Linking Info */}
+        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <p className="text-xs text-blue-900 dark:text-blue-100 text-center">
+            ℹ️ If you placed orders as a guest with this email/phone, they will be automatically linked to your account!
+          </p>
+        </div>
 
         <p className="text-center mt-6 text-sm text-muted-foreground">
           Already have an account?{' '}

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 const footerLinks = {
   support: [
+    { label: 'Track Order', path: '/track-order' },
     { label: 'FAQ', path: '/faq' },
     { label: 'Shipping Policy', path: '/legal/shipping-policy' },
     { label: 'Refund Policy', path: '/legal/refund-policy' },

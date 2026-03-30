@@ -58,18 +58,13 @@ const CheckoutPage = () => {
     // Don't redirect if order was just placed
     if (orderPlaced) return;
 
-    if (!user) {
-      toast.error('Please login to checkout');
-      navigate('/login');
-      return;
-    }
-
+    // Allow guest checkout - don't force login
     if (items.length === 0) {
       toast.error('Your cart is empty');
       navigate('/shop');
       return;
     }
-  }, [user, items, navigate, orderPlaced]);
+  }, [items, navigate, orderPlaced]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -259,6 +254,25 @@ const CheckoutPage = () => {
         >
           CHECKOUT
         </motion.h1>
+
+        {/* Guest Checkout Option */}
+        {!user && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-2xl mx-auto mb-8"
+          >
+            <div className="bg-secondary/50 border border-border rounded-lg p-6 text-center">
+              <h3 className="font-display text-xl mb-2">Don't have an account?</h3>
+              <p className="text-muted-foreground mb-4">
+                You can checkout as a guest with Cash on Delivery
+              </p>
+              <Button variant="outline" size="lg" asChild>
+                <Link to="/guest-checkout">Continue as Guest</Link>
+              </Button>
+            </div>
+          </motion.div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           {/* Checkout Form */}

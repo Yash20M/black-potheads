@@ -24,8 +24,8 @@ export const AboutBrandSection = () => {
               style={{ scale: imageScale, rotate: imageRotate }}
               className="absolute top-0 left-0 w-4/5 h-80 bg-black border border-gray-800 overflow-hidden flex items-center justify-center"
             >
-              <motion.img 
-                src="/logo.png" 
+              <motion.img
+                src="/logo.png"
                 alt="Black Potheads Logo"
                 className="w-32 h-32 md:w-40 md:h-40 object-contain opacity-80"
                 initial={{ opacity: 0, scale: 0.5, rotate: -180 }}
@@ -35,7 +35,7 @@ export const AboutBrandSection = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             </motion.div>
-            
+
             <motion.div
               style={{ y: textY }}
               className="absolute bottom-0 right-0 w-3/4 h-72 bg-black border border-gray-800 p-8 flex flex-col justify-between"
@@ -48,9 +48,9 @@ export const AboutBrandSection = () => {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="flex justify-center"
               >
-                <img 
-                  src="/logo.png" 
-                  alt="Black Potheads Logo" 
+                <img
+                  src="/logo.png"
+                  alt="Black Potheads Logo"
                   className="w-20 h-20 object-contain"
                 />
               </motion.div>
@@ -99,8 +99,8 @@ export const AboutBrandSection = () => {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ 
-                      duration: 0.5, 
+                    transition={{
+                      duration: 0.5,
                       delay: index * 0.05,
                     }}
                     className="inline-block hover:scale-110 transition-transform"
@@ -117,7 +117,7 @@ export const AboutBrandSection = () => {
                 className="h-1 bg-primary mt-4"
               />
             </motion.div>
-            
+
             <motion.h2
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -136,8 +136,8 @@ export const AboutBrandSection = () => {
               transition={{ delay: 0.2 }}
               className="text-muted-foreground text-xl md:text-2xl mb-6 leading-relaxed"
             >
-              Why "Black"? Black is not dark. Black is the void. The cosmic womb. 
-              The space before creation. The space where visions are born. 
+              Why "Black"? Black is not dark. Black is the void. The cosmic womb.
+              The space before creation. The space where visions are born.
               Psychedelic visuals explode from black.
             </motion.p>
 
@@ -148,7 +148,7 @@ export const AboutBrandSection = () => {
               transition={{ delay: 0.3 }}
               className="text-muted-foreground text-xl md:text-2xl mb-8 leading-relaxed"
             >
-              We don't follow trends—we burn them. Our tees are statements, 
+              We don't follow trends—we burn them. Our tees are statements,
               worn by those who refuse to blend in.
             </motion.p>
 
@@ -180,9 +180,9 @@ export const AboutBrandSection = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.7 }}
             >
-              <Button 
-                variant="default" 
-                size="lg" 
+              <Button
+                variant="default"
+                size="lg"
                 asChild
                 className="group"
               >

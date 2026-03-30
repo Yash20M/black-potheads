@@ -178,18 +178,16 @@ const AdminOrderDetail = () => {
           <div className="bg-secondary/50 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <p className="text-sm text-muted-foreground mb-1">Name</p>
-              <p className="font-medium">{order.user?.name || 'N/A'}</p>
+              <p className="font-medium">{order.user?.name || order.guestInfo?.name || 'Guest'}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Email</p>
-              <p className="font-medium">{order.user?.email || 'N/A'}</p>
+              <p className="font-medium">{order.user?.email || order.guestInfo?.email || 'N/A'}</p>
             </div>
-            {order.user?.phone && (
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Phone</p>
-                <p className="font-medium">{order.user.phone}</p>
-              </div>
-            )}
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Phone</p>
+              <p className="font-medium">{order.user?.phone || order.guestInfo?.phone || 'N/A'}</p>
+            </div>
           </div>
         </motion.div>
 
