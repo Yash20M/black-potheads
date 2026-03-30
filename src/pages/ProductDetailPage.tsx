@@ -439,27 +439,13 @@ const ProductDetailPage = () => {
                 )}
               </div>
 
-              {/* Stock Status */}
+              {/* Oversized Fit Info */}
               <div className="mb-6">
-                {product.stock !== undefined && (
-                  <div className="flex items-center gap-2">
-                    {product.stock > 0 ? (
-                      <>
-                        <div className="w-2 h-2 rounded-full bg-gray-600"></div>
-                        <span className="text-sm text-gray-600">
-                          {product.stock <= 5 
-                            ? `Only ${product.stock} left in stock` 
-                            : 'In Stock'}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <div className="w-2 h-2 rounded-full bg-gray-400"></div>
-                        <span className="text-sm text-gray-400">Out of Stock</span>
-                      </>
-                    )}
-                  </div>
-                )}
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold text-black">Oversized Fit</span>
+                  <br />
+                  Ishaan is 6'0 and wearing Size XL
+                </p>
               </div>
 
               <p className="text-gray-600 mb-8 leading-relaxed text-sm">{product.description}</p>
@@ -503,7 +489,7 @@ const ProductDetailPage = () => {
                 </div>
               </div>
 
-              {/* Add to Cart and Wishlist Buttons */}
+              {/* Add to Cart, Buy Now and Wishlist Buttons */}
               <div className="mb-6 flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <Button 
                   variant="default" 
@@ -514,11 +500,20 @@ const ProductDetailPage = () => {
                 >
                   {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
                 </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="w-full sm:flex-1 border-2 border-black text-black hover:bg-black hover:text-white uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  onClick={handleAddToCart}
+                  disabled={!product.stock || product.stock === 0}
+                >
+                  {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Buy Now'}
+                </Button>
                 <Button
                   variant="outline"
                   size="lg"
                   className={cn(
-                    "w-full sm:w-auto h-11 sm:h-14 border-2 transition-colors",
+                    "w-auto h-11 sm:h-14 px-4 border-2 transition-colors",
                     inWishlist
                       ? "bg-black border-black text-white hover:bg-gray-800"
                       : "border-black text-black hover:bg-black hover:text-white"
@@ -527,12 +522,7 @@ const ProductDetailPage = () => {
                   disabled={isTogglingWishlist}
                   aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
                 >
-                  <div className="flex items-center justify-center gap-2">
-                    <Heart size={16} className={cn("sm:w-[18px] sm:h-[18px]", inWishlist ? 'fill-current' : '')} />
-                    <span className="sm:hidden text-xs uppercase tracking-wider">
-                      {inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
-                    </span>
-                  </div>
+                  <Heart size={18} className={cn(inWishlist ? 'fill-current' : '')} />
                 </Button>
               </div>
 
@@ -736,11 +726,61 @@ const ProductDetailPage = () => {
                       </ul>
                     </div>
                     <div>
-                      <h3 className="font-medium mb-2 text-gray-900">Size Guide</h3>
-                      <div className="text-gray-600 space-y-1 text-sm">
-                        {product.sizes.map((size, idx) => (
-                          <p key={size}>Size {size} - Standard fit</p>
-                        ))}
+                      <h3 className="font-medium mb-4 text-gray-900">Size Guide (Oversized Fit)</h3>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm border-collapse">
+                          <thead>
+                            <tr className="border-b border-gray-300">
+                              <th className="text-left py-2 px-3 font-semibold text-gray-900">Size</th>
+                              <th className="text-left py-2 px-3 font-semibold text-gray-900">Length (L)</th>
+                              <th className="text-left py-2 px-3 font-semibold text-gray-900">Chest (C)</th>
+                              <th className="text-left py-2 px-3 font-semibold text-gray-900">Shoulder (S)</th>
+                              <th className="text-left py-2 px-3 font-semibold text-gray-900">Sleeve</th>
+                            </tr>
+                          </thead>
+                          <tbody className="text-gray-600">
+                            <tr className="border-b border-gray-200">
+                              <td className="py-2 px-3 font-medium">S</td>
+                              <td className="py-2 px-3">26</td>
+                              <td className="py-2 px-3">22</td>
+                              <td className="py-2 px-3">6.5</td>
+                              <td className="py-2 px-3">8.5</td>
+                            </tr>
+                            <tr className="border-b border-gray-200">
+                              <td className="py-2 px-3 font-medium">M</td>
+                              <td className="py-2 px-3">27</td>
+                              <td className="py-2 px-3">23</td>
+                              <td className="py-2 px-3">7</td>
+                              <td className="py-2 px-3">9</td>
+                            </tr>
+                            <tr className="border-b border-gray-200">
+                              <td className="py-2 px-3 font-medium">L</td>
+                              <td className="py-2 px-3">28</td>
+                              <td className="py-2 px-3">24</td>
+                              <td className="py-2 px-3">7.5</td>
+                              <td className="py-2 px-3">9.5</td>
+                            </tr>
+                            <tr className="border-b border-gray-200">
+                              <td className="py-2 px-3 font-medium">XL</td>
+                              <td className="py-2 px-3">29</td>
+                              <td className="py-2 px-3">25</td>
+                              <td className="py-2 px-3">8</td>
+                              <td className="py-2 px-3">10</td>
+                            </tr>
+                            <tr className="border-b border-gray-200">
+                              <td className="py-2 px-3 font-medium">XXL</td>
+                              <td className="py-2 px-3">30</td>
+                              <td className="py-2 px-3">26</td>
+                              <td className="py-2 px-3">8.5</td>
+                              <td className="py-2 px-3">10.5</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div className="mt-4 space-y-1 text-xs text-gray-500">
+                        <p>• All measurements are in inches</p>
+                        <p>• This is an oversized fit</p>
+                        <p>• Slight variation of 0.5–1 inch may occur</p>
                       </div>
                     </div>
                   </div>

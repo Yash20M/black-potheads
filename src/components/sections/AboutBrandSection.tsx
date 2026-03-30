@@ -136,9 +136,9 @@ export const AboutBrandSection = () => {
               transition={{ delay: 0.2 }}
               className="text-muted-foreground text-xl md:text-2xl mb-6 leading-relaxed"
             >
-              Black Potheads was born from the underground — a rebellion against 
-              generic streetwear. Every print is a collaboration with tattoo artists, 
-              graffiti writers, and dark illustrators.
+              Why "Black"? Black is not dark. Black is the void. The cosmic womb. 
+              The space before creation. The space where visions are born. 
+              Psychedelic visuals explode from black.
             </motion.p>
 
             <motion.p

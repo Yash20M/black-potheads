@@ -480,7 +480,7 @@ const AdminProducts = () => {
 const ProductForm = ({ product, onSubmit }: any) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const categories = ['Shiva', 'Shrooms', 'ACID', 'Chakras', 'Dark', 'Rick n Morty'];
-  const sizes = ['S', 'M', 'L', 'XL'];
+  const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

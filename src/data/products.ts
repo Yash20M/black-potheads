@@ -26,7 +26,7 @@ export const products: Product[] = [
     category: 'gothic',
     image: gothicTee,
     isSale: true,
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     description: 'Gothic floral rose print on premium black cotton. A tribute to dark romanticism.',
     badge: 'Sale',
   },
@@ -47,7 +47,7 @@ export const products: Product[] = [
     category: 'graffiti',
     image: graffitiTee,
     isNew: true,
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     description: 'Neon dripping graffiti art print on black. Street art meets premium fashion.',
   },
   {
@@ -66,7 +66,7 @@ export const products: Product[] = [
     price: 49,
     category: 'typography',
     image: typoTee,
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     description: 'Bold typographic design on premium black cotton. Say it loud, wear it proud.',
   },
   // Additional products per category
@@ -76,7 +76,7 @@ export const products: Product[] = [
     price: 65,
     category: 'skulls',
     image: skullTee,
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     description: 'The reaper awaits. Premium skull print on ultra-soft black cotton.',
   },
   {
@@ -96,7 +96,7 @@ export const products: Product[] = [
     price: 52,
     category: 'graffiti',
     image: graffitiTee,
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     description: 'Raw graffiti art captured on cotton. Every tag tells a story.',
   },
   {
@@ -116,7 +116,7 @@ export const products: Product[] = [
     price: 58,
     category: 'tattoo',
     image: snakeTee,
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     description: 'Traditional tattoo flash art meets modern streetwear. Every detail matters.',
   },
   {

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Instagram, Twitter, Skull } from 'lucide-react';
+import { Instagram, Skull } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const footerLinks = {
@@ -39,15 +39,6 @@ export const Footer = () => {
                 className="w-10 h-10 border border-border flex items-center justify-center hover:border-primary hover:text-primary transition-colors"
               >
                 <Instagram size={18} />
-              </motion.a>
-              <motion.a
-                href="https://twitter.com/blackpotheads"
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.1, y: -2 }}
-                className="w-10 h-10 border border-border flex items-center justify-center hover:border-primary hover:text-primary transition-colors"
-              >
-                <Twitter size={18} />
               </motion.a>
             </div>
           </div>
