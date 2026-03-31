@@ -23,6 +23,7 @@ const CollectionsPage = lazy(() => import("./pages/CollectionsPage"));
 const ProductDetailPage = lazy(() => import("./pages/ProductDetailPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
+const CollabPage = lazy(() => import("./pages/CollabPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Login = lazy(() => import("./pages/auth/Login"));
 const Register = lazy(() => import("./pages/auth/Register"));
@@ -87,6 +88,7 @@ const App = () => (
               <Route path="/about" element={<AboutPage />} />
               <Route path="/our-story" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />
+              <Route path="/collab" element={<CollabPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/checkout" element={<CheckoutPage />} />

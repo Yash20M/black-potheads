@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CheckCircle, Copy, Package, MapPin, CreditCard, Calendar, ArrowRight } from 'lucide-react';
+import { CheckCircle, Copy, Package, MapPin, CreditCard, Calendar, ArrowRight, Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { orderApi } from '@/lib/api';
 import { toast } from 'sonner';
@@ -98,38 +98,52 @@ const GuestOrderConfirmationPage = () => {
           <p className="text-muted-foreground text-lg">Thank you for your order</p>
         </motion.div>
 
-        {/* Important: Save Order ID */}
+        {/* Easy Tracking Info */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="max-w-2xl mx-auto mb-8"
+          className="max-w-3xl mx-auto mb-8"
         >
-          <div className="bg-yellow-50 border-2 border-yellow-500 rounded-lg p-6">
-            <h3 className="font-display text-xl mb-3 flex items-center gap-2 text-gray-900">
-              ⚠️ IMPORTANT: Save This Information
-            </h3>
-            <p className="text-sm text-gray-700 mb-4">
-              You'll need this to track your order:
-            </p>
-
-            <div className="bg-white border border-gray-300 rounded-lg p-4 mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-gray-900">Order ID:</span>
-                <Button variant="outline" size="sm" onClick={copyOrderId} className="bg-white text-gray-900 border-gray-300 hover:bg-gray-100">
-                  <Copy size={14} className="mr-2" />
-                  Copy
-                </Button>
+          <div className="bg-card border-2 border-primary p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-primary/10 border border-primary flex items-center justify-center">
+                <Package size={24} className="text-primary" />
               </div>
-              <p className="font-mono text-lg break-all text-gray-900 bg-gray-50 p-2 rounded">{order._id}</p>
+              <h3 className="font-display text-2xl">EASY ORDER TRACKING</h3>
             </div>
 
-            <div className="space-y-2 text-sm text-gray-900">
-              <p>
-                <strong className="text-gray-900">Email:</strong> {order.guestInfo.email}
-              </p>
-              <p>
-                <strong className="text-gray-900">Phone:</strong> {order.guestInfo.phone}
+            <p className="text-muted-foreground mb-6">
+              Track your order anytime using just your email or phone number:
+            </p>
+
+            <div className="bg-background border border-border p-6 mb-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-secondary border border-border flex items-center justify-center flex-shrink-0">
+                    <Mail size={18} className="text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground">Email</p>
+                    <p className="font-medium">{order.guestInfo.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-secondary border border-border flex items-center justify-center flex-shrink-0">
+                    <Phone size={18} className="text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground">Phone</p>
+                    <p className="font-medium">{order.guestInfo.phone}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-primary/5 border border-primary/20 p-4 mb-6">
+              <p className="font-display text-lg mb-2">✨ NO ORDER ID NEEDED!</p>
+              <p className="text-sm text-muted-foreground">
+                Just enter your email or phone on the tracking page to see all your orders
               </p>
             </div>
           </div>
@@ -141,29 +155,31 @@ const GuestOrderConfirmationPage = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-card border border-border rounded-lg p-6"
+            className="bg-card border border-border p-6 hover:border-primary transition-colors"
           >
-            <h3 className="font-display text-2xl mb-4 flex items-center gap-2">
-              <Package size={24} />
-              Order Details
-            </h3>
-
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Status:</span>
-                <span className="font-semibold">{order.status}</span>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-secondary border border-border flex items-center justify-center">
+                <CreditCard size={24} className="text-primary" />
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Payment:</span>
+              <h3 className="font-display text-2xl">ORDER DETAILS</h3>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex justify-between items-center pb-3 border-b border-border">
+                <span className="text-sm uppercase tracking-wider text-muted-foreground">Status</span>
+                <span className="font-semibold uppercase tracking-wide">{order.status}</span>
+              </div>
+              <div className="flex justify-between items-center pb-3 border-b border-border">
+                <span className="text-sm uppercase tracking-wider text-muted-foreground">Payment</span>
                 <span className="font-semibold">{order.paymentMethod}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Order Date:</span>
+              <div className="flex justify-between items-center pb-3 border-b border-border">
+                <span className="text-sm uppercase tracking-wider text-muted-foreground">Order Date</span>
                 <span>{new Date(order.createdAt).toLocaleDateString()}</span>
               </div>
-              <div className="flex justify-between pt-3 border-t border-border">
-                <span className="text-muted-foreground">Total Amount:</span>
-                <span className="font-display text-xl">₹{order.totalAmount}</span>
+              <div className="flex justify-between items-center pt-2">
+                <span className="font-display text-lg">TOTAL</span>
+                <span className="font-display text-2xl text-primary">₹{order.totalAmount}</span>
               </div>
             </div>
           </motion.div>
@@ -173,21 +189,23 @@ const GuestOrderConfirmationPage = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-card border border-border rounded-lg p-6"
+            className="bg-card border border-border p-6 hover:border-primary transition-colors"
           >
-            <h3 className="font-display text-2xl mb-4 flex items-center gap-2">
-              <MapPin size={24} />
-              Delivery Address
-            </h3>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-secondary border border-border flex items-center justify-center">
+                <MapPin size={24} className="text-primary" />
+              </div>
+              <h3 className="font-display text-2xl">DELIVERY ADDRESS</h3>
+            </div>
 
-            <div className="text-sm space-y-1">
-              <p className="font-semibold">{order.guestInfo.name}</p>
-              <p>{order.address.line1}</p>
-              <p>
+            <div className="space-y-2 text-sm">
+              <p className="font-semibold text-base">{order.guestInfo.name}</p>
+              <p className="text-muted-foreground">{order.address.line1}</p>
+              <p className="text-muted-foreground">
                 {order.address.city}, {order.address.state}
               </p>
-              <p>{order.address.pincode}</p>
-              <p>{order.address.country}</p>
+              <p className="text-muted-foreground">{order.address.pincode}</p>
+              <p className="text-muted-foreground">{order.address.country}</p>
             </div>
           </motion.div>
         </div>
@@ -199,41 +217,43 @@ const GuestOrderConfirmationPage = () => {
           transition={{ delay: 0.6 }}
           className="max-w-4xl mx-auto mt-6"
         >
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h3 className="font-display text-2xl mb-6">Items Ordered</h3>
+          <div className="bg-card border border-border p-6 hover:border-primary transition-colors">
+            <h3 className="font-display text-2xl mb-6">ITEMS ORDERED</h3>
 
             <div className="space-y-4">
               {order.items.map((item: any, index: number) => {
                 // Handle different image formats from backend
-                const getImageUrl = () => {
-                  if (item.product?.images && Array.isArray(item.product.images) && item.product.images.length > 0) {
-                    return item.product.images[0];
-                  }
-                  if (item.product?.image) {
-                    return item.product.image;
-                  }
-                  return '/placeholder.svg';
-                };
+                const imageUrl = item.product?.images?.[0]
+                  ? typeof item.product.images[0] === 'string'
+                    ? item.product.images[0]
+                    : item.product.images[0]?.url
+                  : item.product?.image
+                  ? typeof item.product.image === 'string'
+                    ? item.product.image
+                    : item.product.image?.url
+                  : '/placeholder.svg';
 
                 return (
-                  <div key={index} className="flex gap-4 pb-4 border-b border-border last:border-0">
-                    <img
-                      src={getImageUrl()}
-                      alt={item.product?.name || 'Product'}
-                      className="w-20 h-20 object-cover rounded"
-                      onError={(e) => {
-                        e.currentTarget.src = '/placeholder.svg';
-                      }}
-                    />
+                  <div key={index} className="flex gap-4 pb-4 border-b border-border last:border-0 last:pb-0">
+                    <div className="w-24 h-24 border border-border overflow-hidden flex-shrink-0">
+                      <img
+                        src={imageUrl}
+                        alt={item.product?.name || 'Product'}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = '/placeholder.svg';
+                        }}
+                      />
+                    </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold">{item.product?.name || 'Product'}</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Size: {item.size} | Quantity: {item.quantity}
+                      <h4 className="font-semibold text-lg mb-1">{item.product?.name || 'Product'}</h4>
+                      <p className="text-sm text-muted-foreground uppercase tracking-wider">
+                        Size: {item.size} | Qty: {item.quantity}
                       </p>
-                      <p className="font-display mt-1">₹{item.price}</p>
+                      <p className="font-display text-primary mt-2">₹{item.price}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-display">₹{item.price * item.quantity}</p>
+                      <p className="font-display text-xl">₹{item.price * item.quantity}</p>
                     </div>
                   </div>
                 );
@@ -250,17 +270,17 @@ const GuestOrderConfirmationPage = () => {
           className="max-w-4xl mx-auto mt-8 space-y-6"
         >
           {/* Registration Prompt for Guest Users */}
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6 text-center">
-            <h3 className="font-display text-2xl mb-2">🎉 Want to track your orders easily?</h3>
-            <p className="text-muted-foreground mb-4">
+          <div className="bg-card border-2 border-primary p-8 text-center">
+            <h3 className="font-display text-3xl mb-3">🎉 JOIN THE MOVEMENT</h3>
+            <p className="text-muted-foreground mb-6 text-lg">
               Create an account and all your orders will be automatically linked!
             </p>
-            <Button variant="hero" size="lg" asChild className="mb-3">
+            <Button variant="hero" size="lg" asChild className="mb-4">
               <Link to="/register">
                 Create Account Now
               </Link>
             </Button>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
               Use the same email ({order.guestInfo.email}) to link this order
             </p>
           </div>

@@ -35,7 +35,7 @@ export const ScrollingText = () => {
                     to={category.path}
                     className="group inline-block mx-8"
                   >
-                    <span className="font-display text-[12vw] text-foreground/50 group-hover:text-foreground/80 transition-colors duration-300">
+                    <span className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground/50 group-hover:text-foreground/80 transition-colors duration-300">
                       {category.name} •
                     </span>
                   </Link>

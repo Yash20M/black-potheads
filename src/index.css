@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700&family=Bebas+Neue&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -44,7 +44,8 @@
 
     /* Typography */
     --font-display: 'Bebas Neue', sans-serif;
-    --font-body: 'Space Grotesk', sans-serif;
+    --font-body: 'Outfit', sans-serif;
+    --font-header-menu-family: 'Outfit', sans-serif;
 
     /* Shadows */
     --shadow-glow: 0 0 40px hsl(0 0% 20% / 0.3);
@@ -69,6 +70,13 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     letter-spacing: 0.02em;
+  }
+
+  /* Menu and navigation elements */
+  .menu,
+  nav,
+  [role="navigation"] {
+    font-family: var(--font-header-menu-family);
   }
 
   /* Performance: Use GPU acceleration for transforms */

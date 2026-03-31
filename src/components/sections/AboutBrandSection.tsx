@@ -187,7 +187,7 @@ export const AboutBrandSection = () => {
                 className="group"
               >
                 <Link to="/about" className="flex items-center gap-2">
-                  Explore Story
+                  The Origin
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>

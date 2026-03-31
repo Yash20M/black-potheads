@@ -284,6 +284,26 @@ export const orderApi = {
     });
   },
 
+  trackGuestOrdersByContact: (data: {
+    email?: string;
+    phone?: string;
+  }) => {
+    const url = `${API_BASE_URL}/api/v1/orders/guest/track-by-contact`;
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    }).then(async (response) => {
+      const result = await response.json();
+      if (!response.ok) {
+        throw new ApiError(response.status, result.message || 'An error occurred');
+      }
+      return result;
+    });
+  },
+
   trackGuestOrder: (data: {
     orderId: string;
     email?: string;

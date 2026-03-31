@@ -1,10 +1,71 @@
-// import { motion, useScroll, useTransform } from 'framer-motion';
-// import { useRef, useState, useEffect } from 'react';
-// import { Play, Volume2, VolumeX } from 'lucide-react';
-// import heroDark from '@/assets/hero-dark.jpg';
+import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 export const VideoSection = () => {
-  return null;
+  return (
+    <section className="py-20 bg-background relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-accent/5 to-background" />
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="max-w-4xl mx-auto text-center"
+        >
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="font-display text-5xl md:text-7xl lg:text-8xl leading-tight mb-6"
+          >
+            <span className="text-gradient">YOUR ART.</span>
+            <br />
+            <span className="text-accent-gradient">OUR PLATFORM!</span>
+          </motion.h2>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="space-y-4 mb-10"
+          >
+            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+              We collaborate with underground artists and creators
+              <br />
+              and turn their work into wearable revolution.
+            </p>
+            <p className="text-lg md:text-xl text-foreground font-medium">
+              If you've got the vision, we've got the platform.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4, type: 'spring', stiffness: 100 }}
+          >
+            <Button
+              variant="hero"
+              size="lg"
+              asChild
+              className="text-lg px-8 py-6 group"
+            >
+              <Link to="/collab">
+                JOIN THE MOVEMENT
+                <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+              </Link>
+            </Button>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
 };
 
 // export const VideoSection = () => {

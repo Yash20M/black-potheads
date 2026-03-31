@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ShoppingBag, Menu, X, Search, User, Heart } from 'lucide-react';
+import { ShoppingBag, Menu, X, Search, User, Heart, Package } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCartStore } from '@/store/cartStore';
@@ -209,6 +209,20 @@ export const Navbar = () => {
             </div>
           ) : (
             <div className="hidden md:flex items-center gap-2">
+              <Link to="/track-order">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className={cn(
+                    'p-1.5 sm:p-2 transition-colors relative',
+                    isHomePage ? 'text-white hover:text-gray-300' : 'text-black hover:text-gray-600'
+                  )}
+                  aria-label="Track Order"
+                  title="Track Order"
+                >
+                  <Package size={18} className="sm:w-5 sm:h-5" />
+                </motion.button>
+              </Link>
               <Link to="/login">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -367,6 +381,17 @@ export const Navbar = () => {
             </>
           ) : (
             <>
+              <Link to="/track-order" onClick={() => setIsMenuOpen(false)}>
+                <div className={cn(
+                  'text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b flex items-center gap-2',
+                  isHomePage 
+                    ? 'text-white border-gray-800' 
+                    : 'text-black border-gray-200'
+                )}>
+                  <Package size={20} />
+                  Track Order
+                </div>
+              </Link>
               <Link to="/login" onClick={() => setIsMenuOpen(false)}>
                 <div className={cn(
                   'text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b',

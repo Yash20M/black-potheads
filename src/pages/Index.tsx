@@ -203,11 +203,11 @@ const SmokeCanvas = ({ style }: { style?: React.CSSProperties }) => {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     const timeLoc = gl.getUniformLocation(program, 'time');
-    const vpLoc   = gl.getUniformLocation(program, 'vp');
+    const vpLoc = gl.getUniformLocation(program, 'vp');
     const startTime = Date.now();
 
     const resize = () => {
-      canvas.width  = canvas.offsetWidth;
+      canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
@@ -279,7 +279,7 @@ const Index = () => {
       const data: any = await productApi.getFeatured(3);
       const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
       setFeaturedProducts(normalized);
-      
+
       // Sync wishlist from API response
       const wishlistIds = data.products
         .filter((p: ApiProduct) => p.in_wishlist)
@@ -348,7 +348,7 @@ const Index = () => {
         <motion.div
           ref={imageRef}
           className="relative w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl h-[50vh] sm:h-[60vh] md:h-[65vh] lg:h-[70vh] mx-auto px-4 sm:px-0"
-          style={{ rotateX, rotateY, transformStyle: 'preserve-3d'}}
+          style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
@@ -406,20 +406,18 @@ const Index = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1 }}
         >
-          <p className="text-white/60 text-sm uppercase tracking-[0.3em]">
-            Move your cursor to explore
-          </p>
+
         </motion.div>
       </section>
 
       {/* Marquee */}
-     
+
 
       <BrandMarquee />
       <CategoriesShowcase />
 
       {/* Featured Products */}
-      {/* <section className="py-24 bg-background">
+      <section className="py-24 bg-background">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -453,7 +451,7 @@ const Index = () => {
             )}
           </div>
         </div>
-      </section> */}
+      </section>
 
       <ScrollingText />
       <TrendingSection />
