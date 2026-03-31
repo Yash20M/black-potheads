@@ -154,7 +154,7 @@ const ShopPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen pt-20 bg-white">
+    <div className="min-h-screen pt-20 bg-background">
       <SEO
         title={currentCollection 
           ? `${currentCollection.title} - Premium Printed T-Shirts | BLACK POTHEADS`
@@ -431,7 +431,7 @@ const ShopPage = () => {
       </section>
 
       {/* Products Section */}
-      <section className="py-12 sm:py-16 bg-white">
+      <section className="py-12 sm:py-16 bg-background">
         <div className="container mx-auto px-4 sm:px-6">
           {/* Category Filter */}
           <motion.div

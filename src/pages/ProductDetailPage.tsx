@@ -190,7 +190,7 @@ const ProductDetailPage = () => {
     : (product?.images[selectedImage] || product?.image || 'https://via.placeholder.com/400x500?text=No+Image');
 
   return (
-    <div className="min-h-screen pt-20 bg-white">
+    <div className="min-h-screen pt-20 bg-background">
       {product && (
         <SEO
           title={`${product.name} - Premium Printed T-Shirt | BLACK POTHEADS`}
@@ -231,10 +231,10 @@ const ProductDetailPage = () => {
           }}
         />
       )}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-card border-b border-border">
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-            <Link to="/shop" className="inline-flex items-center gap-1.5 sm:gap-2 text-gray-600 hover:text-black transition-colors">
+            <Link to="/shop" className="inline-flex items-center gap-1.5 sm:gap-2 text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft size={16} className="sm:w-[18px] sm:h-[18px]" />
               <span className="text-xs sm:text-sm uppercase tracking-[0.15em] sm:tracking-[0.2em]">Back to Shop</span>
             </Link>
@@ -242,7 +242,7 @@ const ProductDetailPage = () => {
         </div>
       </div>
 
-      <section className="py-6 sm:py-8 bg-white">
+      <section className="py-6 sm:py-8 bg-background">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
             {/* Left side - Images section */}
@@ -276,7 +276,7 @@ const ProductDetailPage = () => {
                     <span className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-black text-white px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-bold z-10">New</span>
                   )}
                   {product.isSale && (
-                    <span className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-white text-black px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-bold border-2 border-black z-10">Sale</span>
+                    <span className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-primary text-primary-foreground px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-bold border-2 border-primary z-10">Sale</span>
                   )}
 
                   {/* Navigation Arrows */}
@@ -284,15 +284,15 @@ const ProductDetailPage = () => {
                     <>
                       <button
                         onClick={handlePrevImage}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors z-10"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-card/90 backdrop-blur-sm flex items-center justify-center hover:bg-card transition-colors z-10 border border-border"
                       >
-                        <ChevronLeft size={18} className="sm:w-5 sm:h-5 text-black" />
+                        <ChevronLeft size={18} className="sm:w-5 sm:h-5 text-foreground" />
                       </button>
                       <button
                         onClick={handleNextImage}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors z-10"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-card/90 backdrop-blur-sm flex items-center justify-center hover:bg-card transition-colors z-10 border border-border"
                       >
-                        <ChevronRight size={18} className="sm:w-5 sm:h-5 text-black" />
+                        <ChevronRight size={18} className="sm:w-5 sm:h-5 text-foreground" />
                       </button>
                     </>
                   )}
@@ -308,10 +308,10 @@ const ProductDetailPage = () => {
                             setImageError(false);
                           }}
                           className={cn(
-                            'transition-all border border-white',
+                            'transition-all border border-border',
                             selectedImage === idx 
-                              ? 'w-6 h-1.5 sm:w-8 sm:h-2 bg-white' 
-                              : 'w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/50'
+                              ? 'w-6 h-1.5 sm:w-8 sm:h-2 bg-primary' 
+                              : 'w-1.5 h-1.5 sm:w-2 sm:h-2 bg-muted'
                           )}
                         />
                       ))}
@@ -382,10 +382,10 @@ const ProductDetailPage = () => {
                       <span className="absolute top-4 left-4 bg-black text-white px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold">New</span>
                     )}
                     {product.isSale && (
-                      <span className="absolute top-4 left-4 bg-white text-black px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold border-2 border-black">Sale</span>
+                      <span className="absolute top-4 left-4 bg-primary text-primary-foreground px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold border-2 border-primary">Sale</span>
                     )}
-                    <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ZoomIn size={20} className="text-black" />
+                    <div className="absolute bottom-4 right-4 bg-card/90 backdrop-blur-sm p-2 opacity-0 group-hover:opacity-100 transition-opacity border border-border">
+                      <ZoomIn size={20} className="text-foreground" />
                     </div>
                   </motion.div>
                 )}
@@ -413,8 +413,8 @@ const ProductDetailPage = () => {
                           }}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
                         />
-                        <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <ZoomIn size={20} className="text-black" />
+                        <div className="absolute bottom-4 right-4 bg-card/90 backdrop-blur-sm p-2 opacity-0 group-hover:opacity-100 transition-opacity border border-border">
+                          <ZoomIn size={20} className="text-foreground" />
                         </div>
                       </motion.div>
                     ))}
@@ -430,19 +430,19 @@ const ProductDetailPage = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="flex flex-col"
             >
-              <h1 className="font-display text-3xl md:text-4xl mb-3 text-black">{product.name}</h1>
+              <h1 className="font-display text-3xl md:text-4xl mb-3 text-foreground">{product.name}</h1>
               
               <div className="flex items-center gap-4 mb-6">
-                <span className="font-display text-2xl text-black">{product.price.toLocaleString()}</span>
+                <span className="font-display text-2xl text-foreground">₹{product.price.toLocaleString()}</span>
                 {product.originalPrice && (
-                  <span className="text-gray-400 line-through text-lg">{product.originalPrice.toLocaleString()}</span>
+                  <span className="text-muted-foreground line-through text-lg">₹{product.originalPrice.toLocaleString()}</span>
                 )}
               </div>
 
               {/* Oversized Fit Info */}
               <div className="mb-6">
-                <p className="text-sm text-gray-600">
-                  <span className="font-semibold text-black">Oversized Fit</span>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-semibold text-foreground">Oversized Fit</span>
                   <br />
                   Ishaan is 6'0 and wearing Size XL
                 </p>
@@ -461,10 +461,10 @@ const ProductDetailPage = () => {
               {/* Size Selection */}
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs uppercase tracking-[0.2em] text-black font-semibold">Size</span>
+                  <span className="text-xs uppercase tracking-[0.2em] text-foreground font-semibold">Size</span>
                   <button 
                     onClick={() => setActiveDrawer('details')}
-                    className="text-xs uppercase tracking-[0.2em] text-black underline hover:no-underline"
+                    className="text-xs uppercase tracking-[0.2em] text-foreground underline hover:no-underline"
                   >
                     Size Guide
                   </button>
@@ -503,7 +503,7 @@ const ProductDetailPage = () => {
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="w-full sm:flex-1 border-2 border-black text-black hover:bg-black hover:text-white uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="w-full sm:flex-1 border-2 border-primary text-foreground hover:bg-primary hover:text-primary-foreground uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
                   onClick={handleAddToCart}
                   disabled={!product.stock || product.stock === 0}
                 >
@@ -530,37 +530,37 @@ const ProductDetailPage = () => {
               <div className="space-y-3 mb-8">
                 <button
                   onClick={() => setActiveDrawer('details')}
-                  className="w-full text-left border-b border-gray-200 pb-3 flex items-center justify-between hover:border-black transition-colors group"
+                  className="w-full text-left border-b border-border pb-3 flex items-center justify-between hover:border-primary transition-colors group"
                 >
-                  <span className="text-sm uppercase tracking-[0.15em] text-black font-medium">Details</span>
-                  <Plus size={18} className="text-black group-hover:rotate-90 transition-transform" />
+                  <span className="text-sm uppercase tracking-[0.15em] text-foreground font-medium">Details</span>
+                  <Plus size={18} className="text-foreground group-hover:rotate-90 transition-transform" />
                 </button>
                 <button
                   onClick={() => setActiveDrawer('shipping')}
-                  className="w-full text-left border-b border-gray-200 pb-3 flex items-center justify-between hover:border-black transition-colors group"
+                  className="w-full text-left border-b border-border pb-3 flex items-center justify-between hover:border-primary transition-colors group"
                 >
-                  <span className="text-sm uppercase tracking-[0.15em] text-black font-medium">Shipping & Returns</span>
-                  <Plus size={18} className="text-black group-hover:rotate-90 transition-transform" />
+                  <span className="text-sm uppercase tracking-[0.15em] text-foreground font-medium">Shipping & Returns</span>
+                  <Plus size={18} className="text-foreground group-hover:rotate-90 transition-transform" />
                 </button>
                 
               </div>
 
               {/* Features List */}
-              <div className="space-y-3 text-sm text-gray-700">
+              <div className="space-y-3 text-sm text-muted-foreground">
                 <div className="flex items-start gap-3">
-                  <Check size={18} className="text-black mt-0.5 flex-shrink-0" />
+                  <Check size={18} className="text-primary mt-0.5 flex-shrink-0" />
                   <span>Cash on Delivery</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Check size={18} className="text-black mt-0.5 flex-shrink-0" />
+                  <Check size={18} className="text-primary mt-0.5 flex-shrink-0" />
                   <span>Free Shipping</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Check size={18} className="text-black mt-0.5 flex-shrink-0" />
+                  <Check size={18} className="text-primary mt-0.5 flex-shrink-0" />
                   <span>30 Days Free Returns</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Check size={18} className="text-black mt-0.5 flex-shrink-0" />
+                  <Check size={18} className="text-primary mt-0.5 flex-shrink-0" />
                   <span>Delivery within 3 to 7 working days</span>
                 </div>
               </div>
@@ -576,7 +576,7 @@ const ProductDetailPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-white/98 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-background/98 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={() => setIsZoomed(false)}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -586,7 +586,7 @@ const ProductDetailPage = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="absolute top-4 right-4 w-12 h-12 bg-white border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors z-10 text-black"
+              className="absolute top-4 right-4 w-12 h-12 bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors z-10 text-foreground"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsZoomed(false);
@@ -602,7 +602,7 @@ const ProductDetailPage = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors z-10 text-black"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors z-10 text-foreground"
                   onClick={(e) => {
                     e.stopPropagation();
                     handlePrevImage();
@@ -614,7 +614,7 @@ const ProductDetailPage = () => {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors z-10 text-black"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors z-10 text-foreground"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleNextImage();
@@ -650,8 +650,8 @@ const ProductDetailPage = () => {
                         setImageError(false);
                       }}
                       className={cn(
-                        'w-2 h-2 rounded-full transition-all border border-black',
-                        selectedImage === idx ? 'bg-black w-8' : 'bg-white'
+                        'w-2 h-2 rounded-full transition-all border border-border',
+                        selectedImage === idx ? 'bg-primary w-8' : 'bg-muted'
                       )}
                     />
                   ))}
@@ -678,7 +678,7 @@ const ProductDetailPage = () => {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-white border-l border-gray-200 overflow-y-auto shadow-2xl"
+              className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-card border-l border-border overflow-y-auto shadow-2xl"
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
@@ -838,7 +838,7 @@ const ProductDetailPage = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="font-display text-2xl sm:text-3xl mb-8 sm:mb-10 text-black uppercase tracking-wider"
+              className="font-display text-2xl sm:text-3xl mb-8 sm:mb-10 text-foreground uppercase tracking-wider"
             >
               You May Also Like
             </motion.h2>
