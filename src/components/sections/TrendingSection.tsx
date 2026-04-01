@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import { videoApi } from '@/lib/api';
+import { Button } from '@/components/ui/button';
 
 interface FeaturedVideo {
   _id: string;
@@ -43,7 +44,7 @@ export const TrendingSection = () => {
   };
 
   const handleClick = () => {
-    navigate('/shop');
+    navigate('/collab');
   };
 
   const handleMouseEnter = () => {
@@ -69,8 +70,7 @@ export const TrendingSection = () => {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="relative cursor-pointer group"
-          onClick={handleClick}
+          className="relative group"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -88,43 +88,53 @@ export const TrendingSection = () => {
               Your browser does not support the video tag.
             </video>
 
-            {/* Overlay on hover - Desktop only */}
-            <motion.div
-              className="hidden md:flex absolute inset-0 bg-black/30 items-center justify-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isHovered ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: isHovered ? 1 : 0.8, opacity: isHovered ? 1 : 0 }}
-                transition={{ duration: 0.3 }}
-                className="text-center"
-              >
-                <p className="text-white text-2xl md:text-4xl font-display mb-2">
-                  {featuredVideo.title || 'EXPLORE COLLECTION'}
-                </p>
-                <p className="text-white/80 text-sm md:text-base uppercase tracking-widest">
-                  {featuredVideo.description || 'Click to shop now'}
-                </p>
-              </motion.div>
-            </motion.div>
+            {/* Text Overlay at Bottom - All Devices */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent backdrop-blur-sm py-8 md:py-12 px-4 md:px-6">
+              <div className="container mx-auto max-w-4xl text-center">
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="font-display text-2xl sm:text-3xl md:text-5xl lg:text-6xl leading-tight mb-3 md:mb-4 text-white drop-shadow-lg"
+                >
+                  <span className="text-white">YOUR ART.</span>
+                  <br />
+                  <span className="text-primary">OUR PLATFORM!</span>
+                </motion.h2>
 
-            {/* Permanent text overlay - Mobile only */}
-            <div className="md:hidden absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent backdrop-blur-sm p-6 pb-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="text-center"
-              >
-                <p className="text-white text-xl font-display mb-1.5 drop-shadow-lg">
-                  {featuredVideo.title || 'EXPLORE COLLECTION'}
-                </p>
-                <p className="text-white/90 text-xs uppercase tracking-widest drop-shadow-md">
-                  {featuredVideo.description || 'Tap to shop now'}
-                </p>
-              </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                  className="space-y-2 md:space-y-3 mb-4 md:mb-6"
+                >
+                  <p className="text-sm sm:text-base md:text-lg text-white/90 leading-relaxed drop-shadow-md px-2">
+                    We collaborate with underground artists and creators
+                    <br className="hidden sm:block" />
+                    <span className="sm:hidden"> </span>
+                    and turn their work into wearable revolution.
+                  </p>
+                  <p className="text-xs sm:text-sm md:text-base text-white font-medium drop-shadow-md">
+                    If you've got the vision, we've got the platform.
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <Button
+                    onClick={handleClick}
+                    size="lg"
+                    className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-6 text-sm sm:text-base md:text-lg uppercase tracking-wider shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    Join the Movement
+                  </Button>
+                </motion.div>
+              </div>
             </div>
 
             {/* Border animation on hover */}
@@ -138,8 +148,7 @@ export const TrendingSection = () => {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="relative cursor-pointer group"
-          onClick={handleClick}
+          className="relative group"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -157,43 +166,53 @@ export const TrendingSection = () => {
               Your browser does not support the video tag.
             </video>
 
-            {/* Overlay on hover - Desktop only */}
-            <motion.div
-              className="hidden md:flex absolute inset-0 bg-black/30 items-center justify-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isHovered ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: isHovered ? 1 : 0.8, opacity: isHovered ? 1 : 0 }}
-                transition={{ duration: 0.3 }}
-                className="text-center"
-              >
-                <p className="text-white text-2xl md:text-4xl font-display mb-2">
-                  EXPLORE COLLECTION
-                </p>
-                <p className="text-white/80 text-sm md:text-base uppercase tracking-widest">
-                  Click to shop now
-                </p>
-              </motion.div>
-            </motion.div>
+            {/* Text Overlay at Bottom - All Devices */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent backdrop-blur-sm py-8 md:py-12 px-4 md:px-6">
+              <div className="container mx-auto max-w-4xl text-center">
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="font-display text-2xl sm:text-3xl md:text-5xl lg:text-6xl leading-tight mb-3 md:mb-4 text-white drop-shadow-lg"
+                >
+                  <span className="text-white">YOUR ART.</span>
+                  <br />
+                  <span className="text-primary">OUR PLATFORM!</span>
+                </motion.h2>
 
-            {/* Permanent text overlay - Mobile only */}
-            <div className="md:hidden absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent backdrop-blur-sm p-6 pb-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="text-center"
-              >
-                <p className="text-white text-xl font-display mb-1.5 drop-shadow-lg">
-                  EXPLORE COLLECTION
-                </p>
-                <p className="text-white/90 text-xs uppercase tracking-widest drop-shadow-md">
-                  Tap to shop now
-                </p>
-              </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                  className="space-y-2 md:space-y-3 mb-4 md:mb-6"
+                >
+                  <p className="text-sm sm:text-base md:text-lg text-white/90 leading-relaxed drop-shadow-md px-2">
+                    We collaborate with underground artists and creators
+                    <br className="hidden sm:block" />
+                    <span className="sm:hidden"> </span>
+                    and turn their work into wearable revolution.
+                  </p>
+                  <p className="text-xs sm:text-sm md:text-base text-white font-medium drop-shadow-md">
+                    If you've got the vision, we've got the platform.
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <Button
+                    onClick={handleClick}
+                    size="lg"
+                    className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-6 text-sm sm:text-base md:text-lg uppercase tracking-wider shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    Join the Movement
+                  </Button>
+                </motion.div>
+              </div>
             </div>
 
             {/* Border animation on hover */}

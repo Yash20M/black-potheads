@@ -156,10 +156,12 @@ export const CategoriesShowcase = () => {
                   <img
                     src={category.image}
                     alt={category.name}
-                    className={`w-full h-full object-contain ${
-                      category.slug === 'Rick n Morty' || category.slug === 'Dark' || category.slug ==='Shrooms' || category.slug === 'Shiva'
-                        ? 'scale-75' 
-                        : ''
+                    className={`w-full h-full ${
+                      category.slug === 'Shiva'
+                        ? 'object-cover scale-110'
+                        : category.slug === 'Rick n Morty' || category.slug === 'Dark' || category.slug ==='Shrooms'
+                        ? 'object-contain scale-75'
+                        : 'object-contain'
                     }`}
                   />
 

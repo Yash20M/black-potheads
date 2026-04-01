@@ -459,7 +459,6 @@ const Index = () => {
       </section>
 
       <ScrollingText />
-      <VideoSection />
       <TrendingSection />
       <AboutBrandSection />
       <ProcessSection />
