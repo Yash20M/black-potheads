@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Package, Mail, Phone, Search, MapPin, CheckCircle, Calendar, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,19 @@ const TrackOrderPage = () => {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const ordersRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to orders when they are loaded
+  useEffect(() => {
+    if (orders.length > 0 && ordersRef.current) {
+      setTimeout(() => {
+        ordersRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }, 100);
+    }
+  }, [orders]);
 
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -335,6 +348,7 @@ const TrackOrderPage = () => {
         {/* Orders List */}
         {orders.length > 0 && (
           <motion.div
+            ref={ordersRef}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto"

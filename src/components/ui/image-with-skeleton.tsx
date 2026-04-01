@@ -63,8 +63,8 @@ export const ImageWithSkeleton = ({
 
       {/* Error State */}
       {hasError && !isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-          <span className="text-gray-400 text-sm">No Image</span>
+        <div className="absolute inset-0 flex items-center justify-center bg-muted dark:bg-black/50">
+          <span className="text-muted-foreground dark:text-gray-400 text-sm">No Image</span>
         </div>
       )}
     </div>

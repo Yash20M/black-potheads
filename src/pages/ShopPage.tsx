@@ -174,7 +174,7 @@ const ShopPage = () => {
         }}
       />
       {/* Page Header */}
-      <section className="py-12 sm:py-16 md:py-20 bg-black border-b border-gray-800">
+      <section className="py-8 sm:py-10 md:py-12 bg-black">
         <div className="container mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -348,7 +348,7 @@ const ShopPage = () => {
                       }}
                     >
                       <motion.img 
-                        src="/Dark.PNG" 
+                        src="/dark (2).PNG" 
                         alt="Dark" 
                         className="h-64 md:h-80 lg:h-96 w-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
                         animate={{
@@ -397,7 +397,7 @@ const ShopPage = () => {
                       />
                     </motion.div>
                   )}
-                  <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white relative z-10 px-4">
+                  <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-white relative z-10 px-4">
                     {currentCollection.title.toUpperCase()}
                   </h1>
                 </div>
@@ -423,7 +423,7 @@ const ShopPage = () => {
                 <span className="text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-gray-400 mb-3 sm:mb-4 block">
                   Browse Our
                 </span>
-                <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white">SHOP</h1>
+                <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-white">SHOP</h1>
               </>
             )}
           </motion.div>
@@ -431,7 +431,7 @@ const ShopPage = () => {
       </section>
 
       {/* Products Section */}
-      <section className="py-12 sm:py-16 bg-background">
+      <section className="py-8 sm:py-10 bg-background">
         <div className="container mx-auto px-4 sm:px-6">
           {/* Category Filter */}
           <motion.div
@@ -439,7 +439,7 @@ const ShopPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mb-8 sm:mb-12 overflow-x-auto scrollbar-hide"
+            className="mb-8 sm:mb-10 overflow-x-auto scrollbar-hide"
           >
             <div className="flex md:flex-wrap md:justify-center gap-2 sm:gap-3 min-w-max md:min-w-0 px-2 sm:px-4 md:px-0">
               {categories.map((category) => (
@@ -452,8 +452,8 @@ const ShopPage = () => {
                   className={cn(
                     'px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-3 text-xs sm:text-sm md:text-sm uppercase tracking-[0.15em] sm:tracking-[0.18em] md:tracking-[0.2em] transition-all duration-300 border-2 whitespace-nowrap',
                     activeCategory === category.id
-                      ? 'bg-black text-white border-black'
-                      : 'bg-white border-black text-black hover:bg-black hover:text-white'
+                      ? 'bg-white text-black border-white'
+                      : 'bg-black border-white text-white hover:bg-white hover:text-black'
                   )}
                 >
                   {category.label}
@@ -466,7 +466,7 @@ const ShopPage = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-gray-600 text-xs sm:text-sm mb-6 sm:mb-8 text-center"
+            className="text-muted-foreground text-xs sm:text-sm mb-6 sm:mb-8 text-center"
           >
             {productsCountText}
           </motion.p>
@@ -478,7 +478,7 @@ const ShopPage = () => {
                 <SkeletonCard key={index} />
               ))
             ) : products.length === 0 ? (
-              <div className="col-span-full text-center py-12 text-gray-600">
+              <div className="col-span-full text-center py-12 text-muted-foreground">
                 No products found in this category
               </div>
             ) : (

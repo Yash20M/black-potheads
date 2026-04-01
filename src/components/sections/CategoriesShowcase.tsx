@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const categories = [
-  { name: 'SHIVA', image: '/Shiva.PNG', slug: 'Shiva' },
+  { name: 'SHIVA', image: '/shiva.jpeg', slug: 'Shiva' },
   { name: 'SHROOMS', image: '/Shrooms.PNG', slug: 'Shrooms' },
   { name: 'ACID', image: '/LSD.PNG', slug: 'ACID' },
   { name: 'CHAKRAS', image: '/Chakras.PNG', slug: 'Chakras' },
-  { name: 'DARK', image: '/Dark.PNG', slug: 'Dark' },
+  { name: 'DARK', image: '/dark (2).PNG', slug: 'Dark' },
   { name: 'RICK N MORTY', image: '/Rick-N-Morty.PNG', slug: 'Rick n Morty' },
 ];
 
@@ -157,7 +157,7 @@ export const CategoriesShowcase = () => {
                     src={category.image}
                     alt={category.name}
                     className={`w-full h-full object-contain ${
-                      category.slug === 'Rick n Morty' || category.slug === 'Dark' || category.slug ==='Shrooms'
+                      category.slug === 'Rick n Morty' || category.slug === 'Dark' || category.slug ==='Shrooms' || category.slug === 'Shiva'
                         ? 'scale-75' 
                         : ''
                     }`}

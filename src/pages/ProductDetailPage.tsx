@@ -250,7 +250,7 @@ const ProductDetailPage = () => {
               {/* Mobile Slider View */}
               <div className="lg:hidden">
                 <div 
-                  className="relative aspect-[3/4] bg-gray-50 overflow-hidden"
+                  className="relative aspect-[3/4] bg-muted dark:bg-black/50 overflow-hidden"
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
@@ -362,7 +362,7 @@ const ProductDetailPage = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.4 }}
                     className={cn(
-                      "relative aspect-[3/4] bg-gray-50 overflow-hidden group cursor-zoom-in",
+                      "relative aspect-[3/4] bg-muted dark:bg-black/50 overflow-hidden group cursor-zoom-in",
                       product.images.length === 1 ? "lg:col-span-1" : "lg:col-span-1"
                     )}
                     onClick={() => {
@@ -399,7 +399,7 @@ const ProductDetailPage = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, delay: (index + 1) * 0.1 }}
-                        className="relative aspect-[3/4] bg-gray-50 overflow-hidden group cursor-zoom-in"
+                        className="relative aspect-[3/4] bg-muted dark:bg-black/50 overflow-hidden group cursor-zoom-in"
                         onClick={() => {
                           setSelectedImage(index + 1);
                           setIsZoomed(true);
@@ -448,23 +448,23 @@ const ProductDetailPage = () => {
                 </p>
               </div>
 
-              <p className="text-gray-600 mb-8 leading-relaxed text-sm">{product.description}</p>
+              <p className="text-muted-foreground mb-8 leading-relaxed text-sm">{product.description}</p>
 
               {/* Wide Fit Note */}
-              <div className="mb-6 p-4 bg-gray-50 border border-gray-200">
-                <p className="text-sm text-gray-700">
-                  <span className="font-semibold">Wide Fit</span><br />
-                  Model info and sizing details
+              <div className="mb-6 p-4 bg-card border border-border">
+                <p className="text-sm text-foreground">
+                  <span className="font-semibold text-white">Wide Fit</span><br />
+                  <span className="text-muted-foreground">Model info and sizing details</span>
                 </p>
               </div>
 
               {/* Size Selection */}
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs uppercase tracking-[0.2em] text-foreground font-semibold">Size</span>
+                  <span className="text-xs uppercase tracking-[0.2em] text-white font-semibold">Size</span>
                   <button 
                     onClick={() => setActiveDrawer('details')}
-                    className="text-xs uppercase tracking-[0.2em] text-foreground underline hover:no-underline"
+                    className="text-xs uppercase tracking-[0.2em] text-white underline hover:no-underline"
                   >
                     Size Guide
                   </button>
@@ -477,10 +477,10 @@ const ProductDetailPage = () => {
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setSelectedSize(size)}
                       className={cn(
-                        'h-12 border text-sm font-medium transition-all relative',
+                        'h-12 border-2 text-sm font-medium transition-all relative',
                         selectedSize === size
-                          ? 'bg-black text-white border-black'
-                          : 'bg-white border-gray-300 hover:border-black text-black'
+                          ? 'bg-white text-black border-white'
+                          : 'bg-black border-white text-white hover:bg-white hover:text-black'
                       )}
                     >
                       {size}
@@ -492,9 +492,9 @@ const ProductDetailPage = () => {
               {/* Add to Cart, Buy Now and Wishlist Buttons */}
               <div className="mb-6 flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <Button 
-                  variant="default" 
+                  variant="outline" 
                   size="lg" 
-                  className="w-full sm:flex-1 bg-black hover:bg-gray-800 text-white uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="w-full sm:flex-1 border-2 border-white text-white hover:bg-white hover:text-black uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
                   onClick={handleAddToCart}
                   disabled={!product.stock || product.stock === 0}
                 >
@@ -503,7 +503,7 @@ const ProductDetailPage = () => {
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="w-full sm:flex-1 border-2 border-primary text-foreground hover:bg-primary hover:text-primary-foreground uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
+                  className="w-full sm:flex-1 border-2 border-white text-white hover:bg-white hover:text-black uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
                   onClick={handleAddToCart}
                   disabled={!product.stock || product.stock === 0}
                 >
@@ -515,8 +515,8 @@ const ProductDetailPage = () => {
                   className={cn(
                     "w-auto h-11 sm:h-14 px-4 border-2 transition-colors",
                     inWishlist
-                      ? "bg-black border-black text-white hover:bg-gray-800"
-                      : "border-black text-black hover:bg-black hover:text-white"
+                      ? "bg-white border-white text-black hover:bg-gray-200"
+                      : "border-white text-white hover:bg-white hover:text-black"
                   )}
                   onClick={handleToggleWishlist}
                   disabled={isTogglingWishlist}
@@ -682,12 +682,12 @@ const ProductDetailPage = () => {
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="font-display text-2xl text-gray-900">
+                  <h2 className="font-display text-2xl text-white">
                     {activeDrawer === 'details' ? 'Product Details' : 'Shipping & Returns'}
                   </h2>
                   <button
                     onClick={() => setActiveDrawer(null)}
-                    className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors text-gray-600"
+                    className="w-10 h-10 flex items-center justify-center hover:bg-secondary rounded-full transition-colors text-white"
                   >
                     <X size={20} />
                   </button>
@@ -696,18 +696,18 @@ const ProductDetailPage = () => {
                 {activeDrawer === 'details' ? (
                   <div className="space-y-6">
                     <div>
-                      <h3 className="font-medium mb-2 text-gray-900">Description</h3>
-                      <p className="text-gray-600 text-sm">
+                      <h3 className="font-medium mb-2 text-white">Description</h3>
+                      <p className="text-muted-foreground text-sm">
                         {product?.description || 'Premium quality product with unique design. Made from high-quality materials for maximum comfort and durability.'}
                       </p>
                     </div>
                     <div>
-                      <h3 className="font-medium mb-2 text-gray-900">Material</h3>
-                      <p className="text-gray-600 text-sm">100% Premium Quality Material</p>
+                      <h3 className="font-medium mb-2 text-white">Material</h3>
+                      <p className="text-muted-foreground text-sm">100% Premium Quality Material</p>
                     </div>
                     <div>
-                      <h3 className="font-medium mb-2 text-gray-900">Care Instructions</h3>
-                      <ul className="text-gray-600 space-y-1 text-sm">
+                      <h3 className="font-medium mb-2 text-white">Care Instructions</h3>
+                      <ul className="text-muted-foreground space-y-1 text-sm">
                         <li>• Machine wash cold</li>
                         <li>• Tumble dry low</li>
                         <li>• Do not bleach</li>
@@ -716,8 +716,8 @@ const ProductDetailPage = () => {
                       </ul>
                     </div>
                     <div>
-                      <h3 className="font-medium mb-2 text-gray-900">Features</h3>
-                      <ul className="text-gray-600 space-y-1 text-sm">
+                      <h3 className="font-medium mb-2 text-white">Features</h3>
+                      <ul className="text-muted-foreground space-y-1 text-sm">
                         <li>• High-quality construction</li>
                         <li>• Premium materials</li>
                         <li>• Durable design</li>
@@ -726,49 +726,49 @@ const ProductDetailPage = () => {
                       </ul>
                     </div>
                     <div>
-                      <h3 className="font-medium mb-4 text-gray-900">Size Guide (Oversized Fit)</h3>
+                      <h3 className="font-medium mb-4 text-white">Size Guide (Oversized Fit)</h3>
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm border-collapse">
                           <thead>
-                            <tr className="border-b border-gray-300">
-                              <th className="text-left py-2 px-3 font-semibold text-gray-900">Size</th>
-                              <th className="text-left py-2 px-3 font-semibold text-gray-900">Length (L)</th>
-                              <th className="text-left py-2 px-3 font-semibold text-gray-900">Chest (C)</th>
-                              <th className="text-left py-2 px-3 font-semibold text-gray-900">Shoulder (S)</th>
-                              <th className="text-left py-2 px-3 font-semibold text-gray-900">Sleeve</th>
+                            <tr className="border-b border-border">
+                              <th className="text-left py-2 px-3 font-semibold text-white">Size</th>
+                              <th className="text-left py-2 px-3 font-semibold text-white">Length (L)</th>
+                              <th className="text-left py-2 px-3 font-semibold text-white">Chest (C)</th>
+                              <th className="text-left py-2 px-3 font-semibold text-white">Shoulder (S)</th>
+                              <th className="text-left py-2 px-3 font-semibold text-white">Sleeve</th>
                             </tr>
                           </thead>
-                          <tbody className="text-gray-600">
-                            <tr className="border-b border-gray-200">
-                              <td className="py-2 px-3 font-medium">S</td>
+                          <tbody className="text-muted-foreground">
+                            <tr className="border-b border-border">
+                              <td className="py-2 px-3 font-medium text-white">S</td>
                               <td className="py-2 px-3">26</td>
                               <td className="py-2 px-3">22</td>
                               <td className="py-2 px-3">6.5</td>
                               <td className="py-2 px-3">8.5</td>
                             </tr>
-                            <tr className="border-b border-gray-200">
-                              <td className="py-2 px-3 font-medium">M</td>
+                            <tr className="border-b border-border">
+                              <td className="py-2 px-3 font-medium text-white">M</td>
                               <td className="py-2 px-3">27</td>
                               <td className="py-2 px-3">23</td>
                               <td className="py-2 px-3">7</td>
                               <td className="py-2 px-3">9</td>
                             </tr>
-                            <tr className="border-b border-gray-200">
-                              <td className="py-2 px-3 font-medium">L</td>
+                            <tr className="border-b border-border">
+                              <td className="py-2 px-3 font-medium text-white">L</td>
                               <td className="py-2 px-3">28</td>
                               <td className="py-2 px-3">24</td>
                               <td className="py-2 px-3">7.5</td>
                               <td className="py-2 px-3">9.5</td>
                             </tr>
-                            <tr className="border-b border-gray-200">
-                              <td className="py-2 px-3 font-medium">XL</td>
+                            <tr className="border-b border-border">
+                              <td className="py-2 px-3 font-medium text-white">XL</td>
                               <td className="py-2 px-3">29</td>
                               <td className="py-2 px-3">25</td>
                               <td className="py-2 px-3">8</td>
                               <td className="py-2 px-3">10</td>
                             </tr>
-                            <tr className="border-b border-gray-200">
-                              <td className="py-2 px-3 font-medium">XXL</td>
+                            <tr className="border-b border-border">
+                              <td className="py-2 px-3 font-medium text-white">XXL</td>
                               <td className="py-2 px-3">30</td>
                               <td className="py-2 px-3">26</td>
                               <td className="py-2 px-3">8.5</td>
@@ -777,7 +777,7 @@ const ProductDetailPage = () => {
                           </tbody>
                         </table>
                       </div>
-                      <div className="mt-4 space-y-1 text-xs text-gray-500">
+                      <div className="mt-4 space-y-1 text-xs text-muted-foreground">
                         <p>• All measurements are in inches</p>
                         <p>• This is an oversized fit</p>
                         <p>• Slight variation of 0.5–1 inch may occur</p>
@@ -787,8 +787,8 @@ const ProductDetailPage = () => {
                 ) : (
                   <div className="space-y-6">
                     <div>
-                      <h3 className="font-medium mb-2 text-gray-900">Shipping Information</h3>
-                      <ul className="text-gray-600 space-y-2 text-sm">
+                      <h3 className="font-medium mb-2 text-white">Shipping Information</h3>
+                      <ul className="text-muted-foreground space-y-2 text-sm">
                         <li>• Free standard shipping on all orders</li>
                         <li>• Standard shipping: 5-7 business days</li>
                         <li>• Express shipping: 2-3 business days</li>
@@ -797,8 +797,8 @@ const ProductDetailPage = () => {
                       </ul>
                     </div>
                     <div>
-                      <h3 className="font-medium mb-2 text-gray-900">Return Policy</h3>
-                      <ul className="text-gray-600 space-y-2 text-sm">
+                      <h3 className="font-medium mb-2 text-white">Return Policy</h3>
+                      <ul className="text-muted-foreground space-y-2 text-sm">
                         <li>• 30-day return window</li>
                         <li>• Items must be unworn and unwashed</li>
                         <li>• Original tags must be attached</li>
@@ -807,16 +807,16 @@ const ProductDetailPage = () => {
                       </ul>
                     </div>
                     <div>
-                      <h3 className="font-medium mb-2 text-gray-900">Exchange Policy</h3>
-                      <ul className="text-gray-600 space-y-2 text-sm">
+                      <h3 className="font-medium mb-2 text-white">Exchange Policy</h3>
+                      <ul className="text-muted-foreground space-y-2 text-sm">
                         <li>• Free size exchanges</li>
                         <li>• Exchange processed within 3-5 business days</li>
                         <li>• Contact support for exchange requests</li>
                       </ul>
                     </div>
                     <div>
-                      <h3 className="font-medium mb-2 text-gray-900">Customer Support</h3>
-                      <p className="text-gray-600 text-sm">
+                      <h3 className="font-medium mb-2 text-white">Customer Support</h3>
+                      <p className="text-muted-foreground text-sm">
                         Have questions? Contact us at support@store.com or call our customer service line.
                       </p>
                     </div>
@@ -832,13 +832,13 @@ const ProductDetailPage = () => {
       {product && <ProductReviews productId={product.id} />}
 
       {relatedProducts.length > 0 && (
-        <section className="py-12 sm:py-16 bg-gray-50">
+        <section className="py-12 sm:py-16 bg-background dark:bg-black">
           <div className="container mx-auto px-4 sm:px-6">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="font-display text-2xl sm:text-3xl mb-8 sm:mb-10 text-foreground uppercase tracking-wider"
+              className="font-display text-2xl sm:text-3xl mb-8 sm:mb-10 text-foreground dark:text-white uppercase tracking-wider"
             >
               You May Also Like
             </motion.h2>

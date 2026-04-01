@@ -123,7 +123,7 @@ export const AboutBrandSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="font-display text-6xl md:text-8xl lg:text-9xl leading-none mb-8"
+              className="font-display text-4xl md:text-6xl lg:text-7xl leading-none mb-8"
             >
               NOT JUST<br />
               <span className="text-accent-gradient">A T-SHIRT</span>

@@ -94,7 +94,7 @@ const WishlistPage = () => {
                 Your Favorites
               </span>
             </div>
-            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl">WISHLIST</h1>
+            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl">WISHLIST</h1>
             <p className="text-muted-foreground mt-4">
               {products.length} {products.length === 1 ? 'item' : 'items'} saved
             </p>

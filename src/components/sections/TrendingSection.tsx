@@ -60,7 +60,7 @@ export const TrendingSection = () => {
   return (
     <section className="w-full bg-background overflow-hidden">
       {loading ? (
-        <div className="relative w-full h-[50vh] md:h-[70vh] lg:h-[85vh] flex items-center justify-center bg-muted">
+        <div className="relative w-full h-screen flex items-center justify-center bg-muted">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
       ) : featuredVideo ? (
@@ -74,8 +74,8 @@ export const TrendingSection = () => {
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          {/* Video Container - Full Width */}
-          <div className="relative w-full h-[50vh] md:h-[70vh] lg:h-[85vh] overflow-hidden">
+          {/* Video Container - Full Screen */}
+          <div className="relative w-full h-screen overflow-hidden">
             <video
               ref={videoRef}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -143,8 +143,8 @@ export const TrendingSection = () => {
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          {/* Video Container - Full Width */}
-          <div className="relative w-full h-[50vh] md:h-[70vh] lg:h-[85vh] overflow-hidden">
+          {/* Video Container - Full Screen */}
+          <div className="relative w-full h-screen overflow-hidden">
             <video
               ref={videoRef}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

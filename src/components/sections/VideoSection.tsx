@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 
 export const VideoSection = () => {
   return (
-    <section className="py-20 bg-background relative overflow-hidden">
+    <section className="py-16 pb-12 md:pb-16 bg-background relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-accent/5 to-background" />
       
       <div className="container mx-auto px-4 relative z-10">
@@ -20,7 +20,7 @@ export const VideoSection = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-display text-5xl md:text-7xl lg:text-8xl leading-tight mb-6"
+            className="font-display text-4xl md:text-6xl lg:text-7xl leading-tight mb-6"
           >
             <span className="text-gradient">YOUR ART.</span>
             <br />
@@ -42,6 +42,8 @@ export const VideoSection = () => {
             <p className="text-lg md:text-xl text-foreground font-medium">
               If you've got the vision, we've got the platform.
             </p>
+
+            
           </motion.div>
 
           <motion.div

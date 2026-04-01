@@ -161,13 +161,13 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
 
         {/* Product Info */}
         <div className="space-y-0.5 sm:space-y-1">
-          <h3 className="font-medium text-xs sm:text-sm uppercase tracking-wider line-clamp-2 sm:line-clamp-1 text-black group-hover:text-gray-700 transition-colors">
+          <h3 className="font-medium text-xs sm:text-sm uppercase tracking-wider line-clamp-2 sm:line-clamp-1 text-foreground dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
             {product.name}
           </h3>
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="font-display text-lg sm:text-xl text-black">₹{product.price}</span>
+            <span className="font-display text-lg sm:text-xl text-foreground dark:text-white">₹{product.price}</span>
             {product.originalPrice && (
-              <span className="text-gray-500 line-through text-xs sm:text-sm">
+              <span className="text-muted-foreground dark:text-gray-400 line-through text-xs sm:text-sm">
                 ₹{product.originalPrice}
               </span>
             )}
@@ -177,15 +177,15 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
             <div className="flex items-center gap-1 text-[10px] sm:text-xs">
               {product.stock > 0 ? (
                 <>
-                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-gray-600"></div>
-                  <span className="text-gray-600">
+                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-gray-600 dark:bg-white"></div>
+                  <span className="text-gray-600 dark:text-white">
                     {product.stock <= 5 ? `Only ${product.stock} left` : 'In Stock'}
                   </span>
                 </>
               ) : (
                 <>
-                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-gray-400"></div>
-                  <span className="text-gray-400">Out of Stock</span>
+                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-gray-400 dark:bg-gray-300"></div>
+                  <span className="text-gray-400 dark:text-gray-300">Out of Stock</span>
                 </>
               )}
             </div>

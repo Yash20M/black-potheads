@@ -67,6 +67,28 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+
+  forgotPassword: (data: { 
+    email: string; 
+    phone: string; 
+    newPassword: string; 
+    confirmPassword: string 
+  }) => {
+    const url = `${API_BASE_URL}/api/v1/auth/forgot-password`;
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    }).then(async (response) => {
+      const result = await response.json();
+      if (!response.ok) {
+        throw new ApiError(response.status, result.message || 'An error occurred');
+      }
+      return result;
+    });
+  },
 };
 
 // User APIs

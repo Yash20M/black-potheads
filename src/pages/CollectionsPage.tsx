@@ -9,7 +9,7 @@ const collections = [
     subtitle: 'Divine Power',
     description: 'Embrace the divine energy of Lord Shiva, the destroyer and transformer. Our Shiva collection features intricate spiritual designs that blend ancient Hindu mythology with contemporary streetwear aesthetics. Each piece is crafted with premium cotton and showcases detailed prints of the third eye, trishul, and cosmic dance of Nataraja.',
     features: ['Premium Cotton', 'Spiritual Artwork', 'Limited Edition', 'Unisex Designs'],
-    image: '/Shiva.PNG',
+    image: '/shiva.jpeg',
   },
   {
     id: 'Shrooms',
@@ -41,7 +41,7 @@ const collections = [
     subtitle: 'Shadow Realm',
     description: 'Embrace the darkness within with our most mysterious and edgy collection. The Dark collection features gothic aesthetics, occult symbolism, and shadow-inspired designs that celebrate the beauty of the night. From skulls and ravens to mystical symbols and dark cosmic patterns, these pieces are for those who find power in the shadows.',
     features: ['Gothic Aesthetics', 'Occult Symbolism', 'Dark Schemes', 'Edgy Street Style'],
-    image: '/Dark.PNG',
+    image: '/dark (2).PNG',
   },
   {
     id: 'Rick n Morty',
@@ -56,7 +56,7 @@ const collections = [
 const CollectionsPage = () => {
   return (
     <div className="min-h-screen pt-20 bg-black">
-      <section className="py-16 bg-black border-b border-gray-800">
+      <section className="py-16 bg-black border-gray-800">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -66,7 +66,7 @@ const CollectionsPage = () => {
             <span className="text-sm uppercase tracking-widest text-gray-400 mb-4 block">
               Explore Our
             </span>
-            <h1 className="font-display text-6xl md:text-7xl lg:text-8xl text-white">COLLECTIONS</h1>
+            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-white">COLLECTIONS</h1>
           </motion.div>
         </div>
       </section>
@@ -76,7 +76,7 @@ const CollectionsPage = () => {
           <div className="space-y-24">
             {collections.map((collection, index) => {
               const isEven = index % 2 === 0;
-              
+
               return (
                 <motion.div
                   key={collection.id}
@@ -84,31 +84,29 @@ const CollectionsPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6 }}
-                  className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center ${
-                    !isEven ? 'lg:flex-row-reverse' : ''
-                  }`}
+                  className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center ${!isEven ? 'lg:flex-row-reverse' : ''
+                    }`}
                 >
                   {/* Image Section */}
-                  <Link 
+                  <Link
                     to={`/shop?collection=${collection.id}`}
-                    className={`relative h-[350px] sm:h-[400px] lg:h-[500px] overflow-hidden group ${
-                      !isEven ? 'lg:order-2' : 'lg:order-1'
-                    }`}
+                    className={`relative h-[350px] sm:h-[400px] lg:h-[500px] overflow-hidden group ${!isEven ? 'lg:order-2' : 'lg:order-1'
+                      }`}
                   >
                     <motion.img
                       src={collection.image}
                       alt={collection.title}
-                      className="w-full h-full object-contain"
+                      className={`w-full h-full ${collection.id === 'Shiva' ? 'object-cover' : 'object-contain'
+                        }`}
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.6 }}
                     />
                   </Link>
 
                   {/* Content Section */}
-                  <div className={`flex flex-col justify-center ${
-                    !isEven ? 'lg:order-1 lg:text-right' : 'lg:order-2'
-                  }`}>
-                    <motion.span 
+                  <div className={`flex flex-col justify-center ${!isEven ? 'lg:order-1 lg:text-right' : 'lg:order-2'
+                    }`}>
+                    <motion.span
                       initial={{ opacity: 0, x: isEven ? -20 : 20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
@@ -117,18 +115,18 @@ const CollectionsPage = () => {
                     >
                       {collection.subtitle}
                     </motion.span>
-                    
-                    <motion.h2 
+
+                    <motion.h2
                       initial={{ opacity: 0, x: isEven ? -20 : 20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.3 }}
-                      className="font-display text-5xl md:text-6xl lg:text-7xl mb-6 text-white"
+                      className="font-display text-3xl md:text-4xl lg:text-5xl mb-6 text-white"
                     >
                       {collection.title.toUpperCase()}
                     </motion.h2>
-                    
-                    <motion.p 
+
+                    <motion.p
                       initial={{ opacity: 0, x: isEven ? -20 : 20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
@@ -148,27 +146,25 @@ const CollectionsPage = () => {
                     >
                       {collection.features.map((feature, idx) => (
                         <div key={idx} className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 bg-white"></div>
-                          <span className="text-sm text-gray-400 uppercase tracking-wide">{feature}</span>
+                          <div className="w-1.5 h-1.5 bg-primary"></div>
+                          <span className="text-sm text-muted-foreground uppercase tracking-wide">{feature}</span>
                         </div>
                       ))}
                     </motion.div>
-                    
+
                     <motion.div
                       initial={{ opacity: 0, x: isEven ? -20 : 20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.6 }}
                     >
-                      <Link 
+                      <Link
                         to={`/shop?collection=${collection.id}`}
-                        className={`group inline-flex items-center gap-3 bg-white text-black px-8 py-4 uppercase text-sm tracking-wider font-bold hover:bg-gray-200 transition-all duration-300 relative overflow-hidden ${
-                          !isEven ? 'lg:flex-row-reverse' : ''
-                        }`}
+                        className={`group inline-flex items-center gap-3 bg-white text-black px-8 py-4 uppercase text-sm tracking-wider font-bold hover:bg-gray-200 transition-all duration-300 relative overflow-hidden border-2 border-white ${!isEven ? 'lg:flex-row-reverse' : ''
+                          }`}
                       >
                         <span className="relative z-10">Shop Collection</span>
                         <ArrowRight size={20} className="relative z-10 group-hover:translate-x-1 transition-transform" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-white transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
                       </Link>
                     </motion.div>
                   </div>

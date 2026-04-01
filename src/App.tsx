@@ -27,6 +27,7 @@ const CollabPage = lazy(() => import("./pages/CollabPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Login = lazy(() => import("./pages/auth/Login"));
 const Register = lazy(() => import("./pages/auth/Register"));
+const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const OrdersPage = lazy(() => import("./pages/OrdersPage"));
 const OrderDetailPage = lazy(() => import("./pages/OrderDetailPage"));
@@ -91,6 +92,7 @@ const App = () => (
               <Route path="/collab" element={<CollabPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/guest-checkout" element={<GuestCheckoutPage />} />
               <Route path="/guest-order-confirmation/:orderId" element={<GuestOrderConfirmationPage />} />

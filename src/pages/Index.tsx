@@ -73,18 +73,23 @@ void main() {
     float nns = force * fbm(vec2(ns_a, ns_b));
     float ins = fbm(vec2(ns_b, ns_a));
 
-    // Pure white smoke palette — dark grey → mid grey → bright white
-    vec3 darkGrey  = vec3(0.55, 0.55, 0.55);
-    vec3 midGrey   = vec3(0.80, 0.80, 0.80);
-    vec3 pureWhite = vec3(1.00, 1.00, 1.00);
+    // Fire palette — dark red → bright orange → yellow-white
+    vec3 darkRed    = vec3(0.4, 0.05, 0.0);   // Deep dark red/black
+    vec3 brightRed  = vec3(0.9, 0.15, 0.05);  // Bright red-orange
+    vec3 orange     = vec3(1.0, 0.5, 0.1);    // Bright orange
+    vec3 yellowWhite = vec3(1.0, 0.9, 0.6);   // Yellow-white hot
 
-    vec3 c1 = mix(darkGrey, midGrey,   clamp(ins * 2.0, 0.0, 1.0));
-    vec3 c2 = mix(midGrey,  pureWhite, clamp(ins * 2.0 - 1.0, 0.0, 1.0));
-    vec3 smokeColor = mix(c1, c2, clamp(ins, 0.0, 1.0));
+    // Create fire gradient with multiple color stops
+    vec3 c1 = mix(darkRed, brightRed, clamp(ins * 1.5, 0.0, 1.0));
+    vec3 c2 = mix(brightRed, orange, clamp(ins * 2.0 - 0.5, 0.0, 1.0));
+    vec3 c3 = mix(orange, yellowWhite, clamp(ins * 2.0 - 1.0, 0.0, 1.0));
+    vec3 smokeColor = mix(mix(c1, c2, clamp(ins * 2.0, 0.0, 1.0)), c3, clamp(ins - 0.5, 0.0, 1.0));
 
-    // Alpha: transparent at top, opaque at bottom
-    float alpha = clamp(1.0 - gradient * 1.6, 0.0, 1.0);
-    alpha *= clamp(ins + 0.2, 0.0, 1.0);
+    // Alpha: transparent at top, more opaque at bottom for fire effect
+    float alpha = clamp(1.0 - gradient * 1.2, 0.0, 1.0);
+    alpha *= clamp(ins + 0.4, 0.0, 1.0);
+    // Add intensity variation for flickering fire effect
+    alpha *= 0.85 + 0.15 * sin(time * 2.0 + ins * 10.0);
 
     // ─── HOT COAL EMBERS ───
     // Create floating orange/red particles that rise through the smoke
@@ -454,8 +459,8 @@ const Index = () => {
       </section>
 
       <ScrollingText />
-      <TrendingSection />
       <VideoSection />
+      <TrendingSection />
       <AboutBrandSection />
       <ProcessSection />
       <FeaturesSection />

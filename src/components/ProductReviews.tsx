@@ -172,18 +172,18 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
   const userHasReviewed = reviews.some(r => r.user?._id === user?._id);
 
   return (
-    <div className="py-12 md:py-16 bg-gradient-to-b from-white to-gray-50 border-t border-gray-200">
+    <div className="py-12 md:py-16 bg-background border-t border-border">
       <div className="container mx-auto px-4 md:px-6">
-        <h2 className="font-display text-2xl md:text-3xl lg:text-4xl mb-8 md:mb-12 text-gray-900 uppercase tracking-wider">
+        <h2 className="font-display text-2xl md:text-3xl lg:text-4xl mb-8 md:mb-12 text-white uppercase tracking-wider">
           Customer Reviews
         </h2>
 
         {/* Stats Summary */}
         {stats && (
-          <div className="mb-8 md:mb-12 p-6 md:p-8 bg-white border border-gray-200 shadow-sm">
+          <div className="mb-8 md:mb-12 p-6 md:p-8 bg-card border border-border shadow-sm">
             <div className="flex flex-col md:flex-row gap-6 md:gap-8">
-              <div className="text-center md:text-left md:border-r md:border-gray-200 md:pr-8 pb-6 md:pb-0 border-b md:border-b-0 border-gray-200">
-                <div className="text-5xl md:text-6xl font-display mb-3 text-gray-900">
+              <div className="text-center md:text-left md:border-r md:border-border md:pr-8 pb-6 md:pb-0 border-b md:border-b-0 border-border">
+                <div className="text-5xl md:text-6xl font-display mb-3 text-white">
                   {typeof stats.averageRating === 'number' 
                     ? stats.averageRating.toFixed(1) 
                     : parseFloat(stats.averageRating || '0').toFixed(1)}
@@ -191,7 +191,7 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
                 <div className="flex justify-center md:justify-start mb-3">
                   {renderStars(Math.round(parseFloat(stats.averageRating?.toString() || '0')))}
                 </div>
-                <div className="text-xs md:text-sm text-gray-600 uppercase tracking-wider">
+                <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider">
                   Based on {stats.totalReviews || 0} {stats.totalReviews === 1 ? 'review' : 'reviews'}
                 </div>
               </div>
@@ -205,16 +205,16 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
                   
                   return (
                     <div key={star} className="flex items-center gap-3 md:gap-4 mb-2 md:mb-3">
-                      <span className="text-xs md:text-sm font-medium w-12 md:w-16 text-gray-700 uppercase tracking-wider">
+                      <span className="text-xs md:text-sm font-medium w-12 md:w-16 text-foreground uppercase tracking-wider">
                         {star} Star
                       </span>
-                      <div className="flex-1 h-2 md:h-3 bg-gray-200 overflow-hidden">
+                      <div className="flex-1 h-2 md:h-3 bg-secondary overflow-hidden">
                         <div
                           className="h-full bg-yellow-400 transition-all"
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
-                      <span className="text-xs md:text-sm font-medium text-gray-700 w-8 md:w-12 text-right">
+                      <span className="text-xs md:text-sm font-medium text-foreground w-8 md:w-12 text-right">
                         {count}
                       </span>
                     </div>
@@ -229,7 +229,7 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
         {user && !userHasReviewed && !showReviewForm && (
           <Button
             onClick={() => setShowReviewForm(true)}
-            className="mb-8 bg-gray-900 text-white hover:bg-gray-800 uppercase tracking-wider h-11 md:h-12 px-6 md:px-8 text-sm md:text-base w-full md:w-auto"
+            className="mb-8 bg-white text-black hover:bg-gray-200 border-2 border-white uppercase tracking-wider h-11 md:h-12 px-6 md:px-8 text-sm md:text-base w-full md:w-auto"
             size="lg"
           >
             Write a Review
@@ -243,21 +243,21 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="mb-8 p-6 md:p-8 bg-white border-2 border-gray-900 shadow-lg"
+              className="mb-8 p-6 md:p-8 bg-card border-2 border-primary shadow-lg"
             >
-              <h3 className="font-display text-xl md:text-2xl mb-6 uppercase tracking-wider text-gray-900">
+              <h3 className="font-display text-xl md:text-2xl mb-6 uppercase tracking-wider text-white">
                 Write Your Review
               </h3>
               
               <div className="mb-6">
-                <label className="block text-sm font-semibold mb-3 uppercase tracking-wider text-gray-900">
+                <label className="block text-sm font-semibold mb-3 uppercase tracking-wider text-white">
                   Rating
                 </label>
                 {renderStars(rating, true, setRating)}
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-semibold mb-3 uppercase tracking-wider text-gray-900">
+                <label className="block text-sm font-semibold mb-3 uppercase tracking-wider text-white">
                   Your Review
                 </label>
                 <Textarea
@@ -265,7 +265,7 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="Share your thoughts about this product..."
                   rows={5}
-                  className="w-full bg-white text-gray-900 border-2 border-gray-300 focus:border-gray-900 focus:ring-0 placeholder:text-gray-400"
+                  className="w-full bg-background text-foreground border-2 border-border focus:border-primary focus:ring-0 placeholder:text-muted-foreground"
                 />
               </div>
 
@@ -273,7 +273,7 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
                 <Button
                   onClick={handleSubmitReview}
                   disabled={submitting || !comment.trim()}
-                  className="bg-gray-900 text-white hover:bg-gray-800 uppercase tracking-wider h-11 md:h-12 px-6 md:px-8 disabled:bg-gray-400 disabled:text-gray-200 text-sm md:text-base"
+                  className="bg-white text-black hover:bg-gray-200 border-2 border-white uppercase tracking-wider h-11 md:h-12 px-6 md:px-8 disabled:bg-muted disabled:text-muted-foreground text-sm md:text-base"
                   size="lg"
                 >
                   {submitting ? 'Submitting...' : 'Submit Review'}
@@ -284,7 +284,7 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
                     setRating(5);
                     setComment('');
                   }}
-                  className="bg-white border-2 border-gray-900 text-gray-900 hover:bg-gray-100 uppercase tracking-wider h-11 md:h-12 px-6 md:px-8 text-sm md:text-base"
+                  className="bg-background border-2 border-white text-white hover:bg-secondary uppercase tracking-wider h-11 md:h-12 px-6 md:px-8 text-sm md:text-base"
                   size="lg"
                   disabled={submitting}
                 >
@@ -298,17 +298,17 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
         {/* Reviews List */}
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 text-base md:text-lg uppercase tracking-wider">Loading reviews...</p>
+            <p className="text-muted-foreground text-base md:text-lg uppercase tracking-wider">Loading reviews...</p>
           </div>
         ) : reviews.length === 0 ? (
-          <div className="text-center py-12 md:py-16 bg-white border-2 border-gray-200">
-            <p className="text-gray-900 text-lg md:text-xl mb-6 uppercase tracking-wider font-display">
+          <div className="text-center py-12 md:py-16 bg-card border-2 border-border">
+            <p className="text-white text-lg md:text-xl mb-6 uppercase tracking-wider font-display">
               No reviews yet
             </p>
             {user && !showReviewForm && (
               <Button 
                 onClick={() => setShowReviewForm(true)} 
-                className="bg-gray-900 text-white hover:bg-gray-800 uppercase tracking-wider h-11 md:h-12 px-6 md:px-8 text-sm md:text-base"
+                className="bg-white text-black hover:bg-gray-200 border-2 border-white uppercase tracking-wider h-11 md:h-12 px-6 md:px-8 text-sm md:text-base"
                 size="lg"
               >
                 Be the first to review
@@ -318,26 +318,26 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
         ) : (
           <div className="space-y-4 md:space-y-6">
             {reviews.map((review) => (
-              <div key={review._id} className="border border-gray-200 p-4 md:p-6 bg-white hover:shadow-md transition-shadow">
+              <div key={review._id} className="border border-border p-4 md:p-6 bg-card hover:shadow-md transition-shadow">
                 {editingReview === review._id ? (
                   // Edit Mode
-                  <div className="p-4 md:p-6 bg-gray-50 border-2 border-gray-900">
+                  <div className="p-4 md:p-6 bg-secondary border-2 border-primary">
                     <div className="mb-6">
-                      <label className="block text-sm font-semibold mb-3 uppercase tracking-wider text-gray-900">
+                      <label className="block text-sm font-semibold mb-3 uppercase tracking-wider text-white">
                         Rating
                       </label>
                       {renderStars(editRating, true, setEditRating)}
                     </div>
 
                     <div className="mb-6">
-                      <label className="block text-sm font-semibold mb-3 uppercase tracking-wider text-gray-900">
+                      <label className="block text-sm font-semibold mb-3 uppercase tracking-wider text-white">
                         Your Review
                       </label>
                       <Textarea
                         value={editComment}
                         onChange={(e) => setEditComment(e.target.value)}
                         rows={5}
-                        className="w-full bg-white text-gray-900 border-2 border-gray-300 focus:border-gray-900 focus:ring-0"
+                        className="w-full bg-background text-foreground border-2 border-border focus:border-primary focus:ring-0"
                       />
                     </div>
 
@@ -345,14 +345,14 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
                       <Button
                         onClick={() => handleUpdateReview(review._id)}
                         disabled={submitting}
-                        className="bg-gray-900 text-white hover:bg-gray-800 uppercase tracking-wider h-10 md:h-11 px-4 md:px-6 text-sm"
+                        className="bg-white text-black hover:bg-gray-200 border-2 border-white uppercase tracking-wider h-10 md:h-11 px-4 md:px-6 text-sm"
                       >
                         <Check size={16} className="mr-2" />
                         Save
                       </Button>
                       <Button
                         onClick={cancelEdit}
-                        className="bg-white border-2 border-gray-900 text-gray-900 hover:bg-gray-100 uppercase tracking-wider h-10 md:h-11 px-4 md:px-6 text-sm"
+                        className="bg-background border-2 border-white text-white hover:bg-secondary uppercase tracking-wider h-10 md:h-11 px-4 md:px-6 text-sm"
                         disabled={submitting}
                       >
                         Cancel
@@ -365,18 +365,18 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                       <div className="flex-1">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
-                          <span className="font-display text-base md:text-lg text-gray-900 uppercase tracking-wider">
+                          <span className="font-display text-base md:text-lg text-white uppercase tracking-wider">
                             {review.user?.name || 'Anonymous'}
                           </span>
                           {review.isVerifiedPurchase && (
-                            <span className="text-xs bg-green-50 text-green-700 border border-green-200 px-2 md:px-3 py-1 uppercase tracking-wider font-semibold inline-block w-fit">
+                            <span className="text-xs bg-green-900/30 text-green-400 border border-green-700 px-2 md:px-3 py-1 uppercase tracking-wider font-semibold inline-block w-fit">
                               Verified Purchase
                             </span>
                           )}
                         </div>
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                           {renderStars(review.rating)}
-                          <span className="text-xs md:text-sm text-gray-500 uppercase tracking-wider">
+                          <span className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider">
                             {new Date(review.createdAt).toLocaleDateString('en-US', { 
                               month: 'short', 
                               day: 'numeric', 
@@ -390,14 +390,14 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
                         <div className="flex gap-2 sm:ml-4">
                           <button
                             onClick={() => startEdit(review)}
-                            className="p-2 md:p-2.5 lg:p-2 border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors rounded"
+                            className="p-2 md:p-2.5 lg:p-2 border-2 border-white text-white hover:bg-white hover:text-black transition-colors"
                             title="Edit review"
                           >
                             <Edit2 size={18} className="sm:w-5 sm:h-5 lg:w-4 lg:h-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteReview(review._id)}
-                            className="p-2 md:p-2.5 lg:p-2 border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors rounded"
+                            className="p-2 md:p-2.5 lg:p-2 border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors"
                             title="Delete review"
                           >
                             <Trash2 size={18} className="sm:w-5 sm:h-5 lg:w-4 lg:h-4" />
@@ -406,7 +406,7 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
                       )}
                     </div>
 
-                    <p className="text-gray-700 leading-relaxed text-sm md:text-base">{review.comment}</p>
+                    <p className="text-muted-foreground leading-relaxed text-sm md:text-base">{review.comment}</p>
                   </>
                 )}
               </div>
@@ -420,17 +420,17 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
             <Button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="bg-gray-900 text-white hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 uppercase tracking-wider h-11 md:h-12 px-6 md:px-8 text-sm md:text-base w-full sm:w-auto"
+              className="bg-white text-black hover:bg-gray-200 border-2 border-white disabled:bg-muted disabled:text-muted-foreground uppercase tracking-wider h-11 md:h-12 px-6 md:px-8 text-sm md:text-base w-full sm:w-auto"
             >
               Previous
             </Button>
-            <span className="text-sm md:text-base text-gray-900 font-semibold uppercase tracking-wider px-4">
+            <span className="text-sm md:text-base text-white font-semibold uppercase tracking-wider px-4">
               Page {page} of {totalPages}
             </span>
             <Button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="bg-gray-900 text-white hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 uppercase tracking-wider h-11 md:h-12 px-6 md:px-8 text-sm md:text-base w-full sm:w-auto"
+              className="bg-white text-black hover:bg-gray-200 border-2 border-white disabled:bg-muted disabled:text-muted-foreground uppercase tracking-wider h-11 md:h-12 px-6 md:px-8 text-sm md:text-base w-full sm:w-auto"
             >
               Next
             </Button>

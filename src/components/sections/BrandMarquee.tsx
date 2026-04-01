@@ -23,7 +23,7 @@ export const BrandMarquee = () => {
             <div key={i} className="mx-3 md:mx-8 flex items-center justify-center">
               <Link 
                 to={`/shop?collection=${collection.slug}`}
-                className="font-display text-lg md:text-2xl lg:text-3xl text-muted-foreground/20 hover:text-primary/60 transition-colors duration-300 cursor-pointer whitespace-nowrap"
+                className="font-display text-lg md:text-2xl lg:text-3xl text-muted-foreground/50 dark:text-white/50 hover:text-primary hover:dark:text-primary transition-colors duration-300 cursor-pointer whitespace-nowrap"
               >
                 {collection.name}
               </Link>
@@ -39,7 +39,7 @@ export const BrandMarquee = () => {
             <div key={i} className="mx-3 md:mx-8 flex items-center justify-center">
               <Link 
                 to={`/shop?collection=${collection.slug}`}
-                className="font-display text-lg md:text-2xl lg:text-3xl text-muted-foreground/20 hover:text-primary/60 transition-colors duration-300 cursor-pointer whitespace-nowrap"
+                className="font-display text-lg md:text-2xl lg:text-3xl text-muted-foreground/50 dark:text-white/50 hover:text-primary hover:dark:text-primary transition-colors duration-300 cursor-pointer whitespace-nowrap"
               >
                 {collection.name}
               </Link>

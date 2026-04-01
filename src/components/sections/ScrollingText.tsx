@@ -2,11 +2,11 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 const categories = [
-  { name: 'SHIVA', image: '/Shiva.PNG', path: '/shop?collection=Shiva' },
+  { name: 'SHIVA', image: '/shiva.jpeg', path: '/shop?collection=Shiva' },
   { name: 'SHROOMS', image: '/Shrooms.PNG', path: '/shop?collection=Shrooms' },
   { name: 'ACID', image: '/LSD.PNG', path: '/shop?collection=ACID' },
   { name: 'CHAKRAS', image: '/Chakras.PNG', path: '/shop?collection=Chakras' },
-  { name: 'DARK', image: '/Dark.PNG', path: '/shop?collection=Dark' },
+  { name: 'DARK', image: '/dark (2).PNG', path: '/shop?collection=Dark' },
   { name: 'RICK N MORTY', image: '/Rick-N-Morty.PNG', path: '/shop?collection=Rick n Morty' },
 ];
 
@@ -74,7 +74,9 @@ export const ScrollingText = () => {
                       <img
                         src={category.image}
                         alt={category.name}
-                        className="w-full h-full object-contain  transition-all duration-300"
+                        className={`w-full h-full transition-all duration-300 ${
+                          category.name === 'SHIVA' ? 'object-cover' : 'object-contain'
+                        }`}
                         onError={(e) => {
                           e.currentTarget.src = 'https://via.placeholder.com/200x200?text=' + category.name;
                         }}
