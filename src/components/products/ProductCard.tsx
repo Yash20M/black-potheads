@@ -174,18 +174,18 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
           </div>
           {/* Stock Status */}
           {product.stock !== undefined && (
-            <div className="flex items-center gap-1 text-[10px] sm:text-xs">
+            <div className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold">
               {product.stock > 0 ? (
                 <>
-                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-gray-600 dark:bg-white"></div>
-                  <span className="text-gray-600 dark:text-white">
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 dark:bg-green-400"></div>
+                  <span className="text-green-700 dark:text-green-400">
                     {product.stock <= 5 ? `Only ${product.stock} left` : 'In Stock'}
                   </span>
                 </>
               ) : (
                 <>
-                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-gray-400 dark:bg-gray-300"></div>
-                  <span className="text-gray-400 dark:text-gray-300">Out of Stock</span>
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-500 dark:bg-red-400"></div>
+                  <span className="text-red-600 dark:text-red-400">Out of Stock</span>
                 </>
               )}
             </div>
