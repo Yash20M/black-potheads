@@ -1,24 +1,25 @@
+import { ProductCard } from '@/components/products/ProductCard';
+import { AboutBrandSection } from '@/components/sections/AboutBrandSection';
+import { BrandMarquee } from '@/components/sections/BrandMarquee';
+import { CategoriesShowcase } from '@/components/sections/CategoriesShowcase';
+import { FeaturesSection } from '@/components/sections/FeaturesSection';
+import { ProcessSection } from '@/components/sections/ProcessSection';
+import { ScrollingText } from '@/components/sections/ScrollingText';
+import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
+import { TrendingSection } from '@/components/sections/TrendingSection';
+import { SEO } from '@/components/SEO';
+import { Button } from '@/components/ui/button';
+import { productApi } from '@/lib/api';
+import { useWishlistStore } from '@/store/wishlistStore';
+import { ApiProduct, Product, normalizeProduct } from '@/types/product';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { useEffect, useRef, useState, Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ProductCard } from '@/components/products/ProductCard';
-import { BrandMarquee } from '@/components/sections/BrandMarquee';
-import { StatsSection } from '@/components/sections/StatsSection';
-import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
-import { FeaturesSection } from '@/components/sections/FeaturesSection';
-import { AboutBrandSection } from '@/components/sections/AboutBrandSection';
-import { CategoriesShowcase } from '@/components/sections/CategoriesShowcase';
-import { TrendingSection } from '@/components/sections/TrendingSection';
-import { ProcessSection } from '@/components/sections/ProcessSection';
-import { VideoSection } from '@/components/sections/VideoSection';
-import { ScrollingText } from '@/components/sections/ScrollingText';
-import { SEO } from '@/components/SEO';
-import { useEffect, useState, useRef } from 'react';
-import { productApi } from '@/lib/api';
 import { toast } from 'sonner';
-import { useWishlistStore } from '@/store/wishlistStore';
-import { Product, normalizeProduct, ApiProduct } from '@/types/product';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useGLTF } from '@react-three/drei';
+import * as THREE from 'three';
 
 // ─── WebGL Smoke Fragment Shader ──────────────────────────────────────────────
 // Replace only the FRAGMENT_SHADER constant in your Index.tsx with this:
@@ -250,31 +251,106 @@ const SmokeCanvas = ({ style }: { style?: React.CSSProperties }) => {
   );
 };
 
+// ─── 3D Skull Model Component ────────────────────────────────────────────────
+// ─── 3D Skull Model Component ────────────────────────────────────────────────
+const SkullModel = ({ mouseX, mouseY, velocityX, isMobile }: { mouseX: number; mouseY: number; velocityX: number; isMobile: boolean }) => {
+  const { scene } = useGLTF('/Skull.glb');
+  const meshRef = useRef<THREE.Group>(null);
+
+  useFrame((state) => {
+    if (!meshRef.current) return;
+    
+    // Base slow rotation
+    const baseRotationSpeed = 0.003;
+    
+    // Add mouse velocity to rotation
+    // Normalize velocity (divide by large number to make it reasonable)
+    const velocityInfluence = velocityX * 0.00005;
+    
+    // Combine base rotation with velocity
+    meshRef.current.rotation.y += baseRotationSpeed + velocityInfluence;
+    
+    // Mouse-based rotation (subtle tilt)
+    meshRef.current.rotation.x = THREE.MathUtils.lerp(
+      meshRef.current.rotation.x,
+      mouseY * 0.3,
+      0.05
+    );
+    meshRef.current.rotation.z = THREE.MathUtils.lerp(
+      meshRef.current.rotation.z,
+      mouseX * 0.2,
+      0.05
+    );
+  });
+
+  // Responsive positioning and scaling
+  const scale = isMobile ? 0.9 : 1;
+  const positionX = 1; // Centered on all devices
+  const positionY = isMobile ? -2.5 : -2.8;
+
+  return (
+    <primitive 
+      ref={meshRef} 
+      object={scene} 
+      scale={scale}
+      position={[positionX, positionY, 0]}
+    />
+  );
+};
+
 // ─── Index ────────────────────────────────────────────────────────────────────
 const Index = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const imageRef = useRef<HTMLDivElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [mouseVelocity, setMouseVelocity] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
+  const lastMousePos = useRef({ x: 0, y: 0, time: Date.now() });
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const springConfig = { damping: 40, stiffness: 80 };
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [180, -180]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-180, 180]), springConfig);
+  // Detect mobile view
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!imageRef.current) return;
-    const rect = imageRef.current.getBoundingClientRect();
+    const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    mouseX.set((e.clientX - centerX) / (rect.width / 2));
-    mouseY.set((e.clientY - centerY) / (rect.height / 2));
+    const x = (e.clientX - centerX) / (rect.width / 2);
+    const y = (e.clientY - centerY) / (rect.height / 2);
+    
+    // Calculate velocity
+    const now = Date.now();
+    const deltaTime = (now - lastMousePos.current.time) / 1000; // Convert to seconds
+    const deltaX = e.clientX - lastMousePos.current.x;
+    const deltaY = e.clientY - lastMousePos.current.y;
+    
+    if (deltaTime > 0) {
+      const velocityX = deltaX / deltaTime;
+      const velocityY = deltaY / deltaTime;
+      setMouseVelocity({ x: velocityX, y: velocityY });
+    }
+    
+    lastMousePos.current = { x: e.clientX, y: e.clientY, time: now };
+    
+    mouseX.set(x);
+    mouseY.set(y);
+    setMousePosition({ x, y });
   };
 
   const handleMouseLeave = () => {
     mouseX.set(0);
     mouseY.set(0);
+    setMousePosition({ x: 0, y: 0 });
+    setMouseVelocity({ x: 0, y: 0 });
   };
 
   useEffect(() => { loadFeaturedProducts(); }, []);
@@ -329,19 +405,20 @@ const Index = () => {
       />
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          3D ROTATING HERO
-          z-5  → WebGL smoke BELOW image  (background smoke)
-          z-10 → 3D rotating image
-          z-20 → WebGL smoke ABOVE image  (foreground smoke)
+          3D ROTATING HERO WITH SKULL MODEL
+          z-5  → WebGL smoke BELOW model  (background smoke)
+          z-10 → 3D rotating skull model
+          z-20 → WebGL smoke ABOVE model  (foreground smoke)
       ═══════════════════════════════════════════════════════════════════════ */}
       <section
         className="relative h-[70vh] sm:h-[75vh] md:h-[80vh] lg:h-[85vh] w-full overflow-hidden flex items-center justify-center bg-black"
-        style={{ perspective: '1000px' }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
       >
         <div className="absolute inset-0 bg-black -z-10" />
 
-        {/* ── WEBGL SMOKE BELOW IMAGE (z-5) ── */}
-        {/* Covers bottom 40% of the hero, sits behind the image */}
+        {/* ── WEBGL SMOKE BELOW MODEL (z-5) ── */}
+        {/* Covers bottom 40% of the hero, sits behind the model */}
         <div
           className="absolute inset-x-0 bottom-0 pointer-events-none"
           style={{ height: '40%', zIndex: 5 }}
@@ -349,32 +426,27 @@ const Index = () => {
           <SmokeCanvas />
         </div>
 
-        {/* ── IMAGE (z-10) ── */}
+        {/* ── 3D SKULL MODEL (z-10) ── */}
         <motion.div
-          ref={imageRef}
-          className="relative w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl h-[50vh] sm:h-[60vh] md:h-[65vh] lg:h-[70vh] mx-auto px-4 sm:px-0"
-          style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
+          className="relative w-full h-[50vh] sm:h-[60vh] md:h-[75vh] lg:h-[80vh] mx-auto"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
+          style={{ zIndex: 10 }}
         >
-          <motion.div
-            className="relative w-full h-full bg-black"
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.4 }}
+          <Canvas
+            camera={{ position: [0, 0, 8], fov: 45 }}
+            style={{ width: '100%', height: '100%' }}
+            gl={{ alpha: true, antialias: true }}
           >
-            <img
-              src="/homeimg.jpeg"
-              alt="Black Potheads"
-              className="w-full h-full object-cover"
-              style={{
-                filter: 'brightness(1.2) contrast(1.4) saturate(1.1)',
-                mixBlendMode: 'lighten',
-              }}
-            />
-          </motion.div>
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[10, 10, 5]} intensity={1} />
+            <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#ff4400" />
+            <pointLight position={[0, 5, 0]} intensity={0.8} color="#ff6600" />
+            <Suspense fallback={null}>
+              <SkullModel mouseX={mousePosition.x} mouseY={mousePosition.y} velocityX={mouseVelocity.x} isMobile={isMobile} />
+            </Suspense>
+          </Canvas>
 
           {/* Orbital particles */}
           <motion.div
@@ -394,8 +466,8 @@ const Index = () => {
           </motion.div>
         </motion.div>
 
-        {/* ── WEBGL SMOKE ABOVE IMAGE (z-20) ── */}
-        {/* Covers bottom 25% only — thin foreground wisp layer over the image */}
+        {/* ── WEBGL SMOKE ABOVE MODEL (z-20) ── */}
+        {/* Covers bottom 25% only — thin foreground wisp layer over the model */}
         <div
           className="absolute inset-x-0 bottom-0 pointer-events-none"
           style={{ height: '25%', zIndex: 20 }}
