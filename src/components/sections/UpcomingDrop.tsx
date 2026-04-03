@@ -127,10 +127,13 @@ export const UpcomingDrop = () => {
                   animate={{ scale: 1, opacity: 1 }}
                   className="flex items-center gap-3 text-primary"
                 >
+
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: 'spring' }}
+
+                    
                     className="w-10 h-10 bg-primary flex items-center justify-center"
                   >
                     <Bell size={18} className="text-primary-foreground" />

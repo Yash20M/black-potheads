@@ -329,13 +329,13 @@ const Index = () => {
       />
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          3D ROTATING HERO
+          3D ROTATING HERO - FULL SCREEN
           z-5  → WebGL smoke BELOW image  (background smoke)
           z-10 → 3D rotating image
           z-20 → WebGL smoke ABOVE image  (foreground smoke)
       ═══════════════════════════════════════════════════════════════════════ */}
       <section
-        className="relative h-[70vh] sm:h-[75vh] md:h-[80vh] lg:h-[85vh] w-full overflow-hidden flex items-center justify-center bg-black"
+        className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-black"
         style={{ perspective: '1000px' }}
       >
         <div className="absolute inset-0 bg-black -z-10" />
@@ -352,7 +352,7 @@ const Index = () => {
         {/* ── IMAGE (z-10) ── */}
         <motion.div
           ref={imageRef}
-          className="relative w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl h-[50vh] sm:h-[60vh] md:h-[65vh] lg:h-[70vh] mx-auto px-4 sm:px-0"
+          className="relative w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl h-[60vh] sm:h-[65vh] md:h-[70vh] lg:h-[75vh] mx-auto px-4 sm:px-0"
           style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -422,7 +422,7 @@ const Index = () => {
       <CategoriesShowcase />
 
       {/* Featured Products */}
-      <section className="py-24 bg-background">
+      {/* <section className="py-24 bg-background">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -456,13 +456,12 @@ const Index = () => {
             )}
           </div>
         </div>
-      </section>
+      </section> */}
 
       <ScrollingText />
       <TrendingSection />
       <AboutBrandSection />
       <ProcessSection />
-      <FeaturesSection />
       <TestimonialsSection />
     </div>
   );
