@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { Mail, MapPin, Clock, Send, CheckCircle, Skull, Instagram, Twitter, Package, Truck, RefreshCw, ShoppingBag, Users, MessageCircle } from 'lucide-react';
+import { Mail, MapPin, Clock, Send, CheckCircle, Instagram, Twitter, Package, Truck, RefreshCw, ShoppingBag, Users, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const ContactPage = () => {
@@ -22,13 +22,13 @@ const ContactPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <motion.div
-              animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="inline-block mb-4"
-            >
-              <Skull size={40} className="text-primary" />
-            </motion.div>
+            <div className="inline-block mb-6">
+              <img 
+                src="/logo.png" 
+                alt="Black Potheads Logo" 
+                className="w-16 h-16 md:w-20 md:h-20 object-contain mx-auto"
+              />
+            </div>
             <h1 className="font-display text-4xl md:text-6xl lg:text-7xl">GET IN TOUCH</h1>
             <p className="text-muted-foreground text-lg mt-4 max-w-md mx-auto">
               Questions? Collabs? Wholesale? Hit us up.

@@ -9,7 +9,6 @@ import { useAuthStore } from '@/store/authStore';
 import { wishlistApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { ProductCard } from '@/components/products/ProductCard';
-import { ProductReviews } from '@/components/ProductReviews';
 import { FeaturesSection } from '@/components/sections/FeaturesSection';
 import { SEO } from '@/components/SEO';
 import { productApi } from '@/lib/api';
@@ -823,9 +822,6 @@ const ProductDetailPage = () => {
 
       {/* Features Section */}
       <FeaturesSection />
-
-      {/* Product Reviews Section */}
-      {product && <ProductReviews productId={product.id} />}
 
       {relatedProducts.length > 0 && (
         <section className="py-12 sm:py-16 bg-background dark:bg-black">

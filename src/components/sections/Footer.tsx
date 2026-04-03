@@ -24,11 +24,11 @@ export const Footer = () => {
       <div className="container mx-auto px-6 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-16 border-b border-border">
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-3 mb-4">
               <img 
                 src="/logo.png" 
                 alt="Black Potheads Logo" 
-                className="w-6 h-6 object-contain"
+                className="w-10 h-10 md:w-12 md:h-12 object-contain"
               />
               <h4 className="font-display text-2xl">BLACK POTHEADS</h4>
             </div>
