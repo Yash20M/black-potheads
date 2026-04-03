@@ -94,7 +94,7 @@ export const CategoriesShowcase = () => {
       <div className="text-center">
         <p className="text-white/50 tracking-[0.3em] text-xs uppercase mb-1">Browse By</p>
         <h2 className="text-white text-4xl md:text-5xl font-bold tracking-widest uppercase">
-          Categories
+          Chapter
         </h2>
       </div>
 

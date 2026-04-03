@@ -10,6 +10,7 @@ import { wishlistApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { ProductCard } from '@/components/products/ProductCard';
 import { ProductReviews } from '@/components/ProductReviews';
+import { FeaturesSection } from '@/components/sections/FeaturesSection';
 import { SEO } from '@/components/SEO';
 import { productApi } from '@/lib/api';
 import { Product, normalizeProduct, ApiProduct } from '@/types/product';
@@ -432,11 +433,26 @@ const ProductDetailPage = () => {
             >
               <h1 className="font-display text-3xl md:text-4xl mb-3 text-foreground">{product.name}</h1>
               
-              <div className="flex items-center gap-4 mb-6">
+              <div className="flex items-center gap-4 mb-2">
                 <span className="font-display text-2xl text-foreground">₹{product.price.toLocaleString()}</span>
                 {product.originalPrice && (
                   <span className="text-muted-foreground line-through text-lg">₹{product.originalPrice.toLocaleString()}</span>
                 )}
+              </div>
+              
+              {/* Stock Information */}
+              <div className="mb-6">
+                <p className="text-sm font-medium">
+                  {product.stock && product.stock > 0 ? (
+                    <span className="text-green-600 dark:text-green-400">
+                      {product.stock} units in stock
+                    </span>
+                  ) : (
+                    <span className="text-red-600 dark:text-red-400">
+                      Out of stock
+                    </span>
+                  )}
+                </p>
               </div>
 
               {/* Oversized Fit Info */}
@@ -449,14 +465,6 @@ const ProductDetailPage = () => {
               </div>
 
               <p className="text-muted-foreground mb-8 leading-relaxed text-sm">{product.description}</p>
-
-              {/* Wide Fit Note */}
-              <div className="mb-6 p-4 bg-card border border-border">
-                <p className="text-sm text-foreground">
-                  <span className="font-semibold text-white">Wide Fit</span><br />
-                  <span className="text-muted-foreground">Model info and sizing details</span>
-                </p>
-              </div>
 
               {/* Size Selection */}
               <div className="mb-8">
@@ -489,7 +497,7 @@ const ProductDetailPage = () => {
                 </div>
               </div>
 
-              {/* Add to Cart, Buy Now and Wishlist Buttons */}
+              {/* Add to Cart and Buy Now Buttons */}
               <div className="mb-6 flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <Button 
                   variant="outline" 
@@ -508,21 +516,6 @@ const ProductDetailPage = () => {
                   disabled={!product.stock || product.stock === 0}
                 >
                   {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Buy Now'}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className={cn(
-                    "w-auto h-11 sm:h-14 px-4 border-2 transition-colors",
-                    inWishlist
-                      ? "bg-white border-white text-black hover:bg-gray-200"
-                      : "border-white text-white hover:bg-white hover:text-black"
-                  )}
-                  onClick={handleToggleWishlist}
-                  disabled={isTogglingWishlist}
-                  aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-                >
-                  <Heart size={18} className={cn(inWishlist ? 'fill-current' : '')} />
                 </Button>
               </div>
 
@@ -827,6 +820,9 @@ const ProductDetailPage = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* Features Section */}
+      <FeaturesSection />
 
       {/* Product Reviews Section */}
       {product && <ProductReviews productId={product.id} />}

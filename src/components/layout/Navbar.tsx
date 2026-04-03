@@ -25,7 +25,8 @@ export const Navbar = () => {
 
   const { scrollY } = useScroll();
   const logoScale = useTransform(scrollY, [0, 200], [1, 0.85]);
-  const skullRotate = useTransform(scrollY, [0, 500], [0, 180]);
+  // Continuous rotation: 1 full rotation (360deg) per 1000px of scroll
+  const skullRotate = useTransform(scrollY, (value) => value * 0.36);
   const glowOpacity = useTransform(scrollY, [0, 200, 400], [0.2, 1, 0.2]);
 
   // Check if we're on the home page

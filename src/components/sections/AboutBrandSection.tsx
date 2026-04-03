@@ -16,10 +16,10 @@ export const AboutBrandSection = () => {
   const imageRotate = useTransform(scrollYProgress, [0, 1], [-5, 5]);
 
   return (
-    <section ref={containerRef} className="py-32 bg-secondary overflow-hidden">
+    <section ref={containerRef} className="py-16 md:py-20 bg-secondary overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div className="relative h-[600px]">
+          <div className="relative h-[600px] hidden lg:block">
             <motion.div
               style={{ scale: imageScale, rotate: imageRotate }}
               className="absolute top-0 left-0 w-4/5 h-80 bg-black border border-gray-800 overflow-hidden flex items-center justify-center"
@@ -152,7 +152,7 @@ export const AboutBrandSection = () => {
               worn by those who refuse to blend in.
             </motion.p>
 
-            <div className="grid grid-cols-3 gap-8 pt-8 border-t border-border mb-8">
+            {/* <div className="grid grid-cols-3 gap-8 pt-8 border-t border-border mb-8">
               {[
                 { number: '25K+', label: 'Community' },
                 { number: '100+', label: 'Designs' },
@@ -171,7 +171,7 @@ export const AboutBrandSection = () => {
                   </p>
                 </motion.div>
               ))}
-            </div>
+            </div> */}
 
             {/* Explore Story Button */}
             <motion.div

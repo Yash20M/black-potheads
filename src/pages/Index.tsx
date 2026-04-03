@@ -494,7 +494,7 @@ const Index = () => {
       <CategoriesShowcase />
 
       {/* Featured Products */}
-      <section className="py-24 bg-background">
+      {/* <section className="py-24 bg-background">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -528,13 +528,12 @@ const Index = () => {
             )}
           </div>
         </div>
-      </section>
+      </section> */}
 
       <ScrollingText />
       <TrendingSection />
       <AboutBrandSection />
       <ProcessSection />
-      <FeaturesSection />
       <TestimonialsSection />
     </div>
   );

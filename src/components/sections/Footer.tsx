@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Instagram, Skull } from 'lucide-react';
+import { Instagram } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const footerLinks = {
@@ -25,7 +25,11 @@ export const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-16 border-b border-border">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <Skull size={24} className="text-primary" />
+              <img 
+                src="/logo.png" 
+                alt="Black Potheads Logo" 
+                className="w-6 h-6 object-contain"
+              />
               <h4 className="font-display text-2xl">BLACK POTHEADS</h4>
             </div>
             <p className="text-muted-foreground text-sm mb-6">
