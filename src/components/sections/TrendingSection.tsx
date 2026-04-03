@@ -83,13 +83,27 @@ export const TrendingSection = () => {
               Your browser does not support the video tag.
             </video>
 
-            {/* Collaborate Button */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+            {/* Collaborate Section */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-4">
+              {/* Title Text */}
+              <motion.h3
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="text-white text-xl md:text-2xl font-bold uppercase tracking-wider text-center px-4"
+                style={{ textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8)' }}
+              >
+                Rakt Pipasu Records X Black Potheads
+              </motion.h3>
+              
+              {/* Button */}
               <motion.button
                 onClick={() => navigate('/collab')}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
+                transition={{ delay: 0.4 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-3 bg-white text-black font-semibold uppercase tracking-wider text-sm hover:bg-gray-100 transition-colors duration-300"
@@ -127,13 +141,27 @@ export const TrendingSection = () => {
               Your browser does not support the video tag.
             </video>
 
-            {/* Collaborate Button */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+            {/* Collaborate Section */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-4">
+              {/* Title Text */}
+              <motion.h3
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="text-white text-xl md:text-2xl font-bold uppercase tracking-wider text-center px-4"
+                style={{ textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8)' }}
+              >
+                Rakt Pipasu Records X Black Potheads
+              </motion.h3>
+              
+              {/* Button */}
               <motion.button
                 onClick={() => navigate('/collab')}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
+                transition={{ delay: 0.4 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-3 bg-white text-black font-semibold uppercase tracking-wider text-sm hover:bg-gray-100 transition-colors duration-300"
