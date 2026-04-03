@@ -11,16 +11,19 @@ const collections = [
 ];
 
 export const BrandMarquee = () => {
+  // Duplicate collections multiple times for seamless loop
+  const repeatedCollections = [...collections, ...collections, ...collections, ...collections];
+  
   return (
-    <section className="py-2 md:py-3 bg-card border-y border-border overflow-hidden">
-      <div className="flex">
+    <section className="py-2 md:py-3 bg-card overflow-hidden flex items-center">
+      <div className="flex w-full">
         <motion.div
-          animate={{ x: [0, -1920] }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+          animate={{ x: [0, '-50%'] }}
+          transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
           className="flex shrink-0"
         >
-          {[...collections, ...collections].map((collection, i) => (
-            <div key={i} className="mx-3 md:mx-8 flex items-center justify-center">
+          {repeatedCollections.map((collection, i) => (
+            <div key={`first-${i}`} className="mx-3 md:mx-8 flex items-center justify-center">
               <Link 
                 to={`/shop?collection=${collection.slug}`}
                 className="font-display text-lg md:text-2xl lg:text-3xl text-muted-foreground/50 dark:text-white/50 hover:text-primary hover:dark:text-primary transition-colors duration-300 cursor-pointer whitespace-nowrap"
@@ -29,14 +32,8 @@ export const BrandMarquee = () => {
               </Link>
             </div>
           ))}
-        </motion.div>
-        <motion.div
-          animate={{ x: [0, -1920] }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          className="flex shrink-0"
-        >
-          {[...collections, ...collections].map((collection, i) => (
-            <div key={i} className="mx-3 md:mx-8 flex items-center justify-center">
+          {repeatedCollections.map((collection, i) => (
+            <div key={`second-${i}`} className="mx-3 md:mx-8 flex items-center justify-center">
               <Link 
                 to={`/shop?collection=${collection.slug}`}
                 className="font-display text-lg md:text-2xl lg:text-3xl text-muted-foreground/50 dark:text-white/50 hover:text-primary hover:dark:text-primary transition-colors duration-300 cursor-pointer whitespace-nowrap"

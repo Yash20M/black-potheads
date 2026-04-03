@@ -2,6 +2,7 @@ import { ProductCard } from '@/components/products/ProductCard';
 import { AboutBrandSection } from '@/components/sections/AboutBrandSection';
 import { BrandMarquee } from '@/components/sections/BrandMarquee';
 import { CategoriesShowcase } from '@/components/sections/CategoriesShowcase';
+import { CollabSection } from '@/components/sections/CollabSection';
 import { FeaturesSection } from '@/components/sections/FeaturesSection';
 import { ProcessSection } from '@/components/sections/ProcessSection';
 import { ScrollingText } from '@/components/sections/ScrollingText';
@@ -12,9 +13,9 @@ import { Button } from '@/components/ui/button';
 import { productApi } from '@/lib/api';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { ApiProduct, Product, normalizeProduct } from '@/types/product';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-import { useEffect, useRef, useState, Suspense } from 'react';
+import { useEffect, useRef, useState, Suspense, memo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Canvas, useFrame } from '@react-three/fiber';
@@ -97,8 +98,8 @@ void main() {
     vec3 finalColor = smokeColor;
     float emberAlpha = alpha;
     
-    // Generate multiple ember particles spread across entire width
-    for(int i = 0; i < 20; i++) {
+    // Generate multiple ember particles spread across entire width (reduced from 20 to 12)
+    for(int i = 0; i < 12; i++) {
         float fi = float(i);
         
         // Each ember has unique position and timing
@@ -171,7 +172,7 @@ void main() {
 }`;
 
 // ─── WebGL Smoke Canvas Component ────────────────────────────────────────────
-const SmokeCanvas = ({ style }: { style?: React.CSSProperties }) => {
+const SmokeCanvas = memo(({ style }: { style?: React.CSSProperties }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
 
@@ -179,7 +180,11 @@ const SmokeCanvas = ({ style }: { style?: React.CSSProperties }) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext('webgl2');
+    const gl = canvas.getContext('webgl2', { 
+      alpha: true, 
+      antialias: false, // Disable for performance
+      powerPreference: 'high-performance'
+    });
     if (!gl) return;
 
     // Compile shader helper
@@ -213,8 +218,10 @@ const SmokeCanvas = ({ style }: { style?: React.CSSProperties }) => {
     const startTime = Date.now();
 
     const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      // Use lower resolution for better performance
+      const dpr = Math.min(window.devicePixelRatio, 1.5);
+      canvas.width = canvas.offsetWidth * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
     resize();
@@ -249,11 +256,10 @@ const SmokeCanvas = ({ style }: { style?: React.CSSProperties }) => {
       }}
     />
   );
-};
+});
 
 // ─── 3D Skull Model Component ────────────────────────────────────────────────
-// ─── 3D Skull Model Component ────────────────────────────────────────────────
-const SkullModel = ({ mouseX, mouseY, velocityX, isMobile }: { mouseX: number; mouseY: number; velocityX: number; isMobile: boolean }) => {
+const SkullModel = memo(({ mouseX, mouseY, velocityX, isMobile }: { mouseX: number; mouseY: number; velocityX: number; isMobile: boolean }) => {
   const { scene } = useGLTF('/Skull.glb');
   const meshRef = useRef<THREE.Group>(null);
 
@@ -285,18 +291,18 @@ const SkullModel = ({ mouseX, mouseY, velocityX, isMobile }: { mouseX: number; m
 
   // Responsive positioning and scaling
   const scale = isMobile ? 0.9 : 1;
-  const positionX = 1; // Centered on all devices
+  const positionX = 0; // Centered on all devices
   const positionY = isMobile ? -2.5 : -2.8;
 
   return (
     <primitive 
       ref={meshRef} 
-      object={scene} 
+      object={scene.clone()} 
       scale={scale}
       position={[positionX, positionY, 0]}
     />
   );
-};
+});
 
 // ─── Index ────────────────────────────────────────────────────────────────────
 const Index = () => {
@@ -320,7 +326,7 @@ const Index = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
@@ -344,14 +350,14 @@ const Index = () => {
     mouseX.set(x);
     mouseY.set(y);
     setMousePosition({ x, y });
-  };
+  }, [mouseX, mouseY]);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     mouseX.set(0);
     mouseY.set(0);
     setMousePosition({ x: 0, y: 0 });
     setMouseVelocity({ x: 0, y: 0 });
-  };
+  }, [mouseX, mouseY]);
 
   useEffect(() => { loadFeaturedProducts(); }, []);
 
@@ -411,17 +417,22 @@ const Index = () => {
           z-20 → WebGL smoke ABOVE model  (foreground smoke)
       ═══════════════════════════════════════════════════════════════════════ */}
       <section
-        className="relative h-[70vh] sm:h-[75vh] md:h-[80vh] lg:h-[85vh] w-full overflow-hidden flex items-center justify-center bg-black"
+        className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-black"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
         <div className="absolute inset-0 bg-black -z-10" />
 
         {/* ── WEBGL SMOKE BELOW MODEL (z-5) ── */}
-        {/* Covers bottom 40% of the hero, sits behind the model */}
+        {/* Covers bottom 50% of the hero, sits behind the model */}
         <div
           className="absolute inset-x-0 bottom-0 pointer-events-none"
-          style={{ height: '40%', zIndex: 5 }}
+          style={{ 
+            height: '50%', 
+            zIndex: 5,
+            maskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)'
+          }}
         >
           <SmokeCanvas />
         </div>
@@ -435,9 +446,15 @@ const Index = () => {
           style={{ zIndex: 10 }}
         >
           <Canvas
-            camera={{ position: [0, 0, 8], fov: 45 }}
+            camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 1000 }}
             style={{ width: '100%', height: '100%' }}
-            gl={{ alpha: true, antialias: true }}
+            gl={{ 
+              alpha: true, 
+              antialias: true,
+              powerPreference: 'high-performance'
+            }}
+            dpr={[1, 1.5]} // Limit pixel ratio for performance
+            frameloop="always"
           >
             <ambientLight intensity={0.5} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
@@ -448,13 +465,13 @@ const Index = () => {
             </Suspense>
           </Canvas>
 
-          {/* Orbital particles */}
-          <motion.div
+          {/* Orbital par<tticles - reduced count */}
+          {/* <motion.div
             className="absolute -inset-20 pointer-events-none"
             animate={{ rotate: 360 }}
             transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
           >
-            {[...Array(8)].map((_, i) => (
+            {[...Array(4)].map((_, i) => (
               <motion.div
                 key={i}
                 className="absolute w-2 h-2 bg-white/20 rounded-full"
@@ -463,14 +480,19 @@ const Index = () => {
                 transition={{ duration: 3 + Math.random() * 2, repeat: Infinity, delay: Math.random() * 2 }}
               />
             ))}
-          </motion.div>
+          </motion.div> */}
         </motion.div>
 
         {/* ── WEBGL SMOKE ABOVE MODEL (z-20) ── */}
-        {/* Covers bottom 25% only — thin foreground wisp layer over the model */}
+        {/* Covers bottom 35% only — thin foreground wisp layer over the model */}
         <div
           className="absolute inset-x-0 bottom-0 pointer-events-none"
-          style={{ height: '25%', zIndex: 20 }}
+          style={{ 
+            height: '35%', 
+            zIndex: 20,
+            maskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)'
+          }}
         >
           <SmokeCanvas />
         </div>
@@ -492,6 +514,7 @@ const Index = () => {
 
       <BrandMarquee />
       <CategoriesShowcase />
+      <CollabSection />
 
       {/* Featured Products */}
       {/* <section className="py-24 bg-background">
@@ -534,7 +557,6 @@ const Index = () => {
       <TrendingSection />
       <AboutBrandSection />
       <ProcessSection />
-      <TestimonialsSection />
     </div>
   );
 };

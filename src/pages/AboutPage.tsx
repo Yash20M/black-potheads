@@ -212,7 +212,7 @@ const AboutPage = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 blur-xl" />
                 <div className="relative bg-white/5 backdrop-blur-md border border-white/10 p-10 md:p-14 rounded-2xl">
-                  <p className="text-xl md:text-2xl lg:text-3xl font-light italic text-white/95 leading-relaxed text-center">
+                  <p className="text-xl md:text-xl lg:text-2xl font-light italic text-white/95 leading-relaxed text-center">
                     Black Potheads was born in the space between bass drops —
                     <br className="hidden md:block" />
                     <span className="block mt-3">that moment when the kick fades,</span>
@@ -290,12 +290,12 @@ const AboutPage = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent blur-2xl" />
                   <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/10 border border-white/20 p-10 md:p-14 rounded-2xl">
-                    <p className="text-xl md:text-2xl lg:text-3xl font-light italic text-white leading-relaxed">
+                    <p className="text-xl md:text-xl lg:text-2xl font-light italic text-white leading-relaxed">
                       A reminder of that feeling
                       <span className="block mt-3">when <span className="text-white font-normal">ego melts</span></span>
                       <span className="block mt-2">when <span className="text-white font-normal">sound becomes geometry</span></span>
                       <span className="block mt-2">when <span className="text-white font-normal">black isn't darkness</span> —</span>
-                      <span className="block mt-5 text-2xl md:text-3xl lg:text-4xl font-display text-white/90 not-italic tracking-wide">
+                      <span className="block mt-5 text-xl md:text-2xl lg:text-3xl font-display text-white/90 not-italic tracking-wide">
                         BUT THE INFINITE VOID BEFORE CREATION.
                       </span>
                     </p>

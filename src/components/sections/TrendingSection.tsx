@@ -1,8 +1,7 @@
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { videoApi } from '@/lib/api';
-import { Button } from '@/components/ui/button';
 
 interface FeaturedVideo {
   _id: string;
@@ -43,10 +42,6 @@ export const TrendingSection = () => {
     }
   };
 
-  const handleClick = () => {
-    navigate('/collab');
-  };
-
   const handleMouseEnter = () => {
     setIsHovered(true);
     if (videoRef.current) {
@@ -60,36 +55,6 @@ export const TrendingSection = () => {
 
   return (
     <section className="w-full bg-background overflow-hidden">
-      {/* Text Content Above Video */}
-      <div className="container mx-auto px-6 py-12 md:py-16 text-center">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight mb-6 text-foreground dark:text-white"
-        >
-          <span className="text-foreground dark:text-white">YOUR ART.</span>
-          <br />
-          <span className="text-muted-foreground dark:text-gray-400">OUR PLATFORM!</span>
-        </motion.h2>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-          className="space-y-3 max-w-4xl mx-auto"
-        >
-          <p className="text-base sm:text-lg md:text-xl text-foreground dark:text-gray-300 leading-relaxed">
-            We collaborate with underground artists and creators
-            and turn their work into wearable revolution.
-          </p>
-          <p className="text-sm sm:text-base md:text-lg text-foreground dark:text-gray-400 font-medium">
-            If you've got the vision, we've got the platform.
-          </p>
-        </motion.div>
-      </div>
-
       {loading ? (
         <div className="relative w-full h-screen flex items-center justify-center bg-muted">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -118,24 +83,19 @@ export const TrendingSection = () => {
               Your browser does not support the video tag.
             </video>
 
-            {/* Button Overlay at Bottom */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent backdrop-blur-sm py-8 md:py-12 px-4 md:px-6">
-              <div className="container mx-auto max-w-4xl text-center">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <Button
-                    onClick={handleClick}
-                    size="lg"
-                    className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-6 text-sm sm:text-base md:text-lg uppercase tracking-wider shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    Join the Movement
-                  </Button>
-                </motion.div>
-              </div>
+            {/* Collaborate Button */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+              <motion.button
+                onClick={() => navigate('/collab')}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-3 bg-white text-black font-semibold uppercase tracking-wider text-sm hover:bg-gray-100 transition-colors duration-300"
+              >
+                Collaborate
+              </motion.button>
             </div>
 
             {/* Border animation on hover */}
@@ -167,24 +127,19 @@ export const TrendingSection = () => {
               Your browser does not support the video tag.
             </video>
 
-            {/* Button Overlay at Bottom */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent backdrop-blur-sm py-8 md:py-12 px-4 md:px-6">
-              <div className="container mx-auto max-w-4xl text-center">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <Button
-                    onClick={handleClick}
-                    size="lg"
-                    className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-6 text-sm sm:text-base md:text-lg uppercase tracking-wider shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    Join the Movement
-                  </Button>
-                </motion.div>
-              </div>
+            {/* Collaborate Button */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+              <motion.button
+                onClick={() => navigate('/collab')}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-3 bg-white text-black font-semibold uppercase tracking-wider text-sm hover:bg-gray-100 transition-colors duration-300"
+              >
+                Collaborate
+              </motion.button>
             </div>
 
             {/* Border animation on hover */}
