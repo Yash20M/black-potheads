@@ -272,8 +272,8 @@ const LoadingSpinner = memo(() => (
 ));
 
 // ─── 3D Skull Model Component ────────────────────────────────────────────────
-const SkullModel = memo(({ mouseX, mouseY, velocityX, isMobile, isMouseOver }: { mouseX: number; mouseY: number; velocityX: number; isMobile: boolean; isMouseOver: boolean }) => {
-  const { scene } = useGLTF('/Skull.glb');
+const SkullModel = memo(({ mouseX, mouseY, velocityX, isMobile, isDragging }: { mouseX: number; mouseY: number; velocityX: number; isMobile: boolean; isDragging: boolean }) => {
+  const { scene } = useGLTF('/Skull_Resize4.glb');
   const meshRef = useRef<THREE.Group>(null);
 
   // Center the model geometry properly
@@ -308,9 +308,9 @@ const SkullModel = memo(({ mouseX, mouseY, velocityX, isMobile, isMouseOver }: {
     // Combine base rotation with velocity
     meshRef.current.rotation.y += baseRotationSpeed + velocityInfluence;
     
-    // Only apply mouse-based rotation when mouse is over hero section
-    const targetX = isMouseOver ? mouseY * 0.3 : 0;
-    const targetZ = isMouseOver ? mouseX * 0.2 : 0;
+    // Only apply mouse-based rotation when dragging
+    const targetX = isDragging ? mouseY * 0.5 : 0;
+    const targetZ = isDragging ? mouseX * 0.5 : 0;
     
     // Mouse-based rotation with smoother lerp (increased from 0.05 to 0.08)
     meshRef.current.rotation.x = THREE.MathUtils.lerp(
@@ -326,7 +326,7 @@ const SkullModel = memo(({ mouseX, mouseY, velocityX, isMobile, isMouseOver }: {
   });
 
   // Responsive positioning and scaling - CENTERED & BIGGER
- const scale = isMobile ? 0.7 : 0.9;
+ const scale = isMobile ? 5 : 5;
 
  const positionX = 0; // Center horizontally
 
@@ -350,10 +350,8 @@ const Index = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [mouseVelocity, setMouseVelocity] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
-  const [isMouseOverHero, setIsMouseOverHero] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const lastMousePos = useRef({ x: 0, y: 0, time: Date.now() });
-  const [ready, setReady] = useState(false);
-
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -376,12 +374,17 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    lastMousePos.current = { x: e.clientX, y: e.clientY, time: Date.now() };
+  }, []);
+
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    
     // Throttle mouse updates for better performance
     const now = Date.now();
     if (now - lastMousePos.current.time < 16) return; // ~60fps throttle
-    
-    setIsMouseOverHero(true);
     
     const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -405,10 +408,18 @@ const Index = () => {
     mouseX.set(x);
     mouseY.set(y);
     setMousePosition({ x, y });
+  }, [isDragging, mouseX, mouseY]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+    mouseX.set(0);
+    mouseY.set(0);
+    setMousePosition({ x: 0, y: 0 });
+    setMouseVelocity({ x: 0, y: 0 });
   }, [mouseX, mouseY]);
 
   const handleMouseLeave = useCallback(() => {
-    setIsMouseOverHero(false);
+    setIsDragging(false);
     mouseX.set(0);
     mouseY.set(0);
     setMousePosition({ x: 0, y: 0 });
@@ -478,8 +489,10 @@ const Index = () => {
           z-20 → WebGL smoke ABOVE model  (foreground smoke)
       ═══════════════════════════════════════════════════════════════════════ */}
       <section
-        className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-black"
+        className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-black cursor-grab active:cursor-grabbing"
+        onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
       >
         <div className="absolute inset-0 bg-black -z-10" />
@@ -527,7 +540,7 @@ const Index = () => {
             <pointLight position={[0, 5, 0]} intensity={0.8} color="#ff6600" />
             <Suspense fallback={null}>
               <Center>
-              <SkullModel mouseX={mousePosition.x} mouseY={mousePosition.y} velocityX={mouseVelocity.x} isMobile={isMobile} isMouseOver={isMouseOverHero} />
+              <SkullModel mouseX={mousePosition.x} mouseY={mousePosition.y} velocityX={mouseVelocity.x} isMobile={isMobile} isDragging={isDragging} />
               </Center>
             </Suspense>
           </Canvas>
