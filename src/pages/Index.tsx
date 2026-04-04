@@ -19,7 +19,7 @@ import { useEffect, useRef, useState, Suspense, memo, useCallback } from 'react'
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import { Center, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
 // ─── WebGL Smoke Fragment Shader ──────────────────────────────────────────────
@@ -258,10 +258,43 @@ const SmokeCanvas = memo(({ style }: { style?: React.CSSProperties }) => {
   );
 });
 
+// ─── Loading Spinner Component ────────────────────────────────────────────────
+const LoadingSpinner = memo(() => (
+  <div className="absolute inset-0 flex items-center justify-center bg-black z-50">
+    <div className="flex flex-col items-center gap-4">
+      <div className="relative w-16 h-16">
+        <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-white border-r-white animate-spin" />
+        <div className="absolute inset-1 rounded-full border-2 border-transparent border-b-orange-500 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+      </div>
+      <p className="text-white text-sm font-medium tracking-widest">LOADING EXPERIENCE</p>
+    </div>
+  </div>
+));
+
 // ─── 3D Skull Model Component ────────────────────────────────────────────────
-const SkullModel = memo(({ mouseX, mouseY, velocityX, isMobile }: { mouseX: number; mouseY: number; velocityX: number; isMobile: boolean }) => {
+const SkullModel = memo(({ mouseX, mouseY, velocityX, isMobile, isMouseOver }: { mouseX: number; mouseY: number; velocityX: number; isMobile: boolean; isMouseOver: boolean }) => {
   const { scene } = useGLTF('/Skull.glb');
   const meshRef = useRef<THREE.Group>(null);
+
+  // Center the model geometry properly
+  useEffect(() => {
+    if (scene) {
+      // Calculate bounding box and center, then translate geometry
+      const box = new THREE.Box3().setFromObject(scene);
+      const center = box.getCenter(new THREE.Vector3());
+      // Traverse all meshes and center their geometry
+      scene.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const mesh = child as THREE.Mesh;
+          if (mesh.geometry) {
+            mesh.geometry.translate(-center.x, -center.y, -center.z);
+          }
+        }
+      });
+      // Reset scene position to origin
+      scene.position.set(0, 0, 0);
+    }
+  }, [scene]);
 
   useFrame((state) => {
     if (!meshRef.current) return;
@@ -269,35 +302,40 @@ const SkullModel = memo(({ mouseX, mouseY, velocityX, isMobile }: { mouseX: numb
     // Base slow rotation
     const baseRotationSpeed = 0.003;
     
-    // Add mouse velocity to rotation
-    // Normalize velocity (divide by large number to make it reasonable)
-    const velocityInfluence = velocityX * 0.00005;
+    // Add mouse velocity to rotation (reduced influence for smoother movement)
+    const velocityInfluence = velocityX * 0.00003;
     
     // Combine base rotation with velocity
     meshRef.current.rotation.y += baseRotationSpeed + velocityInfluence;
     
-    // Mouse-based rotation (subtle tilt)
+    // Only apply mouse-based rotation when mouse is over hero section
+    const targetX = isMouseOver ? mouseY * 0.3 : 0;
+    const targetZ = isMouseOver ? mouseX * 0.2 : 0;
+    
+    // Mouse-based rotation with smoother lerp (increased from 0.05 to 0.08)
     meshRef.current.rotation.x = THREE.MathUtils.lerp(
       meshRef.current.rotation.x,
-      mouseY * 0.3,
-      0.05
+      targetX,
+      0.08
     );
     meshRef.current.rotation.z = THREE.MathUtils.lerp(
       meshRef.current.rotation.z,
-      mouseX * 0.2,
-      0.05
+      targetZ,
+      0.08
     );
   });
 
-  // Responsive positioning and scaling
-  const scale = isMobile ? 0.9 : 1;
-  const positionX = 0; // Centered on all devices
-  const positionY = isMobile ? -2.5 : -2.8;
+  // Responsive positioning and scaling - CENTERED & BIGGER
+ const scale = isMobile ? 0.7 : 0.9;
+
+ const positionX = 0; // Center horizontally
+
+ const positionY = isMobile ? -0.5 : 0;
 
   return (
     <primitive 
       ref={meshRef} 
-      object={scene.clone()} 
+      object={scene} 
       scale={scale}
       position={[positionX, positionY, 0]}
     />
@@ -308,10 +346,14 @@ const SkullModel = memo(({ mouseX, mouseY, velocityX, isMobile }: { mouseX: numb
 const Index = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [skullLoading, setSkullLoading] = useState(true);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [mouseVelocity, setMouseVelocity] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const [isMouseOverHero, setIsMouseOverHero] = useState(false);
   const lastMousePos = useRef({ x: 0, y: 0, time: Date.now() });
+  const [ready, setReady] = useState(false);
+
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -326,7 +368,21 @@ const Index = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Hide skull loader after 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSkullLoading(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    // Throttle mouse updates for better performance
+    const now = Date.now();
+    if (now - lastMousePos.current.time < 16) return; // ~60fps throttle
+    
+    setIsMouseOverHero(true);
+    
     const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
@@ -334,8 +390,7 @@ const Index = () => {
     const y = (e.clientY - centerY) / (rect.height / 2);
     
     // Calculate velocity
-    const now = Date.now();
-    const deltaTime = (now - lastMousePos.current.time) / 1000; // Convert to seconds
+    const deltaTime = (now - lastMousePos.current.time) / 1000;
     const deltaX = e.clientX - lastMousePos.current.x;
     const deltaY = e.clientY - lastMousePos.current.y;
     
@@ -353,6 +408,7 @@ const Index = () => {
   }, [mouseX, mouseY]);
 
   const handleMouseLeave = useCallback(() => {
+    setIsMouseOverHero(false);
     mouseX.set(0);
     mouseY.set(0);
     setMousePosition({ x: 0, y: 0 });
@@ -381,6 +437,11 @@ const Index = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+  setTimeout(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, 200);
+}, []);
 
   return (
     <div className="min-h-screen bg-black">
@@ -423,6 +484,9 @@ const Index = () => {
       >
         <div className="absolute inset-0 bg-black -z-10" />
 
+        {/* Skull Loading Spinner */}
+        {skullLoading && <LoadingSpinner />}
+
         {/* ── WEBGL SMOKE BELOW MODEL (z-5) ── */}
         {/* Covers bottom 50% of the hero, sits behind the model */}
         <div
@@ -445,6 +509,7 @@ const Index = () => {
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           style={{ zIndex: 10 }}
         >
+    
           <Canvas
             camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 1000 }}
             style={{ width: '100%', height: '100%' }}
@@ -461,9 +526,12 @@ const Index = () => {
             <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#ff4400" />
             <pointLight position={[0, 5, 0]} intensity={0.8} color="#ff6600" />
             <Suspense fallback={null}>
-              <SkullModel mouseX={mousePosition.x} mouseY={mousePosition.y} velocityX={mouseVelocity.x} isMobile={isMobile} />
+              <Center>
+              <SkullModel mouseX={mousePosition.x} mouseY={mousePosition.y} velocityX={mouseVelocity.x} isMobile={isMobile} isMouseOver={isMouseOverHero} />
+              </Center>
             </Suspense>
           </Canvas>
+          
 
           {/* Orbital par<tticles - reduced count */}
           {/* <motion.div
