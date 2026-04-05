@@ -1,25 +1,19 @@
-import { ProductCard } from '@/components/products/ProductCard';
 import { AboutBrandSection } from '@/components/sections/AboutBrandSection';
 import { BrandMarquee } from '@/components/sections/BrandMarquee';
 import { CategoriesShowcase } from '@/components/sections/CategoriesShowcase';
 import { CollabSection } from '@/components/sections/CollabSection';
-import { FeaturesSection } from '@/components/sections/FeaturesSection';
 import { ProcessSection } from '@/components/sections/ProcessSection';
 import { ScrollingText } from '@/components/sections/ScrollingText';
-import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
 import { TrendingSection } from '@/components/sections/TrendingSection';
 import { SEO } from '@/components/SEO';
-import { Button } from '@/components/ui/button';
 import { productApi } from '@/lib/api';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { ApiProduct, Product, normalizeProduct } from '@/types/product';
 import { motion, useMotionValue } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import { useEffect, useRef, useState, Suspense, memo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState, Suspense, memo } from 'react';
 import { toast } from 'sonner';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Center, useGLTF } from '@react-three/drei';
+import { Center, useGLTF, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
 // ─── WebGL Smoke Fragment Shader ──────────────────────────────────────────────
@@ -272,7 +266,7 @@ const LoadingSpinner = memo(() => (
 ));
 
 // ─── 3D Skull Model Component ────────────────────────────────────────────────
-const SkullModel = memo(({ mouseX, mouseY, velocityX, isMobile, isDragging }: { mouseX: number; mouseY: number; velocityX: number; isMobile: boolean; isDragging: boolean }) => {
+const SkullModel = memo(({ isMobile, isUserInteracting }: { isMobile: boolean; isUserInteracting: boolean }) => {
   const { scene } = useGLTF('/Skull_Resize4.glb');
   const meshRef = useRef<THREE.Group>(null);
 
@@ -296,41 +290,18 @@ const SkullModel = memo(({ mouseX, mouseY, velocityX, isMobile, isDragging }: { 
     }
   }, [scene]);
 
-  useFrame((state) => {
-    if (!meshRef.current) return;
+  // Auto-rotation when user is not interacting
+  useFrame(() => {
+    if (!meshRef.current || isUserInteracting) return;
     
-    // Base slow rotation
-    const baseRotationSpeed = 0.003;
-    
-    // Add mouse velocity to rotation (reduced influence for smoother movement)
-    const velocityInfluence = velocityX * 0.00003;
-    
-    // Combine base rotation with velocity
-    meshRef.current.rotation.y += baseRotationSpeed + velocityInfluence;
-    
-    // Only apply mouse-based rotation when dragging
-    const targetX = isDragging ? mouseY * 0.5 : 0;
-    const targetZ = isDragging ? mouseX * 0.5 : 0;
-    
-    // Mouse-based rotation with smoother lerp (increased from 0.05 to 0.08)
-    meshRef.current.rotation.x = THREE.MathUtils.lerp(
-      meshRef.current.rotation.x,
-      targetX,
-      0.08
-    );
-    meshRef.current.rotation.z = THREE.MathUtils.lerp(
-      meshRef.current.rotation.z,
-      targetZ,
-      0.08
-    );
+    // Slow automatic rotation on Y-axis
+    meshRef.current.rotation.y += 0.003;
   });
 
   // Responsive positioning and scaling - CENTERED & BIGGER
- const scale = isMobile ? 5 : 5;
-
- const positionX = 0; // Center horizontally
-
- const positionY = isMobile ? -0.5 : 0;
+  const scale = isMobile ? 5 : 5;
+  const positionX = 0; // Center horizontally
+  const positionY = isMobile ? -0.5 : 0;
 
   return (
     <primitive 
@@ -347,11 +318,8 @@ const Index = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [skullLoading, setSkullLoading] = useState(true);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [mouseVelocity, setMouseVelocity] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const lastMousePos = useRef({ x: 0, y: 0, time: Date.now() });
+  const [isUserInteracting, setIsUserInteracting] = useState(false);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -373,58 +341,6 @@ const Index = () => {
     }, 3000);
     return () => clearTimeout(timer);
   }, []);
-
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    setIsDragging(true);
-    lastMousePos.current = { x: e.clientX, y: e.clientY, time: Date.now() };
-  }, []);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDragging) return;
-    
-    // Throttle mouse updates for better performance
-    const now = Date.now();
-    if (now - lastMousePos.current.time < 16) return; // ~60fps throttle
-    
-    const rect = e.currentTarget.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const x = (e.clientX - centerX) / (rect.width / 2);
-    const y = (e.clientY - centerY) / (rect.height / 2);
-    
-    // Calculate velocity
-    const deltaTime = (now - lastMousePos.current.time) / 1000;
-    const deltaX = e.clientX - lastMousePos.current.x;
-    const deltaY = e.clientY - lastMousePos.current.y;
-    
-    if (deltaTime > 0) {
-      const velocityX = deltaX / deltaTime;
-      const velocityY = deltaY / deltaTime;
-      setMouseVelocity({ x: velocityX, y: velocityY });
-    }
-    
-    lastMousePos.current = { x: e.clientX, y: e.clientY, time: now };
-    
-    mouseX.set(x);
-    mouseY.set(y);
-    setMousePosition({ x, y });
-  }, [isDragging, mouseX, mouseY]);
-
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-    mouseX.set(0);
-    mouseY.set(0);
-    setMousePosition({ x: 0, y: 0 });
-    setMouseVelocity({ x: 0, y: 0 });
-  }, [mouseX, mouseY]);
-
-  const handleMouseLeave = useCallback(() => {
-    setIsDragging(false);
-    mouseX.set(0);
-    mouseY.set(0);
-    setMousePosition({ x: 0, y: 0 });
-    setMouseVelocity({ x: 0, y: 0 });
-  }, [mouseX, mouseY]);
 
   useEffect(() => { loadFeaturedProducts(); }, []);
 
@@ -489,11 +405,7 @@ const Index = () => {
           z-20 → WebGL smoke ABOVE model  (foreground smoke)
       ═══════════════════════════════════════════════════════════════════════ */}
       <section
-        className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-black cursor-grab active:cursor-grabbing"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
+        className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-black"
       >
         <div className="absolute inset-0 bg-black -z-10" />
 
@@ -540,9 +452,22 @@ const Index = () => {
             <pointLight position={[0, 5, 0]} intensity={0.8} color="#ff6600" />
             <Suspense fallback={null}>
               <Center>
-              <SkullModel mouseX={mousePosition.x} mouseY={mousePosition.y} velocityX={mouseVelocity.x} isMobile={isMobile} isDragging={isDragging} />
+                <SkullModel isMobile={isMobile} isUserInteracting={isUserInteracting} />
               </Center>
             </Suspense>
+            
+            {/* OrbitControls for free mouse movement */}
+            <OrbitControls
+              enableZoom={false}
+              enablePan={false}
+              rotateSpeed={0.5}
+              dampingFactor={0.05}
+              enableDamping={true}
+              onStart={() => setIsUserInteracting(true)}
+              onEnd={() => setIsUserInteracting(false)}
+              minPolarAngle={0}
+              maxPolarAngle={Math.PI}
+            />
           </Canvas>
           
 
