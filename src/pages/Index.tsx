@@ -365,13 +365,28 @@ const Index = () => {
     }
   };
   useEffect(() => {
-  setTimeout(() => {
-    window.dispatchEvent(new Event('resize'));
-  }, 200);
-}, []);
+    // Force multiple resize events to ensure canvas gets correct dimensions
+    const triggerResize = () => {
+      window.dispatchEvent(new Event('resize'));
+    };
+    
+    // Trigger immediately
+    triggerResize();
+    
+    // Trigger after a short delay
+    const timer1 = setTimeout(triggerResize, 100);
+    const timer2 = setTimeout(triggerResize, 300);
+    const timer3 = setTimeout(triggerResize, 500);
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
+  }, []);
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black w-full overflow-x-hidden">
       <SEO
         title="BLACK POTHEADS - Premium Printed T-Shirts | Streetwear India"
         description="Shop premium printed t-shirts online in India. Unique Shiva, psychedelic, gothic & streetwear designs. Free shipping, COD available. 7-day returns. Order now!"
@@ -405,7 +420,14 @@ const Index = () => {
           z-20 → WebGL smoke ABOVE model  (foreground smoke)
       ═══════════════════════════════════════════════════════════════════════ */}
       <section
-        className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-black"
+        className="relative h-screen overflow-hidden flex items-center justify-center bg-black"
+        style={{ 
+          width: '100vw',
+          marginLeft: '50%',
+          transform: 'translateX(-50%)',
+          left: 0,
+          right: 0
+        }}
       >
         <div className="absolute inset-0 bg-black -z-10" />
 

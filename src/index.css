@@ -60,6 +60,7 @@
 
   html {
     scroll-behavior: smooth;
+    overflow-y: scroll; /* Force scrollbar to always be visible */
   }
 
   body {
