@@ -269,38 +269,62 @@ const LoadingSpinner = memo(() => (
 const SkullModel = memo(({ isMobile, isUserInteracting }: { isMobile: boolean; isUserInteracting: boolean }) => {
   const { scene } = useGLTF('/Skull_Resize4.glb');
   const meshRef = useRef<THREE.Group>(null);
+  const autoRotationRef = useRef(0);
 
-  // Center the model geometry properly
+  // Center the model geometry properly and optimize materials
   useEffect(() => {
     if (scene) {
       // Calculate bounding box and center, then translate geometry
       const box = new THREE.Box3().setFromObject(scene);
       const center = box.getCenter(new THREE.Vector3());
-      // Traverse all meshes and center their geometry
+      
+      // Traverse all meshes and optimize
       scene.traverse((child) => {
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh;
+          
+          // Center geometry
           if (mesh.geometry) {
             mesh.geometry.translate(-center.x, -center.y, -center.z);
           }
+          
+          // Optimize materials for performance
+          if (mesh.material) {
+            const material = mesh.material as THREE.MeshStandardMaterial;
+            // Disable expensive features if not needed
+            material.flatShading = false;
+            material.needsUpdate = true;
+          }
+          
+          // Enable frustum culling
+          mesh.frustumCulled = true;
         }
       });
+      
       // Reset scene position to origin
       scene.position.set(0, 0, 0);
     }
   }, [scene]);
 
   // Auto-rotation when user is not interacting
-  useFrame(() => {
-    if (!meshRef.current || isUserInteracting) return;
+  useFrame((state, delta) => {
+    if (!meshRef.current) return;
     
-    // Slow automatic rotation on Y-axis
-    meshRef.current.rotation.y += 0.003;
+    // Always update auto-rotation value
+    autoRotationRef.current += delta * 0.3; // Smooth rotation speed
+    
+    // Apply auto-rotation only when user is not interacting
+    if (!isUserInteracting) {
+      meshRef.current.rotation.y = autoRotationRef.current;
+    } else {
+      // Sync auto-rotation with current rotation when user stops
+      autoRotationRef.current = meshRef.current.rotation.y;
+    }
   });
 
-  // Responsive positioning and scaling - CENTERED & BIGGER
+  // Responsive positioning and scaling
   const scale = isMobile ? 5 : 5;
-  const positionX = 0; // Center horizontally
+  const positionX = 0;
   const positionY = isMobile ? -0.5 : 0;
 
   return (
@@ -312,6 +336,9 @@ const SkullModel = memo(({ isMobile, isUserInteracting }: { isMobile: boolean; i
     />
   );
 });
+
+// Preload the skull model for better performance
+useGLTF.preload('/Skull_Resize4.glb');
 
 // ─── Index ────────────────────────────────────────────────────────────────────
 const Index = () => {
@@ -462,11 +489,14 @@ const Index = () => {
             style={{ width: '100%', height: '100%' }}
             gl={{ 
               alpha: true, 
-              antialias: true,
-              powerPreference: 'high-performance'
+              antialias: false, // Disable antialiasing for better performance
+              powerPreference: 'high-performance',
+              stencil: false, // Disable stencil buffer
+              depth: true
             }}
-            dpr={[1, 1.5]} // Limit pixel ratio for performance
-            frameloop="always"
+            dpr={Math.min(window.devicePixelRatio, 1.5)} // Limit pixel ratio for performance
+            frameloop="always" // Always render for smooth rotation
+            performance={{ min: 0.5 }} // Performance degradation settings
           >
             <ambientLight intensity={0.5} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
@@ -482,13 +512,14 @@ const Index = () => {
             <OrbitControls
               enableZoom={false}
               enablePan={false}
-              rotateSpeed={0.5}
+              rotateSpeed={0.8}
               dampingFactor={0.05}
               enableDamping={true}
               onStart={() => setIsUserInteracting(true)}
               onEnd={() => setIsUserInteracting(false)}
               minPolarAngle={0}
               maxPolarAngle={Math.PI}
+              makeDefault
             />
           </Canvas>
           
