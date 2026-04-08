@@ -106,7 +106,7 @@ export const TrendingSection = () => {
                 transition={{ delay: 0.4 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-3 bg-white text-black font-semibold uppercase tracking-wider text-sm hover:bg-gray-100 transition-colors duration-300"
+                className="px-8 py-3 bg-white text-black font-bold uppercase tracking-wider text-sm hover:bg-gray-100 transition-colors duration-300"
               >
                 Collaborate
               </motion.button>
@@ -164,7 +164,7 @@ export const TrendingSection = () => {
                 transition={{ delay: 0.4 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-3 bg-white text-black font-semibold uppercase tracking-wider text-sm hover:bg-gray-100 transition-colors duration-300"
+                className="px-8 py-3 bg-white text-black font-bold uppercase tracking-wider text-sm hover:bg-gray-100 transition-colors duration-300"
               >
                 Collaborate
               </motion.button>

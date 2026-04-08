@@ -30,7 +30,7 @@ export const Footer = () => {
                 alt="Black Potheads Logo" 
                 className="w-10 h-10 md:w-12 md:h-12 object-contain"
               />
-              <h4 className="font-display text-2xl">BLACK POTHEADS</h4>
+              <h4 className="font-body font-bold uppercase tracking-wider text-2xl">BLACK POTHEADS</h4>
             </div>
             <p className="text-muted-foreground text-sm mb-6">
               Premium printed tees for the unapologetically bold.

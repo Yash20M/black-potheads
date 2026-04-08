@@ -710,6 +710,33 @@ export const adminApi = {
     getProductsByCategory: (category: string) =>
       apiFetch(`/api/admin/inventory/category/${encodeURIComponent(category)}`, {}, true),
   },
+
+  // Collabs Management
+  collabs: {
+    getAll: (params?: {
+      page?: number;
+      limit?: number;
+      status?: string;
+    }) => {
+      const queryParams = new URLSearchParams();
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.status) queryParams.append('status', params.status);
+      
+      return apiFetch(`/api/admin/collabs?${queryParams.toString()}`, {}, true);
+    },
+
+    updateStatus: (id: string, status: string) =>
+      apiFetch(`/api/admin/collabs/${id}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status }),
+      }, true),
+
+    delete: (id: string) =>
+      apiFetch(`/api/admin/collabs/${id}`, {
+        method: 'DELETE',
+      }, true),
+  },
 };
 
 // Video APIs
@@ -756,5 +783,34 @@ export const videoApi = {
       apiFetch('/api/admin/video', {
         method: 'DELETE',
       }, true),
+  },
+};
+
+
+// Collab APIs (Public)
+export const collabApi = {
+  submit: (data: {
+    name: string;
+    mobile: string;
+    email?: string;
+    instagram: string;
+    vision: string;
+  }) => {
+    // Prepare the payload according to API spec
+    const payload: any = {
+      name: data.name,
+      phone: data.mobile,
+      message: `Instagram: ${data.instagram}\n\nVision:\n${data.vision}`,
+    };
+    
+    // Only include email if provided
+    if (data.email && data.email.trim()) {
+      payload.email = data.email;
+    }
+    
+    return apiFetch('/api/v1/collabs/submit', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
   },
 };

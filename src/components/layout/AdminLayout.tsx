@@ -1,6 +1,6 @@
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, Package, ShoppingCart, LogOut, Warehouse, ChevronDown, ChevronRight, Menu, X, Tag, Star, KeyRound, Video } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, LogOut, Warehouse, ChevronDown, ChevronRight, Menu, X, Tag, Star, KeyRound, Video, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
 import { useAdminNotificationStore } from '@/store/adminNotificationStore';
@@ -66,6 +66,7 @@ const AdminLayout = () => {
     { path: '/admin/offers', label: 'Offers', icon: Tag },
     { path: '/admin/reviews', label: 'Reviews', icon: Star },
     { path: '/admin/video', label: 'Featured Video', icon: Video },
+    { path: '/admin/collabs', label: 'Collabs', icon: Users },
     { path: '/admin/change-password', label: 'Change Password', icon: KeyRound },
   ];
 

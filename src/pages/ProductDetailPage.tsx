@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useScroll } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Plus, X, ZoomIn, Check, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,10 +28,37 @@ const ProductDetailPage = () => {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(false);
   const { addItem, openCart } = useCartStore();
   const { isInWishlist, addToWishlist, removeFromWishlist, syncWishlist } = useWishlistStore();
   const { user } = useAuthStore();
   const inWishlist = product ? (product.inWishlist || isInWishlist(product.id)) : false;
+  const footerRef = useRef<HTMLDivElement>(null);
+  const buttonsRef = useRef<HTMLDivElement>(null);
+
+  // Track scroll to show/hide sticky bar
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!buttonsRef.current || !footerRef.current) return;
+
+      const buttonsRect = buttonsRef.current.getBoundingClientRect();
+      const footerRect = footerRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      // Show sticky bar when original buttons are scrolled out of view
+      const buttonsOutOfView = buttonsRect.bottom < 0;
+      
+      // Hide sticky bar when footer is in view
+      const footerInView = footerRect.top < windowHeight;
+
+      setShowStickyBar(buttonsOutOfView && !footerInView);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial state
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [product]);
 
   useEffect(() => {
     if (id) {
@@ -348,78 +375,94 @@ const ProductDetailPage = () => {
                     ))}
                   </div>
                 )}
+
+                {/* Product Description - Mobile */}
+                <div className="mt-6 p-4 bg-card border border-border">
+                  <h3 className="font-body font-bold uppercase tracking-wider text-sm text-white mb-3">Product Info</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{product.description}</p>
+                </div>
               </div>
 
               {/* Desktop Grid View */}
               <div className={cn(
-                "hidden lg:grid gap-4",
-                product.images.length === 1 ? "grid-cols-1 max-w-xl mx-auto" : "grid-cols-1 lg:grid-cols-2"
+                "hidden lg:block space-y-4"
               )}>
-                {/* First image - Fixed on left */}
-                {product.images[0] && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className={cn(
-                      "relative aspect-[3/4] bg-muted dark:bg-black/50 overflow-hidden group cursor-zoom-in",
-                      product.images.length === 1 ? "lg:col-span-1" : "lg:col-span-1"
-                    )}
-                    onClick={() => {
-                      setSelectedImage(0);
-                      setIsZoomed(true);
-                    }}
-                  >
-                    <motion.img 
-                      src={product.images[0]}
-                      alt={`${product.name} 1`}
-                      onError={(e) => {
-                        e.currentTarget.src = 'https://via.placeholder.com/400x500?text=No+Image';
+                <div className={cn(
+                  "grid gap-4",
+                  product.images.length === 1 ? "grid-cols-1 max-w-xl mx-auto" : "grid-cols-1 lg:grid-cols-2"
+                )}>
+                  {/* First image - Fixed on left */}
+                  {product.images[0] && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className={cn(
+                        "relative aspect-[3/4] bg-muted dark:bg-black/50 overflow-hidden group cursor-zoom-in",
+                        product.images.length === 1 ? "lg:col-span-1" : "lg:col-span-1"
+                      )}
+                      onClick={() => {
+                        setSelectedImage(0);
+                        setIsZoomed(true);
                       }}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                    />
-                    {product.isNew && (
-                      <span className="absolute top-4 left-4 bg-black text-white px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold">New</span>
-                    )}
-                    {product.isSale && (
-                      <span className="absolute top-4 left-4 bg-primary text-primary-foreground px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold border-2 border-primary">Sale</span>
-                    )}
-                    <div className="absolute bottom-4 right-4 bg-card/90 backdrop-blur-sm p-2 opacity-0 group-hover:opacity-100 transition-opacity border border-border">
-                      <ZoomIn size={20} className="text-foreground" />
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Remaining images - Scrolling vertically on right */}
-                {product.images.length > 1 && (
-                  <div className="space-y-4 max-h-[600px] lg:max-h-[calc(100vh-120px)] overflow-y-auto pr-2 lg:col-span-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    {product.images.slice(1).map((img, index) => (
-                      <motion.div
-                        key={index + 1}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: (index + 1) * 0.1 }}
-                        className="relative aspect-[3/4] bg-muted dark:bg-black/50 overflow-hidden group cursor-zoom-in"
-                        onClick={() => {
-                          setSelectedImage(index + 1);
-                          setIsZoomed(true);
+                    >
+                      <motion.img 
+                        src={product.images[0]}
+                        alt={`${product.name} 1`}
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://via.placeholder.com/400x500?text=No+Image';
                         }}
-                      >
-                        <motion.img 
-                          src={img}
-                          alt={`${product.name} ${index + 2}`}
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://via.placeholder.com/400x500?text=No+Image';
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                      />
+                      {product.isNew && (
+                        <span className="absolute top-4 left-4 bg-black text-white px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold">New</span>
+                      )}
+                      {product.isSale && (
+                        <span className="absolute top-4 left-4 bg-primary text-primary-foreground px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold border-2 border-primary">Sale</span>
+                      )}
+                      <div className="absolute bottom-4 right-4 bg-card/90 backdrop-blur-sm p-2 opacity-0 group-hover:opacity-100 transition-opacity border border-border">
+                        <ZoomIn size={20} className="text-foreground" />
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Remaining images - Scrolling vertically on right */}
+                  {product.images.length > 1 && (
+                    <div className="space-y-4 max-h-[600px] lg:max-h-[calc(100vh-120px)] overflow-y-auto pr-2 lg:col-span-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                      {product.images.slice(1).map((img, index) => (
+                        <motion.div
+                          key={index + 1}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: (index + 1) * 0.1 }}
+                          className="relative aspect-[3/4] bg-muted dark:bg-black/50 overflow-hidden group cursor-zoom-in"
+                          onClick={() => {
+                            setSelectedImage(index + 1);
+                            setIsZoomed(true);
                           }}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                        />
-                        <div className="absolute bottom-4 right-4 bg-card/90 backdrop-blur-sm p-2 opacity-0 group-hover:opacity-100 transition-opacity border border-border">
-                          <ZoomIn size={20} className="text-foreground" />
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
+                        >
+                          <motion.img 
+                            src={img}
+                            alt={`${product.name} ${index + 2}`}
+                            onError={(e) => {
+                              e.currentTarget.src = 'https://via.placeholder.com/400x500?text=No+Image';
+                            }}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                          />
+                          <div className="absolute bottom-4 right-4 bg-card/90 backdrop-blur-sm p-2 opacity-0 group-hover:opacity-100 transition-opacity border border-border">
+                            <ZoomIn size={20} className="text-foreground" />
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Product Description - Desktop */}
+                <div className="p-6 bg-card border border-border">
+                  <h3 className="font-body font-bold uppercase tracking-wider text-sm text-white mb-3">Product Info</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{product.description}</p>
+                </div>
               </div>
             </div>
 
@@ -454,21 +497,10 @@ const ProductDetailPage = () => {
                 </p>
               </div>
 
-              {/* Oversized Fit Info */}
-              <div className="mb-6">
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground">Oversized Fit</span>
-                  <br />
-                  Ishaan is 6'0 and wearing Size XL
-                </p>
-              </div>
-
-              <p className="text-muted-foreground mb-8 leading-relaxed text-sm">{product.description}</p>
-
               {/* Size Selection */}
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs uppercase tracking-[0.2em] text-white font-semibold">Size</span>
+                  <span className="text-xs uppercase tracking-[0.2em] text-white font-bold">Size</span>
                   <button 
                     onClick={() => setActiveDrawer('details')}
                     className="text-xs uppercase tracking-[0.2em] text-white underline hover:no-underline"
@@ -497,11 +529,11 @@ const ProductDetailPage = () => {
               </div>
 
               {/* Add to Cart and Buy Now Buttons */}
-              <div className="mb-6 flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <div ref={buttonsRef} className="mb-6 flex flex-row gap-2 sm:gap-3">
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="w-full sm:flex-1 border-2 border-white text-white hover:bg-white hover:text-black uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
+                  className="flex-1 border-2 border-white text-white hover:bg-white hover:text-black uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
                   onClick={handleAddToCart}
                   disabled={!product.stock || product.stock === 0}
                 >
@@ -510,7 +542,7 @@ const ProductDetailPage = () => {
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="w-full sm:flex-1 border-2 border-white text-white hover:bg-white hover:text-black uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
+                  className="flex-1 border-2 border-white text-white hover:bg-white hover:text-black uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
                   onClick={handleAddToCart}
                   disabled={!product.stock || product.stock === 0}
                 >
@@ -844,6 +876,92 @@ const ProductDetailPage = () => {
           </div>
         </section>
       )}
+
+      {/* Footer reference div */}
+      <div ref={footerRef} />
+
+      {/* Sticky Bottom Bar - Flipkart Style */}
+      <AnimatePresence>
+        {showStickyBar && product && (
+          <motion.div
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            exit={{ y: 100 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed bottom-0 left-0 right-0 z-40 bg-black border-t border-white/20 shadow-[0_-2px_10px_rgba(0,0,0,0.5)]"
+          >
+            {/* Mobile View - Simple buttons only */}
+            <div className="lg:hidden px-4 py-3 flex gap-2">
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="flex-1 border-2 border-white bg-black text-white hover:bg-white hover:text-black uppercase tracking-wider text-sm font-bold h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleAddToCart}
+                disabled={!product.stock || product.stock === 0}
+              >
+                {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+              </Button>
+              <Button 
+                size="lg"
+                className="flex-1 bg-white text-black hover:bg-gray-200 uppercase tracking-wider text-sm font-bold h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleAddToCart}
+                disabled={!product.stock || product.stock === 0}
+              >
+                {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Buy Now'}
+              </Button>
+            </div>
+
+            {/* Desktop View - With product info */}
+            <div className="hidden lg:block">
+              <div className="container mx-auto px-6 py-4">
+                <div className="flex items-center justify-between gap-6">
+                  {/* Left: Product Info */}
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-16 h-16 object-cover border border-white/20 flex-shrink-0"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://via.placeholder.com/64x64?text=No+Image';
+                      }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-medium text-base text-white truncate mb-1">{product.name}</h3>
+                      <div className="flex items-center gap-3">
+                        <span className="font-bold text-xl text-white">₹{product.price.toLocaleString()}</span>
+                        {product.originalPrice && (
+                          <span className="text-gray-400 line-through text-sm">₹{product.originalPrice.toLocaleString()}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Action Buttons */}
+                  <div className="flex gap-3 flex-shrink-0">
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      className="border-2 border-white bg-black text-white hover:bg-white hover:text-black uppercase tracking-wider text-sm font-bold px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={handleAddToCart}
+                      disabled={!product.stock || product.stock === 0}
+                    >
+                      {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                    </Button>
+                    <Button 
+                      size="lg"
+                      className="bg-white text-black hover:bg-gray-200 uppercase tracking-wider text-sm font-bold px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={handleAddToCart}
+                      disabled={!product.stock || product.stock === 0}
+                    >
+                      {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Buy Now'}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -126,7 +126,7 @@ export const AboutBrandSection = () => {
               className="font-display text-4xl md:text-6xl lg:text-7xl leading-none mb-8"
             >
               NOT JUST<br />
-              <span className="text-accent-gradient">A T-SHIRT</span>
+              <span className="text-accent-gradient">A APPAREL</span>
             </motion.h2>
 
             <motion.p

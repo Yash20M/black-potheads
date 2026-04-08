@@ -37,7 +37,7 @@ export const SkullLogo = ({ size = 'md', animated = true }: SkullLogoProps) => {
         )}
         <Skull size={iconSize} className="text-foreground relative z-10" />
       </motion.div>
-      <span className={`font-display ${textClass} tracking-wider`}>
+      <span className={`font-body font-bold uppercase tracking-wider ${textClass}`}>
         BLACK POTHEADS
       </span>
     </div>
