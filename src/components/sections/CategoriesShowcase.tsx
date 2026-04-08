@@ -61,6 +61,7 @@ const getCardStyle = (position: number) => {
 export const CategoriesShowcase = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   const mod = (n: number, m: number) => ((n % m) + m) % m;
 
@@ -73,6 +74,20 @@ export const CategoriesShowcase = () => {
     setDirection(-1);
     setCurrentIndex((prev) => mod(prev - 1, categories.length));
   }, []);
+
+  // Handle swipe gestures
+  const handleDragEnd = useCallback((event: any, info: any) => {
+    setIsDragging(false);
+    const swipeThreshold = 50;
+    
+    if (info.offset.x > swipeThreshold) {
+      // Swiped right - go to previous
+      handlePrev();
+    } else if (info.offset.x < -swipeThreshold) {
+      // Swiped left - go to next
+      handleNext();
+    }
+  }, [handleNext, handlePrev]);
 
   useEffect(() => {
     const timer = setInterval(handleNext, 4000);
@@ -99,12 +114,17 @@ export const CategoriesShowcase = () => {
       </div>
 
       {/* 3D Carousel Stage */}
-      <div
-        className="relative w-full max-w-3xl h-[380px] md:h-[480px] flex items-center justify-center"
+      <motion.div
+        className="relative w-full max-w-3xl h-[380px] md:h-[480px] flex items-center justify-center touch-pan-y"
         style={{ perspective: '1400px' }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.2}
+        onDragStart={() => setIsDragging(true)}
+        onDragEnd={handleDragEnd}
       >
         <div
-          className="relative w-full h-full flex items-center justify-center"
+          className="relative w-full h-full flex items-center justify-center pointer-events-none"
           style={{ transformStyle: 'preserve-3d' }}
         >
           {categories.map((category, index) => {
@@ -117,7 +137,7 @@ export const CategoriesShowcase = () => {
             return (
               <motion.div
                 key={category.slug}
-                className="absolute"
+                className="absolute pointer-events-auto"
                 style={{
                   width: '280px',
                   height: '380px',
@@ -138,13 +158,17 @@ export const CategoriesShowcase = () => {
                   ease: [0.32, 0.72, 0, 1],
                 }}
                 onClick={() => {
-                  if (position === 1) handleNext();
-                  if (position === -1) handlePrev();
+                  if (!isDragging) {
+                    if (position === 1) handleNext();
+                    if (position === -1) handlePrev();
+                  }
                 }}
               >
                 <Link
                   to={`/shop?collection=${category.slug}`}
-                  onClick={(e) => !isCenter && e.preventDefault()}
+                  onClick={(e) => {
+                    if (!isCenter || isDragging) e.preventDefault();
+                  }}
                   className="block w-full h-full rounded-2xl overflow-hidden relative"
                   style={{
                     boxShadow: isCenter
@@ -193,7 +217,7 @@ export const CategoriesShowcase = () => {
             );
           })}
         </div>
-      </div>
+      </motion.div>
 
       {/* Arrow navigation */}
       <div className="flex items-center gap-6">

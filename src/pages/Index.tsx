@@ -17,8 +17,6 @@ import { Center, useGLTF, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
 // ─── WebGL Smoke Fragment Shader ──────────────────────────────────────────────
-// Replace only the FRAGMENT_SHADER constant in your Index.tsx with this:
-
 const FRAGMENT_SHADER = `#version 300 es
 precision highp float;
 uniform float time;
@@ -69,83 +67,49 @@ void main() {
     float nns = force * fbm(vec2(ns_a, ns_b));
     float ins = fbm(vec2(ns_b, ns_a));
 
-    // Fire palette — dark red → bright orange → yellow-white
-    vec3 darkRed    = vec3(0.4, 0.05, 0.0);   // Deep dark red/black
-    vec3 brightRed  = vec3(0.9, 0.15, 0.05);  // Bright red-orange
-    vec3 orange     = vec3(1.0, 0.5, 0.1);    // Bright orange
-    vec3 yellowWhite = vec3(1.0, 0.9, 0.6);   // Yellow-white hot
+    vec3 darkRed    = vec3(0.4, 0.05, 0.0);
+    vec3 brightRed  = vec3(0.9, 0.15, 0.05);
+    vec3 orange     = vec3(1.0, 0.5, 0.1);
+    vec3 yellowWhite = vec3(1.0, 0.9, 0.6);
 
-    // Create fire gradient with multiple color stops
     vec3 c1 = mix(darkRed, brightRed, clamp(ins * 1.5, 0.0, 1.0));
     vec3 c2 = mix(brightRed, orange, clamp(ins * 2.0 - 0.5, 0.0, 1.0));
     vec3 c3 = mix(orange, yellowWhite, clamp(ins * 2.0 - 1.0, 0.0, 1.0));
     vec3 smokeColor = mix(mix(c1, c2, clamp(ins * 2.0, 0.0, 1.0)), c3, clamp(ins - 0.5, 0.0, 1.0));
 
-    // Alpha: transparent at top, more opaque at bottom for fire effect
     float alpha = clamp(1.0 - gradient * 1.2, 0.0, 1.0);
     alpha *= clamp(ins + 0.4, 0.0, 1.0);
-    // Add intensity variation for flickering fire effect
     alpha *= 0.85 + 0.15 * sin(time * 2.0 + ins * 10.0);
 
-    // ─── HOT COAL EMBERS ───
-    // Create floating orange/red particles that rise through the smoke
     vec3 finalColor = smokeColor;
     float emberAlpha = alpha;
-    
-    // Generate multiple ember particles spread across entire width (reduced from 20 to 12)
+
     for(int i = 0; i < 12; i++) {
         float fi = float(i);
-        
-        // Each ember has unique position and timing
         float emberSeed = fi * 0.618;
-        
-        // Spread embers across full width with better distribution
         float emberX = fract(sin(emberSeed * 12.9898) * 43758.5453);
-        // Add multiple columns of embers
         float columnOffset = floor(fi / 4.0) * 0.2;
         emberX = fract(emberX + columnOffset);
-        
         float emberSpeed = 0.06 + fract(sin(emberSeed * 78.233) * 43758.5453) * 0.10;
         float emberSize = 0.01 + fract(sin(emberSeed * 45.164) * 43758.5453) * 0.018;
-        
-        // Ember rises from bottom, loops when reaching top
         float emberY = fract((time * emberSpeed) + emberSeed);
-        
-        // Add horizontal drift with wider range
         float drift = sin(time * 0.4 + emberSeed * 6.28) * 0.15;
-        
-        // Map to screen space with aspect ratio correction
         float aspectRatio = vp.x / vp.y;
         vec2 emberPos = vec2((emberX * 2.0 - 1.0) * aspectRatio + drift, emberY * 2.0 - 1.0);
-        
-        // Distance from current pixel to ember
         float dist = length(p - emberPos);
-        
-        // Create glowing ember with soft falloff
         float ember = smoothstep(emberSize * 3.0, 0.0, dist);
-        
-        // Pulsing glow effect
         float pulse = 0.7 + 0.3 * sin(time * 3.0 + emberSeed * 6.28);
         ember *= pulse;
-        
-        // Hot coal color gradient: deep red → bright orange → yellow center
-        vec3 emberCore = vec3(1.0, 0.9, 0.3);    // Bright yellow-white
-        vec3 emberMid = vec3(1.0, 0.4, 0.1);     // Bright orange
-        vec3 emberOuter = vec3(0.8, 0.1, 0.0);   // Deep red
-        
+        vec3 emberCore = vec3(1.0, 0.9, 0.3);
+        vec3 emberMid = vec3(1.0, 0.4, 0.1);
+        vec3 emberOuter = vec3(0.8, 0.1, 0.0);
         float emberGradient = smoothstep(emberSize * 2.0, 0.0, dist);
         vec3 emberColor = mix(emberOuter, emberMid, emberGradient);
         emberColor = mix(emberColor, emberCore, pow(emberGradient, 2.0));
-        
-        // Fade embers at top and bottom
         float fadeFactor = smoothstep(0.0, 0.15, emberY) * smoothstep(1.0, 0.85, emberY);
         ember *= fadeFactor;
-        
-        // Add glow halo around ember
         float glow = smoothstep(emberSize * 6.0, emberSize * 2.0, dist) * 0.3;
         ember = max(ember, glow);
-        
-        // Blend ember into scene
         finalColor = mix(finalColor, emberColor, ember * 0.9);
         emberAlpha = max(emberAlpha, ember * 0.8);
     }
@@ -153,6 +117,7 @@ void main() {
     fragColor = vec4(finalColor, emberAlpha);
 }
 `;
+
 const VERTEX_SHADER = `#version 300 es
 precision mediump float;
 const vec2 positions[6] = vec2[6](
@@ -174,14 +139,13 @@ const SmokeCanvas = memo(({ style }: { style?: React.CSSProperties }) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext('webgl2', { 
-      alpha: true, 
-      antialias: false, // Disable for performance
+    const gl = canvas.getContext('webgl2', {
+      alpha: true,
+      antialias: false,
       powerPreference: 'high-performance'
     });
     if (!gl) return;
 
-    // Compile shader helper
     const compileShader = (src: string, type: number) => {
       const shader = gl.createShader(type)!;
       gl.shaderSource(shader, src);
@@ -203,7 +167,6 @@ const SmokeCanvas = memo(({ style }: { style?: React.CSSProperties }) => {
     gl.linkProgram(program);
     gl.useProgram(program);
 
-    // Enable alpha blending so transparent parts show through
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
@@ -212,7 +175,6 @@ const SmokeCanvas = memo(({ style }: { style?: React.CSSProperties }) => {
     const startTime = Date.now();
 
     const resize = () => {
-      // Use lower resolution for better performance
       const dpr = Math.min(window.devicePixelRatio, 1.5);
       canvas.width = canvas.offsetWidth * dpr;
       canvas.height = canvas.offsetHeight * dpr;
@@ -265,109 +227,151 @@ const LoadingSpinner = memo(() => (
   </div>
 ));
 
+// ─── Global flag to track if model has ever loaded (persists across navigation) ───
+let globalModelLoaded = false;
+// Track which models have been centered to avoid re-processing
+const centeredModels = new WeakSet<THREE.Object3D>();
+
 // ─── 3D Skull Model Component ────────────────────────────────────────────────
-const SkullModel = memo(({ isMobile, isUserInteracting }: { isMobile: boolean; isUserInteracting: boolean }) => {
-  const { scene } = useGLTF('/Skull_Resize4.glb');
+const SkullModel = memo(({ isMobile, isUserInteracting, onLoad }: {
+  isMobile: boolean;
+  isUserInteracting: boolean;
+  onLoad?: () => void;
+}) => {
   const meshRef = useRef<THREE.Group>(null);
   const autoRotationRef = useRef(0);
+  const onLoadCalledRef = useRef(false);
 
-  // Center the model geometry properly and optimize materials
+  // Load the model
+  const { scene } = useGLTF('/Skull_Resize4.glb') as any;
+
+  // Center and optimize the model geometry
   useEffect(() => {
-    if (scene) {
-      // Calculate bounding box and center, then translate geometry
+    if (!scene) return;
+    
+    // Check if this scene has already been centered
+    if (centeredModels.has(scene)) {
+      // Already processed, just call onLoad
+      if (!onLoadCalledRef.current && onLoad) {
+        onLoad();
+        onLoadCalledRef.current = true;
+      }
+      return;
+    }
+
+    try {
       const box = new THREE.Box3().setFromObject(scene);
       const center = box.getCenter(new THREE.Vector3());
-      
-      // Traverse all meshes and optimize
-      scene.traverse((child) => {
+
+      scene.traverse((child: THREE.Object3D) => {
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh;
-          
-          // Center geometry
+
           if (mesh.geometry) {
             mesh.geometry.translate(-center.x, -center.y, -center.z);
           }
-          
-          // Optimize materials for performance
+
           if (mesh.material) {
             const material = mesh.material as THREE.MeshStandardMaterial;
-            // Disable expensive features if not needed
             material.flatShading = false;
             material.needsUpdate = true;
           }
-          
-          // Enable frustum culling
+
           mesh.frustumCulled = true;
         }
       });
-      
-      // Reset scene position to origin
-      scene.position.set(0, 0, 0);
-    }
-  }, [scene]);
 
-  // Auto-rotation when user is not interacting
-  useFrame((state, delta) => {
+      scene.position.set(0, 0, 0);
+      
+      // Mark this scene as centered
+      centeredModels.add(scene);
+      
+      if (!onLoadCalledRef.current && onLoad) {
+        onLoad();
+        onLoadCalledRef.current = true;
+      }
+    } catch (err) {
+      console.error('Error processing skull model:', err);
+      if (!onLoadCalledRef.current && onLoad) {
+        onLoad();
+        onLoadCalledRef.current = true;
+      }
+    }
+  }, [scene, onLoad]);
+
+  // Auto-rotation
+  useFrame((_state, delta) => {
     if (!meshRef.current) return;
-    
-    // Always update auto-rotation value
-    autoRotationRef.current += delta * 0.3; // Smooth rotation speed
-    
-    // Apply auto-rotation only when user is not interacting
+
     if (!isUserInteracting) {
+      autoRotationRef.current += delta * 0.3;
       meshRef.current.rotation.y = autoRotationRef.current;
     } else {
-      // Sync auto-rotation with current rotation when user stops
       autoRotationRef.current = meshRef.current.rotation.y;
     }
   });
 
-  // Responsive positioning and scaling
   const scale = isMobile ? 5 : 5;
-  const positionX = 0;
   const positionY = isMobile ? -0.5 : 0;
 
   return (
-    <primitive 
-      ref={meshRef} 
-      object={scene} 
+    <primitive
+      ref={meshRef}
+      object={scene}
       scale={scale}
-      position={[positionX, positionY, 0]}
+      position={[0, positionY, 0]}
     />
   );
 });
 
-// Preload the skull model for better performance
-useGLTF.preload('/Skull_Resize4.glb');
+// Preload for faster first paint
+try {
+  useGLTF.preload('/Skull_Resize4.glb');
+} catch (error) {
+  console.error('Error preloading skull model:', error);
+}
 
 // ─── Index ────────────────────────────────────────────────────────────────────
 const Index = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [skullLoading, setSkullLoading] = useState(true);
+  const [skullLoading, setSkullLoading] = useState(!globalModelLoaded); // Only show spinner if never loaded
   const [isMobile, setIsMobile] = useState(false);
   const [isUserInteracting, setIsUserInteracting] = useState(false);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  // Detect mobile view
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Hide skull loader after 3 seconds
+  // Only show loading spinner if model hasn't loaded yet
   useEffect(() => {
-    const timer = setTimeout(() => {
+    // If model was already loaded globally, hide spinner immediately
+    if (globalModelLoaded) {
       setSkullLoading(false);
-    }, 3000);
-    return () => clearTimeout(timer);
+      return;
+    }
+
+    // First time: wait for model or timeout
+    const fallbackTimer = setTimeout(() => {
+      setSkullLoading(false);
+      globalModelLoaded = true;
+    }, 2000);
+
+    return () => {
+      clearTimeout(fallbackTimer);
+    };
   }, []);
+
+  const handleModelLoad = () => {
+    globalModelLoaded = true;
+    setSkullLoading(false);
+  };
 
   useEffect(() => { loadFeaturedProducts(); }, []);
 
@@ -377,7 +381,6 @@ const Index = () => {
       const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
       setFeaturedProducts(normalized);
 
-      // Sync wishlist from API response
       const wishlistIds = data.products
         .filter((p: ApiProduct) => p.in_wishlist)
         .map((p: ApiProduct) => p._id);
@@ -391,25 +394,14 @@ const Index = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
-    // Force multiple resize events to ensure canvas gets correct dimensions
-    const triggerResize = () => {
-      window.dispatchEvent(new Event('resize'));
-    };
-    
-    // Trigger immediately
+    const triggerResize = () => window.dispatchEvent(new Event('resize'));
     triggerResize();
-    
-    // Trigger after a short delay
-    const timer1 = setTimeout(triggerResize, 100);
-    const timer2 = setTimeout(triggerResize, 300);
-    const timer3 = setTimeout(triggerResize, 500);
-    
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-    };
+    const t1 = setTimeout(triggerResize, 100);
+    const t2 = setTimeout(triggerResize, 300);
+    const t3 = setTimeout(triggerResize, 500);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
 
   return (
@@ -448,7 +440,7 @@ const Index = () => {
       ═══════════════════════════════════════════════════════════════════════ */}
       <section
         className="relative h-screen overflow-hidden flex items-center justify-center bg-black"
-        style={{ 
+        style={{
           width: '100vw',
           marginLeft: '50%',
           transform: 'translateX(-50%)',
@@ -458,15 +450,13 @@ const Index = () => {
       >
         <div className="absolute inset-0 bg-black -z-10" />
 
-        {/* Skull Loading Spinner */}
         {skullLoading && <LoadingSpinner />}
 
         {/* ── WEBGL SMOKE BELOW MODEL (z-5) ── */}
-        {/* Covers bottom 50% of the hero, sits behind the model */}
         <div
           className="absolute inset-x-0 bottom-0 pointer-events-none"
-          style={{ 
-            height: '50%', 
+          style={{
+            height: '50%',
             zIndex: 5,
             maskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)'
@@ -483,32 +473,47 @@ const Index = () => {
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           style={{ zIndex: 10 }}
         >
-    
           <Canvas
+            key="skull-canvas" // Prevent Canvas from unmounting
             camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 1000 }}
             style={{ width: '100%', height: '100%' }}
-            gl={{ 
-              alpha: true, 
-              antialias: false, // Disable antialiasing for better performance
+            gl={{
+              alpha: true,
+              antialias: false,
               powerPreference: 'high-performance',
-              stencil: false, // Disable stencil buffer
+              stencil: false,
               depth: true
             }}
-            dpr={Math.min(window.devicePixelRatio, 1.5)} // Limit pixel ratio for performance
-            frameloop="always" // Always render for smooth rotation
-            performance={{ min: 0.5 }} // Performance degradation settings
+            dpr={Math.min(window.devicePixelRatio, 1.5)}
+            frameloop="always"
+            performance={{ min: 0.5 }}
+            onCreated={({ gl }) => {
+              console.log('Canvas created successfully');
+            }}
           >
             <ambientLight intensity={0.5} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
             <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#ff4400" />
             <pointLight position={[0, 5, 0]} intensity={0.8} color="#ff6600" />
+
             <Suspense fallback={null}>
               <Center>
-                <SkullModel isMobile={isMobile} isUserInteracting={isUserInteracting} />
+                <SkullModel
+                  isMobile={isMobile}
+                  isUserInteracting={isUserInteracting}
+                  onLoad={handleModelLoad}
+                />
               </Center>
             </Suspense>
-            
-            {/* OrbitControls for free mouse movement */}
+
+            {/*
+              FIX: Full free rotation on all axes.
+              - autoRotate is handled manually in useFrame above (so we control
+                the counter and avoid snapping).
+              - No azimuth limits → full 360° horizontal spin.
+              - No polar limits → full 360° vertical flip allowed.
+              - dampingFactor gives a smooth coast-to-stop feel.
+            */}
             <OrbitControls
               enableZoom={false}
               enablePan={false}
@@ -517,37 +522,20 @@ const Index = () => {
               enableDamping={true}
               onStart={() => setIsUserInteracting(true)}
               onEnd={() => setIsUserInteracting(false)}
-              minPolarAngle={0}
-              maxPolarAngle={Math.PI}
+              minAzimuthAngle={-Infinity}
+              maxAzimuthAngle={Infinity}
+              minPolarAngle={-Infinity}
+              maxPolarAngle={Infinity}
               makeDefault
             />
           </Canvas>
-          
-
-          {/* Orbital par<tticles - reduced count */}
-          {/* <motion.div
-            className="absolute -inset-20 pointer-events-none"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          >
-            {[...Array(4)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-2 h-2 bg-white/20 rounded-full"
-                style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
-                animate={{ y: [0, -30, 0], opacity: [0.2, 0.5, 0.2] }}
-                transition={{ duration: 3 + Math.random() * 2, repeat: Infinity, delay: Math.random() * 2 }}
-              />
-            ))}
-          </motion.div> */}
         </motion.div>
 
         {/* ── WEBGL SMOKE ABOVE MODEL (z-20) ── */}
-        {/* Covers bottom 35% only — thin foreground wisp layer over the model */}
         <div
           className="absolute inset-x-0 bottom-0 pointer-events-none"
-          style={{ 
-            height: '35%', 
+          style={{
+            height: '35%',
             zIndex: 20,
             maskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)'
@@ -556,62 +544,18 @@ const Index = () => {
           <SmokeCanvas />
         </div>
 
-        {/* Instruction Text */}
         <motion.div
           className="absolute bottom-12 left-1/2 -translate-x-1/2 text-center hidden md:block"
           style={{ zIndex: 30 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1 }}
-        >
-
-        </motion.div>
+        />
       </section>
-
-      {/* Marquee */}
-
 
       <BrandMarquee />
       <CategoriesShowcase />
       <CollabSection />
-
-      {/* Featured Products */}
-      {/* <section className="py-24 bg-background">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6"
-          >
-            <div>
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: 60 }}
-                viewport={{ once: true }}
-                className="h-1 bg-primary mb-6"
-              />
-              <span className="text-sm uppercase tracking-widest text-muted-foreground mb-4 block">Just Dropped</span>
-              <h2 className="font-display text-5xl md:text-6xl">NEW ARRIVALS</h2>
-            </div>
-            <Button variant="minimal" asChild>
-              <Link to="/shop">View All Products <ArrowRight size={18} /></Link>
-            </Button>
-          </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {loading ? (
-              <div className="col-span-full text-center py-12 text-muted-foreground">Loading featured products...</div>
-            ) : featuredProducts.length === 0 ? (
-              <div className="col-span-full text-center py-12 text-muted-foreground">No featured products available</div>
-            ) : (
-              featuredProducts.map((product, index) => (
-                <ProductCard key={product.id} product={product} index={index} />
-              ))
-            )}
-          </div>
-        </div>
-      </section> */}
-
       <ScrollingText />
       <TrendingSection />
       <AboutBrandSection />

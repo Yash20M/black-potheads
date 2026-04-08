@@ -119,7 +119,7 @@ const AboutPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="font-body font-bold uppercase tracking-wider text-6xl md:text-7xl lg:text-8xl mb-4 text-white"
+                className="font-body font-bold uppercase tracking-wider text-5xl md:text-7xl lg:text-8xl mb-4 text-white"
               >
                 BLACK POTHEADS
               </motion.h2>
