@@ -1,13 +1,10 @@
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { CollabFormModal } from '@/components/CollabFormModal';
 
 export const CollabSection = () => {
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    navigate('/collab');
-  };
+  const [showForm, setShowForm] = useState(false);
 
   return (
     <section className="w-full bg-black py-24 md:py-32">
@@ -58,7 +55,7 @@ export const CollabSection = () => {
             transition={{ delay: 0.4 }}
           >
             <Button
-              onClick={handleClick}
+              onClick={() => setShowForm(true)}
               size="lg"
               className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 md:px-12 py-4 md:py-6 text-base md:text-lg uppercase tracking-wider shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
@@ -76,6 +73,9 @@ export const CollabSection = () => {
           />
         </motion.div>
       </div>
+
+      {/* Collab Form Modal */}
+      <CollabFormModal isOpen={showForm} onClose={() => setShowForm(false)} />
     </section>
   );
 };

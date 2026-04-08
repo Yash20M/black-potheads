@@ -787,7 +787,7 @@ export const videoApi = {
 };
 
 
-// Collab APIs (Public)
+// Collab APIs (Public - No authentication required)
 export const collabApi = {
   submit: (data: {
     name: string;
@@ -796,11 +796,14 @@ export const collabApi = {
     instagram: string;
     vision: string;
   }) => {
+    const url = `${API_BASE_URL}/api/v1/collabs/submit`;
+    
     // Prepare the payload according to API spec
     const payload: any = {
       name: data.name,
-      phone: data.mobile,
-      message: `Instagram: ${data.instagram}\n\nVision:\n${data.vision}`,
+      mobile: data.mobile,
+      instagram: data.instagram,
+      vision: data.vision,
     };
     
     // Only include email if provided
@@ -808,9 +811,33 @@ export const collabApi = {
       payload.email = data.email;
     }
     
-    return apiFetch('/api/v1/collabs/submit', {
+    console.log('Collab API - Making request to:', url);
+    console.log('Collab API - Payload:', payload);
+    console.log('Collab API - No authentication token (public endpoint)');
+    
+    // Make a direct fetch call without authentication
+    return fetch(url, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(payload),
-    });
+    })
+      .then(async (response) => {
+        console.log('Collab API - Response status:', response.status);
+        console.log('Collab API - Response ok:', response.ok);
+        
+        const result = await response.json();
+        console.log('Collab API - Response data:', result);
+        
+        if (!response.ok) {
+          throw new ApiError(response.status, result.message || 'An error occurred');
+        }
+        return result;
+      })
+      .catch((error) => {
+        console.error('Collab API - Fetch error:', error);
+        throw error;
+      });
   },
 };

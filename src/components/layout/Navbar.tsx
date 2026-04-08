@@ -259,7 +259,7 @@ export const Navbar = () => {
           !isMenuOpen && 'pointer-events-none'
         )}
       >
-        <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col gap-3 sm:gap-4">
+        <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col gap-2 sm:gap-3">
           {navLinks.map((link, index) => (
             <motion.div
               key={link.label}
@@ -270,7 +270,7 @@ export const Navbar = () => {
               <Link
                 to={link.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b block text-white border-gray-800"
+                className="text-base sm:text-lg font-display uppercase tracking-wider py-2 border-b block text-white border-gray-800"
               >
                 {link.label}
               </Link>
@@ -280,7 +280,7 @@ export const Navbar = () => {
           {user ? (
             <>
               <Link to="/wishlist" onClick={() => setIsMenuOpen(false)}>
-                <div className="text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b flex items-center justify-between text-white border-gray-800">
+                <div className="text-base sm:text-lg font-display uppercase tracking-wider py-2 border-b flex items-center justify-between text-white border-gray-800">
                   Wishlist
                   {wishlistCount > 0 && (
                     <span className="text-xs sm:text-sm px-2 py-1 bg-white text-black">
@@ -290,7 +290,7 @@ export const Navbar = () => {
                 </div>
               </Link>
               <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
-                <div className="text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b text-white border-gray-800">
+                <div className="text-base sm:text-lg font-display uppercase tracking-wider py-2 border-b text-white border-gray-800">
                   Profile
                 </div>
               </Link>
@@ -299,7 +299,7 @@ export const Navbar = () => {
                   logout();
                   setIsMenuOpen(false);
                 }}
-                className="text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b text-left text-white border-gray-800"
+                className="text-base sm:text-lg font-display uppercase tracking-wider py-2 border-b text-left text-white border-gray-800"
               >
                 Logout
               </button>
@@ -307,18 +307,18 @@ export const Navbar = () => {
           ) : (
             <>
               <Link to="/track-order" onClick={() => setIsMenuOpen(false)}>
-                <div className="text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b flex items-center gap-2 text-white border-gray-800">
-                  <Package size={20} />
+                <div className="text-base sm:text-lg font-display uppercase tracking-wider py-2 border-b flex items-center gap-2 text-white border-gray-800">
+                  <Package size={18} />
                   Track Order
                 </div>
               </Link>
               <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                <div className="text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b text-white border-gray-800">
+                <div className="text-base sm:text-lg font-display uppercase tracking-wider py-2 border-b text-white border-gray-800">
                   Login
                 </div>
               </Link>
               <Link to="/register" onClick={() => setIsMenuOpen(false)}>
-                <div className="text-xl sm:text-2xl font-display uppercase tracking-wider py-2 border-b text-white border-gray-800">
+                <div className="text-base sm:text-lg font-display uppercase tracking-wider py-2 border-b text-white border-gray-800">
                   Register
                 </div>
               </Link>

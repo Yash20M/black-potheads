@@ -8,9 +8,10 @@ import { adminApi } from '@/lib/api';
 interface CollabSubmission {
   _id: string;
   name: string;
-  phone: string;
+  mobile: string;
   email?: string;
-  message: string;
+  instagram: string;
+  vision: string;
   status: 'pending' | 'reviewed' | 'contacted' | 'rejected';
   createdAt: string;
   updatedAt: string;
@@ -75,17 +76,6 @@ const AdminCollabs = () => {
       case 'rejected': return 'bg-red-500/20 text-red-500 border-red-500/30';
       default: return 'bg-gray-500/20 text-gray-500 border-gray-500/30';
     }
-  };
-
-  // Parse message to extract Instagram and Vision
-  const parseMessage = (message: string) => {
-    const instagramMatch = message.match(/Instagram:\s*(@?\S+)/);
-    const visionMatch = message.match(/Vision:\s*([\s\S]+)/);
-    
-    return {
-      instagram: instagramMatch ? instagramMatch[1] : '',
-      vision: visionMatch ? visionMatch[1].trim() : message
-    };
   };
 
   if (loading) {
@@ -160,10 +150,7 @@ const AdminCollabs = () => {
         </div>
       ) : (
         <div className="grid gap-4">
-          {submissions.map((submission) => {
-            const { instagram, vision } = parseMessage(submission.message);
-            
-            return (
+          {submissions.map((submission) => (
             <motion.div
               key={submission._id}
               initial={{ opacity: 0, y: 20 }}
@@ -211,7 +198,7 @@ const AdminCollabs = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div className="flex items-center gap-2 text-sm">
                   <Phone size={16} className="text-muted-foreground" />
-                  <span>{submission.phone}</span>
+                  <span>{submission.mobile || 'N/A'}</span>
                 </div>
                 {submission.email && (
                   <div className="flex items-center gap-2 text-sm">
@@ -219,28 +206,30 @@ const AdminCollabs = () => {
                     <span>{submission.email}</span>
                   </div>
                 )}
-                {instagram && (
+                {submission.instagram && (
                   <div className="flex items-center gap-2 text-sm">
                     <Instagram size={16} className="text-muted-foreground" />
                     <a
-                      href={`https://instagram.com/${instagram.replace('@', '')}`}
+                      href={`https://instagram.com/${submission.instagram.replace('@', '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline"
                     >
-                      {instagram}
+                      {submission.instagram}
                     </a>
                   </div>
                 )}
               </div>
 
               {/* Vision Preview */}
-              <div className="bg-muted/50 p-4 rounded-lg mb-4">
-                <p className="text-sm font-semibold mb-2">Vision:</p>
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {vision}
-                </p>
-              </div>
+              {submission.vision && (
+                <div className="bg-muted/50 p-4 rounded-lg mb-4">
+                  <p className="text-sm font-semibold mb-2">Vision:</p>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {submission.vision}
+                  </p>
+                </div>
+              )}
 
               {/* Status Actions */}
               <div className="flex gap-2 flex-wrap">
@@ -270,15 +259,12 @@ const AdminCollabs = () => {
                 </Button>
               </div>
             </motion.div>
-          )})}
+          ))}
         </div>
       )}
 
       {/* Detail Modal */}
-      {selectedSubmission && (() => {
-        const { instagram, vision } = parseMessage(selectedSubmission.message);
-        
-        return (
+      {selectedSubmission && (
         <div
           className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedSubmission(null)}
@@ -305,14 +291,14 @@ const AdminCollabs = () => {
               {/* Name */}
               <div>
                 <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Name</label>
-                <p className="text-lg mt-1">{selectedSubmission.name}</p>
+                <p className="text-lg mt-1">{selectedSubmission.name || 'N/A'}</p>
               </div>
 
               {/* Contact Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Mobile</label>
-                  <p className="text-lg mt-1">{selectedSubmission.phone}</p>
+                  <p className="text-lg mt-1">{selectedSubmission.mobile || 'N/A'}</p>
                 </div>
                 {selectedSubmission.email && (
                   <div>
@@ -323,17 +309,17 @@ const AdminCollabs = () => {
               </div>
 
               {/* Instagram */}
-              {instagram && (
+              {selectedSubmission.instagram && (
                 <div>
                   <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Instagram</label>
                   <p className="text-lg mt-1">
                     <a
-                      href={`https://instagram.com/${instagram.replace('@', '')}`}
+                      href={`https://instagram.com/${selectedSubmission.instagram.replace('@', '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline"
                     >
-                      {instagram}
+                      {selectedSubmission.instagram}
                     </a>
                   </p>
                 </div>
@@ -343,11 +329,15 @@ const AdminCollabs = () => {
               <div>
                 <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Vision</label>
                 <div className="bg-muted/50 p-4 rounded-lg mt-2">
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{vision}</p>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                    {selectedSubmission.vision || 'No vision provided'}
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  {vision.trim().split(/\s+/).length} words
-                </p>
+                {selectedSubmission.vision && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {selectedSubmission.vision.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                  </p>
+                )}
               </div>
 
               {/* Status */}
@@ -401,19 +391,19 @@ const AdminCollabs = () => {
               <div>
                 <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Submitted On</label>
                 <p className="text-lg mt-1">
-                  {new Date(selectedSubmission.createdAt).toLocaleDateString('en-US', {
+                  {selectedSubmission.createdAt ? new Date(selectedSubmission.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit'
-                  })}
+                  }) : 'N/A'}
                 </p>
               </div>
             </div>
           </motion.div>
         </div>
-      )})()}
+      )}
     </div>
   );
 };
