@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const categories = [
-  { name: 'SHIVA', image: '/shiva.jpeg', slug: 'Shiva' },
-  { name: 'SHROOMS', image: '/Shrooms.PNG', slug: 'Shrooms' },
-  { name: 'ACID', image: '/LSD.PNG', slug: 'ACID' },
-  { name: 'CHAKRAS', image: '/Chakras.PNG', slug: 'Chakras' },
-  { name: 'DARK', image: '/dark (2).PNG', slug: 'Dark' },
-  { name: 'RICK N MORTY', image: '/Rick-N-Morty.PNG', slug: 'Rick n Morty' },
+  { name: 'SHIVA', image: '/shiva.webp', slug: 'Shiva' },
+  { name: 'SHROOMS', image: '/Shrooms.webp', slug: 'Shrooms' },
+  { name: 'ACID', image: '/LSD.webp', slug: 'ACID' },
+  { name: 'CHAKRAS', image: '/Chakras.webp', slug: 'Chakras' },
+  { name: 'DARK', image: '/dark (2).webp', slug: 'Dark' },
+  { name: 'RICK N MORTY', image: '/Rick-N-Morty.webp', slug: 'Rick n Morty' },
 ];
 
 // Positions: -1 = left behind, 0 = center front, 1 = right behind

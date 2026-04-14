@@ -2,12 +2,12 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 const categories = [
-  { name: 'SHIVA', image: '/shiva.jpeg', path: '/shop?collection=Shiva' },
-  { name: 'SHROOMS', image: '/Shrooms.PNG', path: '/shop?collection=Shrooms' },
-  { name: 'ACID', image: '/LSD.PNG', path: '/shop?collection=ACID' },
-  { name: 'CHAKRAS', image: '/Chakras.PNG', path: '/shop?collection=Chakras' },
-  { name: 'DARK', image: '/dark (2).PNG', path: '/shop?collection=Dark' },
-  { name: 'RICK N MORTY', image: '/Rick-N-Morty.PNG', path: '/shop?collection=Rick n Morty' },
+  { name: 'SHIVA', image: '/shiva.webp', path: '/shop?collection=Shiva' },
+  { name: 'SHROOMS', image: '/Shrooms.webp', path: '/shop?collection=Shrooms' },
+  { name: 'ACID', image: '/LSD.webp', path: '/shop?collection=ACID' },
+  { name: 'CHAKRAS', image: '/Chakras.webp', path: '/shop?collection=Chakras' },
+  { name: 'DARK', image: '/dark (2).webp', path: '/shop?collection=Dark' },
+  { name: 'RICK N MORTY', image: '/Rick-N-Morty.webp', path: '/shop?collection=Rick n Morty' },
 ];
 
 export const ScrollingText = () => {
