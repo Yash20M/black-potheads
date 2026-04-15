@@ -182,7 +182,7 @@ export const CategoriesShowcase = () => {
                     alt={category.name}
                     className={`w-full h-full ${
                       category.slug === 'Shiva'
-                        ? 'object-cover scale-110'
+                        ? 'object-contain'
                         : category.slug === 'Rick n Morty' || category.slug === 'Dark' || category.slug ==='Shrooms'
                         ? 'object-contain scale-75'
                         : 'object-contain'

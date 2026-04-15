@@ -96,8 +96,7 @@ const CollectionsPage = () => {
                     <motion.img
                       src={collection.image}
                       alt={collection.title}
-                      className={`w-full h-full ${collection.id === 'Shiva' ? 'object-cover' : 'object-contain'
-                        }`}
+                      className="w-full h-full object-contain"
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.6 }}
                     />
