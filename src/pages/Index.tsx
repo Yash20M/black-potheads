@@ -9,11 +9,11 @@ import { SEO } from '@/components/SEO';
 import { productApi } from '@/lib/api';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { ApiProduct, Product, normalizeProduct } from '@/types/product';
-import { motion, useMotionValue } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useEffect, useRef, useState, Suspense, memo } from 'react';
 import { toast } from 'sonner';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Center, useGLTF, OrbitControls } from '@react-three/drei';
+import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
 // ─── WebGL Smoke Fragment Shader ──────────────────────────────────────────────
@@ -222,156 +222,121 @@ const LoadingSpinner = memo(() => (
         <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-white border-r-white animate-spin" />
         <div className="absolute inset-1 rounded-full border-2 border-transparent border-b-orange-500 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
       </div>
-      <p className="text-white text-sm font-medium tracking-widest">LOADING EXPERIENCE</p>
     </div>
   </div>
 ));
 
-// ─── Global flag to track if model has ever loaded (persists across navigation) ───
-let globalModelLoaded = false;
-// Track which models have been centered to avoid re-processing
-const centeredModels = new WeakSet<THREE.Object3D>();
-
-// ─── 3D Skull Model Component ────────────────────────────────────────────────
-const SkullModel = memo(({ isMobile, isUserInteracting, onLoad }: {
-  isMobile: boolean;
-  isUserInteracting: boolean;
-  onLoad?: () => void;
+// ─── 3D Skull Model ───────────────────────────────────────────────────────────
+// Uses Euler XYZ rotation directly on the group — no OrbitControls.
+// This gives true 360° on ALL axes (vertical + horizontal).
+// Drag state is passed in via refs to avoid re-renders.
+const SkullModel = memo(({ onLoad, rotX, rotY }: {
+  onLoad: () => void;
+  rotX: React.MutableRefObject<number>;
+  rotY: React.MutableRefObject<number>;
 }) => {
-  const meshRef = useRef<THREE.Group>(null);
-  const autoRotationRef = useRef(0);
-  const onLoadCalledRef = useRef(false);
-
-  // Load the model
+  const groupRef = useRef<THREE.Group>(null);
+  const [offset, setOffset] = useState<[number, number, number]>([0, 0, 0]);
   const { scene } = useGLTF('/Skull_Resize4.glb') as any;
 
-  // Center and optimize the model geometry
   useEffect(() => {
     if (!scene) return;
-    
-    // Check if this scene has already been centered
-    if (centeredModels.has(scene)) {
-      // Already processed, just call onLoad
-      if (!onLoadCalledRef.current && onLoad) {
-        onLoad();
-        onLoadCalledRef.current = true;
-      }
-      return;
-    }
+    // Read bounding box WITHOUT mutating geometry
+    const box = new THREE.Box3().setFromObject(scene);
+    const center = box.getCenter(new THREE.Vector3());
+    setOffset([-center.x, -center.y, -center.z]);
+    onLoad();
+  }, [scene]);
 
-    try {
-      const box = new THREE.Box3().setFromObject(scene);
-      const center = box.getCenter(new THREE.Vector3());
-
-      scene.traverse((child: THREE.Object3D) => {
-        if ((child as THREE.Mesh).isMesh) {
-          const mesh = child as THREE.Mesh;
-
-          if (mesh.geometry) {
-            mesh.geometry.translate(-center.x, -center.y, -center.z);
-          }
-
-          if (mesh.material) {
-            const material = mesh.material as THREE.MeshStandardMaterial;
-            material.flatShading = false;
-            material.needsUpdate = true;
-          }
-
-          mesh.frustumCulled = true;
-        }
-      });
-
-      scene.position.set(0, 0, 0);
-      
-      // Mark this scene as centered
-      centeredModels.add(scene);
-      
-      if (!onLoadCalledRef.current && onLoad) {
-        onLoad();
-        onLoadCalledRef.current = true;
-      }
-    } catch (err) {
-      console.error('Error processing skull model:', err);
-      if (!onLoadCalledRef.current && onLoad) {
-        onLoad();
-        onLoadCalledRef.current = true;
-      }
-    }
-  }, [scene, onLoad]);
-
-  // Auto-rotation
-  useFrame((_state, delta) => {
-    if (!meshRef.current) return;
-
-    if (!isUserInteracting) {
-      autoRotationRef.current += delta * 0.3;
-      meshRef.current.rotation.y = autoRotationRef.current;
-    } else {
-      autoRotationRef.current = meshRef.current.rotation.y;
-    }
+  useFrame(() => {
+    if (!groupRef.current) return;
+    groupRef.current.rotation.x = rotX.current;
+    groupRef.current.rotation.y = rotY.current;
   });
 
-  const scale = isMobile ? 5 : 5;
-  const positionY = isMobile ? -0.5 : 0;
-
   return (
-    <primitive
-      ref={meshRef}
-      object={scene}
-      scale={scale}
-      position={[0, positionY, 0]}
-    />
+    <group ref={groupRef}>
+      <primitive object={scene} scale={5} position={offset} />
+    </group>
   );
 });
 
-// Preload for faster first paint
-try {
-  useGLTF.preload('/Skull_Resize4.glb');
-} catch (error) {
-  console.error('Error preloading skull model:', error);
-}
+useGLTF.preload('/Skull_Resize4.glb');
 
 // ─── Index ────────────────────────────────────────────────────────────────────
 const Index = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [skullLoading, setSkullLoading] = useState(!globalModelLoaded); // Only show spinner if never loaded
-  const [isMobile, setIsMobile] = useState(false);
-  const [isUserInteracting, setIsUserInteracting] = useState(false);
+  const [skullLoading, setSkullLoading] = useState(true);
 
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  // ── Rotation state (refs = no re-renders, direct to useFrame) ──
+  const rotX = useRef(0);          // vertical rotation (full 360°)
+  const rotY = useRef(0);          // horizontal rotation (full 360°)
+  const velX = useRef(0);          // inertia velocity X
+  const velY = useRef(0);          // inertia velocity Y
+  const isDragging = useRef(false);
+  const lastPos = useRef({ x: 0, y: 0 });
+  const autoRotating = useRef(true);
+  const autoResumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
+  // ── Auto-rotation loop (runs outside React/Three) ──
+  const rafRef = useRef<number>(0);
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Only show loading spinner if model hasn't loaded yet
-  useEffect(() => {
-    // If model was already loaded globally, hide spinner immediately
-    if (globalModelLoaded) {
-      setSkullLoading(false);
-      return;
-    }
-
-    // First time: wait for model or timeout
-    const fallbackTimer = setTimeout(() => {
-      setSkullLoading(false);
-      globalModelLoaded = true;
-    }, 2000);
-
-    return () => {
-      clearTimeout(fallbackTimer);
+    const tick = () => {
+      if (autoRotating.current && !isDragging.current) {
+        rotY.current += 0.004;
+      } else if (!isDragging.current) {
+        // Apply inertia
+        velX.current *= 0.92;
+        velY.current *= 0.92;
+        rotX.current += velX.current;
+        rotY.current += velY.current;
+        // Resume auto-rotate when inertia dies
+        if (Math.abs(velX.current) < 0.0001 && Math.abs(velY.current) < 0.0001) {
+          autoRotating.current = true;
+        }
+      }
+      rafRef.current = requestAnimationFrame(tick);
     };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
-  const handleModelLoad = () => {
-    globalModelLoaded = true;
-    setSkullLoading(false);
+  // ── Pointer drag handlers ──
+  const onPointerDown = (e: React.PointerEvent) => {
+    isDragging.current = true;
+    autoRotating.current = false;
+    velX.current = 0;
+    velY.current = 0;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+    if (autoResumeTimer.current) clearTimeout(autoResumeTimer.current);
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!isDragging.current) return;
+    const dx = e.clientX - lastPos.current.x;
+    const dy = e.clientY - lastPos.current.y;
+    const sensitivity = 0.008;
+    velY.current = dx * sensitivity;
+    velX.current = dy * sensitivity;
+    rotY.current += velY.current;
+    rotX.current += velX.current;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const onPointerUp = () => {
+    isDragging.current = false;
+    // Resume auto-rotate after 2s of no interaction
+    autoResumeTimer.current = setTimeout(() => {
+      autoRotating.current = true;
+      velX.current = 0;
+      velY.current = 0;
+    }, 2000);
+  };
+
+  const handleModelLoad = () => setSkullLoading(false);
 
   useEffect(() => { loadFeaturedProducts(); }, []);
 
@@ -380,7 +345,6 @@ const Index = () => {
       const data: any = await productApi.getFeatured(3);
       const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
       setFeaturedProducts(normalized);
-
       const wishlistIds = data.products
         .filter((p: ApiProduct) => p.in_wishlist)
         .map((p: ApiProduct) => p._id);
@@ -389,20 +353,10 @@ const Index = () => {
       }
     } catch (error: any) {
       toast.error('Failed to load featured products');
-      console.error('Featured products error:', error);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    const triggerResize = () => window.dispatchEvent(new Event('resize'));
-    triggerResize();
-    const t1 = setTimeout(triggerResize, 100);
-    const t2 = setTimeout(triggerResize, 300);
-    const t3 = setTimeout(triggerResize, 500);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, []);
 
   return (
     <div className="min-h-screen bg-black w-full overflow-x-hidden">
@@ -420,10 +374,7 @@ const Index = () => {
           "logo": "https://blackpotheads.com/logo.png",
           "image": "https://blackpotheads.com/homeimg.jpeg",
           "priceRange": "₹₹",
-          "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "IN"
-          },
+          "address": { "@type": "PostalAddress", "addressCountry": "IN" },
           "paymentAccepted": "Cash, Credit Card, Debit Card, UPI, Net Banking",
           "currenciesAccepted": "INR",
           "openingHours": "Mo-Su 00:00-23:59",
@@ -432,125 +383,61 @@ const Index = () => {
         }}
       />
 
-      {/* ═══════════════════════════════════════════════════════════════════════
-          3D ROTATING HERO WITH SKULL MODEL
-          z-5  → WebGL smoke BELOW model  (background smoke)
-          z-10 → 3D rotating skull model
-          z-20 → WebGL smoke ABOVE model  (foreground smoke)
-      ═══════════════════════════════════════════════════════════════════════ */}
-      <section
-        className="relative h-screen overflow-hidden flex items-center justify-center bg-black"
-        style={{
-          width: '100vw',
-          marginLeft: '50%',
-          transform: 'translateX(-50%)',
-          left: 0,
-          right: 0
-        }}
-      >
-        <div className="absolute inset-0 bg-black -z-10" />
+      {/* ── 3D SKULL HERO ── */}
+      <section className="relative h-screen overflow-hidden flex items-center justify-center bg-black">
 
         {skullLoading && <LoadingSpinner />}
 
-        {/* ── WEBGL SMOKE BELOW MODEL (z-5) ── */}
-        <div
-          className="absolute inset-x-0 bottom-0 pointer-events-none"
+        {/* welcome.webp — sits in the bottom fog area, behind smoke */}
+        <div className="absolute inset-x-0 bottom-0 pointer-events-none"
           style={{
-            height: '50%',
-            zIndex: 5,
+            height: '50%', zIndex: 4,
+            maskImage: 'linear-gradient(to top, black 50%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to top, black 50%, transparent 100%)'
+          }}>
+          {/* Mobile image */}
+          <img src="/welcome-mobile.webp" alt="" className="block md:hidden w-full h-full object-cover opacity-50" />
+          {/* Desktop image */}
+          <img src="/welcome.webp" alt="" className="hidden md:block w-full h-full object-cover opacity-50" />
+        </div>
+
+        {/* Smoke background */}
+        <div className="absolute inset-x-0 bottom-0 pointer-events-none"
+          style={{
+            height: '50%', zIndex: 5,
             maskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)'
-          }}
-        >
+          }}>
           <SmokeCanvas />
         </div>
 
-        {/* ── 3D SKULL MODEL (z-10) ── */}
-        <motion.div
-          className="relative w-full h-[50vh] sm:h-[60vh] md:h-[75vh] lg:h-[80vh] mx-auto"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          style={{ zIndex: 10 }}
+        {/* Drag surface + Canvas */}
+        <div
+          ref={canvasRef}
+          className="relative w-full h-[55vh] sm:h-[65vh] md:h-[80vh]"
+          style={{ zIndex: 10, cursor: isDragging.current ? 'grabbing' : 'grab' }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerLeave={onPointerUp}
+          onPointerCancel={onPointerUp}
         >
           <Canvas
-            key="skull-canvas" // Prevent Canvas from unmounting
             camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 1000 }}
             style={{ width: '100%', height: '100%' }}
-            gl={{
-              alpha: true,
-              antialias: false,
-              powerPreference: 'high-performance',
-              stencil: false,
-              depth: true
-            }}
-            dpr={Math.min(window.devicePixelRatio, 1.5)}
+            gl={{ alpha: true, antialias: true, powerPreference: 'high-performance', stencil: false, depth: true }}
+            dpr={[1, 1.5]}
             frameloop="always"
-            performance={{ min: 0.5 }}
-            onCreated={({ gl }) => {
-              console.log('Canvas created successfully');
-            }}
           >
-            <ambientLight intensity={0.5} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
+            <ambientLight intensity={0.6} />
+            <directionalLight position={[10, 10, 5]} intensity={1.2} />
             <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#ff4400" />
             <pointLight position={[0, 5, 0]} intensity={0.8} color="#ff6600" />
-
             <Suspense fallback={null}>
-              <Center>
-                <SkullModel
-                  isMobile={isMobile}
-                  isUserInteracting={isUserInteracting}
-                  onLoad={handleModelLoad}
-                />
-              </Center>
+              <SkullModel onLoad={handleModelLoad} rotX={rotX} rotY={rotY} />
             </Suspense>
-
-            {/*
-              FIX: Full free rotation on all axes.
-              - autoRotate is handled manually in useFrame above (so we control
-                the counter and avoid snapping).
-              - No azimuth limits → full 360° horizontal spin.
-              - No polar limits → full 360° vertical flip allowed.
-              - dampingFactor gives a smooth coast-to-stop feel.
-            */}
-            <OrbitControls
-              enableZoom={false}
-              enablePan={false}
-              rotateSpeed={0.8}
-              dampingFactor={0.05}
-              enableDamping={true}
-              onStart={() => setIsUserInteracting(true)}
-              onEnd={() => setIsUserInteracting(false)}
-              minAzimuthAngle={-Infinity}
-              maxAzimuthAngle={Infinity}
-              minPolarAngle={-Infinity}
-              maxPolarAngle={Infinity}
-              makeDefault
-            />
           </Canvas>
-        </motion.div>
-
-        {/* ── WEBGL SMOKE ABOVE MODEL (z-20) ── */}
-        <div
-          className="absolute inset-x-0 bottom-0 pointer-events-none"
-          style={{
-            height: '35%',
-            zIndex: 20,
-            maskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)'
-          }}
-        >
-          <SmokeCanvas />
         </div>
-
-        <motion.div
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 text-center hidden md:block"
-          style={{ zIndex: 30 }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1 }}
-        />
       </section>
 
       <BrandMarquee />

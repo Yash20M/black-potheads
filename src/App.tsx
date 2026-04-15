@@ -75,12 +75,12 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <Sonner />
+      <Sonner duration={1000} />
       <BrowserRouter>
         <LoadingBar />
         <ScrollToTop />
         <OfferModal />
-        <Suspense fallback={<PageLoader />}>
+        <Suspense fallback={null}>
           <Routes>
             <Route element={<Layout />}>
               <Route path="/" element={<Index />} />

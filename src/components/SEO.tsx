@@ -11,9 +11,9 @@ interface SEOProps {
 }
 
 export const SEO = ({
-  title = 'BLACK POTHEADS - Premium Printed T-Shirts | Streetwear India',
-  description = 'Shop premium printed t-shirts online in India. Unique Shiva, psychedelic, gothic & streetwear designs. Free shipping, COD available. 7-day returns. Order now!',
-  keywords = 'printed t-shirts india, streetwear india, graphic tees, shiva t-shirts, psychedelic clothing, gothic tees, premium cotton tshirts, online tshirt shopping india, blackpotheads',
+  title = 'Blackpotheads - Psy Clothing | Premium Streetwear Brand',
+  description = 'Buy psychedelic t-shirts & streetwear in India. Shop unique Shiva, gothic & trippy printed tees at Blackpotheads (Black Potheads). Premium quality. Free shipping, COD & easy returns.',
+  keywords = 'blackpotheads, black potheads, psy clothing india, psychedelic t-shirts india, streetwear india, Trippy streetwear, Psychedelic streetwear, graphic tees india, shiva t-shirts, gothic clothing india, trippy t-shirts, premium streetwear brand india',
   image = 'https://blackpotheads.com/logo.png',
   url = 'https://blackpotheads.com',
   type = 'website',
@@ -26,11 +26,13 @@ export const SEO = ({
       <meta name="title" content={title} />
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
+      <meta name="robots" content="index, follow" />
       <link rel="canonical" href={url} />
 
-      {/* Open Graph / Facebook */}
+      {/* Open Graph */}
       <meta property="og:type" content={type} />
       <meta property="og:url" content={url} />
+      <meta property="og:site_name" content="Blackpotheads" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image} />
@@ -41,6 +43,9 @@ export const SEO = ({
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
+
+      {/* Extra SEO Boost */}
+      <meta name="author" content="Blackpotheads" />
 
       {/* Structured Data */}
       {structuredData && (

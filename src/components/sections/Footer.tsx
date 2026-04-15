@@ -32,8 +32,8 @@ export const Footer = () => {
               />
               <h4 className="font-body font-bold uppercase tracking-wider text-2xl">BLACK POTHEADS</h4>
             </div>
-            <p className="text-muted-foreground text-sm mb-6">
-              Premium printed tees for the unapologetically bold.
+            <p className="text-muted-foreground text-xl font-semibold mb-6 text-center">
+              PSY Clothing
             </p>
             <div className="flex gap-4">
               <motion.a

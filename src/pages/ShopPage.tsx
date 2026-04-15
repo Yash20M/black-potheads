@@ -20,6 +20,15 @@ const categories = [
   { id: 'Rick n Morty', label: 'Rick n Morty' },
 ];
 
+// Collab config — add new collabs here as they come
+const collabConfig: Record<string, { label: string; category: Category; description: string }> = {
+  'rakt-pipasu-records': {
+    label: 'RAKT PIPASU RECORDS',
+    category: 'Shiva',
+    description: 'Divine designs inspired by cosmic consciousness and spiritual awakening — a collaboration with Rakt Pipasu Records.',
+  },
+};
+
 const collectionDetails = {
   'Shiva': {
     title: 'Shiva Collection',
@@ -62,8 +71,13 @@ const collectionDetails = {
 const ShopPage = () => {
   const [searchParams] = useSearchParams();
   const collectionParam = searchParams.get('collection');
+  const collabParam = searchParams.get('collab');
+
+  // Resolve active collab config (if any)
+  const activeCollab = collabParam ? collabConfig[collabParam] ?? null : null;
+
   const [activeCategory, setActiveCategory] = useState<Category>(
-    (collectionParam as Category) || 'all'
+    activeCollab ? activeCollab.category : (collectionParam as Category) || 'all'
   );
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,10 +86,12 @@ const ShopPage = () => {
 
   // Update active category when URL param changes
   useEffect(() => {
-    if (collectionParam) {
+    if (collabParam && collabConfig[collabParam]) {
+      setActiveCategory(collabConfig[collabParam].category);
+    } else if (collectionParam) {
       setActiveCategory(collectionParam as Category);
     }
-  }, [collectionParam]);
+  }, [collectionParam, collabParam]);
 
   // Scroll active button into view horizontally only
   useEffect(() => {
@@ -104,7 +120,16 @@ const ShopPage = () => {
   const loadProducts = useCallback(async () => {
     setLoading(true);
     try {
-      if (activeCategory === 'all') {
+      if (collabParam && collabConfig[collabParam]) {
+        // Collab mode: fetch by collab slug
+        const data: any = await productApi.getByCollab(collabParam, 1, 50);
+        const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
+        setProducts(normalized);
+        const wishlistIds = data.products
+          .filter((p: ApiProduct) => p.in_wishlist)
+          .map((p: ApiProduct) => p._id);
+        useWishlistStore.getState().syncWishlist(wishlistIds);
+      } else if (activeCategory === 'all') {
         // Load all products without category filter
         const data: any = await productApi.getAll(1, 100);
         const normalized = data.products.map((p: ApiProduct) => normalizeProduct(p));
@@ -133,7 +158,7 @@ const ShopPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [activeCategory]);
+  }, [activeCategory, collabParam]);
 
   useEffect(() => {
     loadProducts();
@@ -179,9 +204,14 @@ const ShopPage = () => {
             className="text-center"
           >
             <span className="text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-gray-400 mb-3 sm:mb-4 block">
-              Browse Our
+              {activeCollab ? 'Collab Collection' : 'Browse Our'}
             </span>
-            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-white">SHOP</h1>
+            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-white">
+              {activeCollab ? activeCollab.label : 'SHOP'}
+            </h1>
+            {activeCollab && (
+              <p className="text-white/60 text-sm mt-3 max-w-md mx-auto">{activeCollab.description}</p>
+            )}
           </motion.div>
         </div>
       </section>
@@ -189,7 +219,7 @@ const ShopPage = () => {
       {/* Products Section */}
       <section className="py-8 sm:py-10 bg-background">
         <div className="container mx-auto px-4 sm:px-6">
-          {/* Category Filter */}
+          {/* Category Filter — hidden in collab mode, replaced by single collab tab */}
           <motion.div
             ref={scrollContainerRef}
             initial={{ opacity: 0, y: 20 }}
@@ -198,23 +228,30 @@ const ShopPage = () => {
             className="mb-8 sm:mb-10 overflow-x-auto scrollbar-hide"
           >
             <div className="flex md:flex-wrap md:justify-center gap-2 sm:gap-3 min-w-max md:min-w-0 px-2 sm:px-4 md:px-0">
-              {categories.map((category) => (
-                <motion.button
-                  key={category.id}
-                  ref={(el) => (categoryRefs.current[category.id] = el)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleCategoryChange(category.id as Category)}
-                  className={cn(
-                    'px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-3 text-xs sm:text-sm md:text-sm uppercase tracking-[0.15em] sm:tracking-[0.18em] md:tracking-[0.2em] transition-all duration-300 border-2 whitespace-nowrap',
-                    activeCategory === category.id
-                      ? 'bg-white text-black border-white'
-                      : 'bg-black border-white text-white hover:bg-white hover:text-black'
-                  )}
-                >
-                  {category.label}
-                </motion.button>
-              ))}
+              {activeCollab ? (
+                // Collab mode: single non-clickable tab showing the collab name
+                <div className="px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-3 text-xs sm:text-sm md:text-sm uppercase tracking-[0.15em] sm:tracking-[0.18em] md:tracking-[0.2em] border-2 bg-white text-black border-white whitespace-nowrap">
+                  {activeCollab.label}
+                </div>
+              ) : (
+                categories.map((category) => (
+                  <motion.button
+                    key={category.id}
+                    ref={(el) => (categoryRefs.current[category.id] = el)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleCategoryChange(category.id as Category)}
+                    className={cn(
+                      'px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-3 text-xs sm:text-sm md:text-sm uppercase tracking-[0.15em] sm:tracking-[0.18em] md:tracking-[0.2em] transition-all duration-300 border-2 whitespace-nowrap',
+                      activeCategory === category.id
+                        ? 'bg-white text-black border-white'
+                        : 'bg-black border-white text-white hover:bg-white hover:text-black'
+                    )}
+                  >
+                    {category.label}
+                  </motion.button>
+                ))
+              )}
             </div>
           </motion.div>
 

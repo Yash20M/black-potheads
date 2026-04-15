@@ -9,7 +9,7 @@ const collections = [
     subtitle: 'Divine Power',
     description: 'Embrace the divine energy of Lord Shiva, the destroyer and transformer. Our Shiva collection features intricate spiritual designs that blend ancient Hindu mythology with contemporary streetwear aesthetics. Each piece is crafted with premium cotton and showcases detailed prints of the third eye, trishul, and cosmic dance of Nataraja.',
     features: ['Premium Cotton', 'Spiritual Artwork', 'Limited Edition', 'Unisex Designs'],
-    image: '/shiva.jpeg',
+    image: '/shiva.webp',
   },
   {
     id: 'Shrooms',
@@ -17,7 +17,7 @@ const collections = [
     subtitle: 'Psychedelic Art',
     description: 'Journey into the mystical world of psychedelic mushrooms with our trippy designs. This collection celebrates consciousness expansion and natural wisdom through vibrant, mind-bending artwork. Featuring colorful mushroom patterns, fractal designs, and nature-inspired motifs that capture the essence of psychedelic experiences.',
     features: ['Vibrant Colors', 'Nature-Inspired', 'Soft Fabric', 'Unique Artwork'],
-    image: '/Shrooms.PNG',
+    image: '/Shrooms.webp',
   },
   {
     id: 'ACID',
@@ -25,7 +25,7 @@ const collections = [
     subtitle: 'Mind Expansion',
     description: 'Dive into a kaleidoscope of colors and patterns inspired by the psychedelic revolution. Our ACID collection features mesmerizing geometric patterns, optical illusions, and vibrant color combinations that transcend ordinary fashion. Each design is a visual journey, blending sacred geometry with modern street style.',
     features: ['Geometric Patterns', 'Optical Illusions', 'Bold Colors', 'Premium Prints'],
-    image: '/LSD.PNG',
+    image: '/LSD.webp',
   },
   {
     id: 'Chakras',
@@ -33,7 +33,7 @@ const collections = [
     subtitle: 'Energy Centers',
     description: 'Align your energy centers with our Chakras collection, featuring sacred geometry and ancient symbols of spiritual balance. Each design represents the seven chakras, from root to crown, incorporating mandalas, lotus flowers, and energy flow patterns. Perfect for yoga enthusiasts and meditation practitioners.',
     features: ['Sacred Geometry', 'Seven Chakras', 'Meditation-Inspired', 'Spiritual Balance'],
-    image: '/Chakras.PNG',
+    image: '/Chakras.webp',
   },
   {
     id: 'Dark',
@@ -41,7 +41,7 @@ const collections = [
     subtitle: 'Shadow Realm',
     description: 'Embrace the darkness within with our most mysterious and edgy collection. The Dark collection features gothic aesthetics, occult symbolism, and shadow-inspired designs that celebrate the beauty of the night. From skulls and ravens to mystical symbols and dark cosmic patterns, these pieces are for those who find power in the shadows.',
     features: ['Gothic Aesthetics', 'Occult Symbolism', 'Dark Schemes', 'Edgy Street Style'],
-    image: '/dark (2).PNG',
+    image: '/dark (2).webp',
   },
   {
     id: 'Rick n Morty',
@@ -49,7 +49,7 @@ const collections = [
     subtitle: 'Wubba Lubba',
     description: 'Get schwifty with our interdimensional Rick and Morty collection! Featuring iconic characters, memorable quotes, and scenes from across the multiverse. From portal guns to Pickle Rick, these designs capture the chaotic genius and dark humor of the show. Perfect for fans who appreciate science, sarcasm, and interdimensional adventures.',
     features: ['Official-Style Art', 'Iconic Characters', 'Multiverse Designs', 'Fan Favorites'],
-    image: '/Rick-N-Morty.PNG',
+    image: '/Rick-N-Morty.webp',
   },
 ];
 

@@ -36,7 +36,7 @@ const AboutPage = () => {
               <img 
                 src="/logo.png" 
                 alt="Black Potheads Logo" 
-                className="w-20 h-20 mx-auto opacity-20 object-contain"
+                className="w-32 h-32 mx-auto object-contain"
               />
             </motion.div>
             
@@ -110,7 +110,7 @@ const AboutPage = () => {
                 <img 
                   src="/logo.png" 
                   alt="Black Potheads Logo" 
-                  className="w-20 h-20 mx-auto opacity-20 object-contain"
+                  className="w-32 h-32 mx-auto object-contain"
                 />
               </motion.div>
               

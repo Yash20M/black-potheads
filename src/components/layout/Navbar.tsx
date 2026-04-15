@@ -46,7 +46,7 @@ export const Navbar = () => {
           <Link to="/" className="flex items-center gap-2 sm:gap-3">
             <motion.div 
               style={{ rotate: skullRotate }} 
-              className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-14 lg:h-14 flex items-center justify-center"
+              className="relative w-20 h-20 sm:w-20 sm:h-20 md:w-20 md:h-20 lg:w-20 lg:h-20 flex items-center justify-center"
             >
               <motion.div
                 style={{ opacity: glowOpacity }}
@@ -55,13 +55,13 @@ export const Navbar = () => {
                 <img 
                   src="/logo.png"
                   alt="Black Potheads Logo" 
-                  className="w-full h-full object-contain max-h-14"
+                  className="w-full h-full object-contain max-h-16"
                 />
               </motion.div>
               <img 
                 src="/logo.png"
                 alt="Black Potheads Logo" 
-                className="w-full h-full object-contain relative z-10 max-h-14"
+                className="w-full h-full object-contain relative z-10 max-h-16"
               />
             </motion.div>
             

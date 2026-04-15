@@ -61,11 +61,11 @@ export const useCartStore = create<CartStore>()(
             };
           });
 
-          toast.success('Added to cart');
+          toast.success('Added to cart', { duration: 2000 });
         } catch (error: any) {
           console.error('Failed to add to cart:', error);
           const errorMessage = error.response?.data?.message || error.message || 'Failed to add to cart';
-          toast.error(errorMessage);
+          toast.error(errorMessage, { duration: 2000 });
           throw error;
         }
       },
@@ -182,7 +182,7 @@ export const useCartStore = create<CartStore>()(
           }
         } catch (error: any) {
           console.error('Failed to sync cart with backend:', error);
-          toast.error('Failed to sync cart. Please try again.');
+          toast.error('Failed to sync cart. Please try again.', { duration: 2000 });
         } finally {
           set({ isSyncing: false });
         }

@@ -191,11 +191,17 @@ const ContactPage = () => {
                 <p className="text-muted-foreground">Got questions or issues? We're here.</p>
                 
                 <div>
+                  <p className="font-semibold mb-1">Mobile No</p>
+                    +91 8949331335
+                </div>
+
+                <div>
                   <p className="font-semibold mb-1">Email</p>
                   <a href="mailto:support@blackpotheads.com" className="text-primary hover:underline">
                     support@blackpotheads.com
                   </a>
                 </div>
+                
                 
                 <div>
                   <p className="font-semibold mb-1">Response Time</p>

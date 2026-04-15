@@ -151,9 +151,9 @@ export const CollabFormModal = ({ isOpen, onClose }: CollabFormModalProps) => {
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4"
           >
-            <div className="bg-black border-2 border-white w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="bg-black border border-white/30 w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
               {/* Header */}
-              <div className="sticky top-0 bg-black border-b-2 border-white p-4 sm:p-6 flex items-center justify-between z-10">
+              <div className="sticky top-0 bg-black border-b border-white/30 p-4 sm:p-6 flex items-center justify-between z-10">
                 <h2 className="font-display text-lg sm:text-xl md:text-2xl text-white">
                   JOIN THE MOVEMENT
                 </h2>
@@ -177,7 +177,7 @@ export const CollabFormModal = ({ isOpen, onClose }: CollabFormModalProps) => {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full bg-black border-2 border-white text-white px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base focus:outline-none focus:border-gray-400 transition-colors"
+                    className="w-full bg-black border border-white/30 text-white px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base focus:outline-none focus:border-white/60 transition-colors"
                     placeholder="Enter your name"
                     required
                   />
@@ -193,7 +193,7 @@ export const CollabFormModal = ({ isOpen, onClose }: CollabFormModalProps) => {
                     name="mobile"
                     value={formData.mobile}
                     onChange={handleInputChange}
-                    className="w-full bg-black border-2 border-white text-white px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base focus:outline-none focus:border-gray-400 transition-colors"
+                    className="w-full bg-black border border-white/30 text-white px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base focus:outline-none focus:border-white/60 transition-colors"
                     placeholder="10-digit mobile number"
                     pattern="[0-9]{10}"
                     maxLength={10}
@@ -211,7 +211,7 @@ export const CollabFormModal = ({ isOpen, onClose }: CollabFormModalProps) => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full bg-black border-2 border-white text-white px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base focus:outline-none focus:border-gray-400 transition-colors"
+                    className="w-full bg-black border border-white/30 text-white px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base focus:outline-none focus:border-white/60 transition-colors"
                     placeholder="Enter your email"
                   />
                 </div>
@@ -226,7 +226,7 @@ export const CollabFormModal = ({ isOpen, onClose }: CollabFormModalProps) => {
                     name="instagram"
                     value={formData.instagram}
                     onChange={handleInputChange}
-                    className="w-full bg-black border-2 border-white text-white px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base focus:outline-none focus:border-gray-400 transition-colors"
+                    className="w-full bg-black border border-white/30 text-white px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base focus:outline-none focus:border-white/60 transition-colors"
                     placeholder="@yourusername"
                     required
                   />
@@ -243,7 +243,7 @@ export const CollabFormModal = ({ isOpen, onClose }: CollabFormModalProps) => {
                     value={formData.vision}
                     onChange={handleInputChange}
                     rows={5}
-                    className="w-full bg-black border-2 border-white text-white px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base focus:outline-none focus:border-gray-400 transition-colors resize-none"
+                    className="w-full bg-black border border-white/30 text-white px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base focus:outline-none focus:border-white/60 transition-colors resize-none"
                     placeholder="Tell us about your artistic vision and what you'd like to create..."
                     required
                   />
@@ -256,7 +256,7 @@ export const CollabFormModal = ({ isOpen, onClose }: CollabFormModalProps) => {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-white text-black hover:bg-gray-200 font-bold uppercase tracking-wider py-4 sm:py-6 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-black text-white border border-white/30 hover:bg-white hover:text-black font-bold uppercase tracking-wider py-4 sm:py-6 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit'}
                 </Button>

@@ -110,6 +110,9 @@ export const productApi = {
   getByCategory: (category: string, page = 1, limit = 10) =>
     apiFetch(`/api/v1/products/category/${encodeURIComponent(category)}?page=${page}&limit=${limit}`),
 
+  getByCollab: (collab: string, page = 1, limit = 50) =>
+    apiFetch(`/api/v1/products/collab/${encodeURIComponent(collab)}?page=${page}&limit=${limit}`),
+
   getFeatured: (limit = 10) =>
     apiFetch(`/api/v1/products/featured?limit=${limit}`),
 

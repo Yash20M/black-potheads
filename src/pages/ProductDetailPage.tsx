@@ -131,15 +131,13 @@ const ProductDetailPage = () => {
     if (!product) return;
     
     if (!product.stock || product.stock === 0) {
-      toast.error('This product is out of stock');
+      toast.error('This product is out of stock', { duration: 2000 });
       return;
     }
     
     try {
       await addItem(product, selectedSize);
-      openCart();
     } catch (error) {
-      // Error is already handled in the store with toast
       console.error('Add to cart error:', error);
     }
   };

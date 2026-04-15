@@ -42,7 +42,7 @@ const CollabPage = () => {
             >
               <div className="relative aspect-square overflow-hidden rounded-2xl border border-white/10">
                 <img
-                  src="/shiva.jpeg"
+                  src="/Rakt_collab.webp"
                   alt="Rakt Pipasu Records"
                   className="w-full h-full object-cover"
                 />
@@ -59,7 +59,7 @@ const CollabPage = () => {
                   
                   {/* Shop Button */}
                   <Button
-                    onClick={() => navigate('/shop?collection=Shiva')}
+                    onClick={() => navigate('/shop?collab=rakt-pipasu-records')}
                     className="bg-white text-black hover:bg-gray-200 font-bold uppercase tracking-wider px-6 py-4 text-sm md:text-base"
                   >
                     Shop Collection
