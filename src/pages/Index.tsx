@@ -361,9 +361,9 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-black w-full overflow-x-hidden">
       <SEO
-        title="BLACK POTHEADS - Premium Printed T-Shirts | Streetwear India"
-        description="Shop premium printed t-shirts online in India. Unique Shiva, psychedelic, gothic & streetwear designs. Free shipping, COD available. 7-day returns. Order now!"
-        keywords="printed t-shirts india, streetwear india, graphic tees, shiva t-shirts, psychedelic clothing, gothic tees, premium cotton tshirts, online tshirt shopping india, blackpotheads, rick and morty tshirts, chakra clothing"
+        title="Blackpotheads - Psy Clothing | Premium Streetwear Brand"
+        description="Buy psychedelic t-shirts & streetwear in India. Shop unique Shiva, gothic & trippy printed tees at Blackpotheads. Premium quality. Free shipping, COD & easy returns."
+        keywords="printed t-shirts india, streetwear india, graphic tees, Psychedelic streetwear, Trippy streetwear, shiva t-shirts, psychedelic clothing, gothic tees, premium cotton tshirts, online tshirt shopping india, blackpotheads, rick and morty tshirts, chakra clothing"
         url="https://blackpotheads.com/"
         structuredData={{
           "@context": "https://schema.org",
