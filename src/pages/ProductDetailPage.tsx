@@ -1,6 +1,6 @@
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, X, ZoomIn, Check, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
@@ -32,6 +32,7 @@ const ProductDetailPage = () => {
   const { addItem, openCart } = useCartStore();
   const { isInWishlist, addToWishlist, removeFromWishlist, syncWishlist } = useWishlistStore();
   const { user } = useAuthStore();
+  const navigate = useNavigate();
   const inWishlist = product ? (product.inWishlist || isInWishlist(product.id)) : false;
   const footerRef = useRef<HTMLDivElement>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
@@ -139,6 +140,20 @@ const ProductDetailPage = () => {
       await addItem(product, selectedSize);
     } catch (error) {
       console.error('Add to cart error:', error);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!product) return;
+    if (!product.stock || product.stock === 0) {
+      toast.error('This product is out of stock', { duration: 1000 });
+      return;
+    }
+    try {
+      await addItem(product, selectedSize);
+      navigate('/checkout');
+    } catch (error) {
+      console.error('Buy now error:', error);
     }
   };
 
@@ -541,7 +556,7 @@ const ProductDetailPage = () => {
                   variant="outline" 
                   size="lg" 
                   className="flex-1 border-2 border-white text-white hover:bg-white hover:text-black uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
-                  onClick={handleAddToCart}
+                  onClick={handleBuyNow}
                   disabled={!product.stock || product.stock === 0}
                 >
                   {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Buy Now'}
@@ -902,7 +917,7 @@ const ProductDetailPage = () => {
               <Button 
                 size="lg"
                 className="flex-1 bg-white text-black hover:bg-gray-200 uppercase tracking-wider text-sm font-bold h-12 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleAddToCart}
+                onClick={handleBuyNow}
                 disabled={!product.stock || product.stock === 0}
               >
                 {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Buy Now'}
@@ -948,7 +963,7 @@ const ProductDetailPage = () => {
                     <Button 
                       size="lg"
                       className="bg-white text-black hover:bg-gray-200 uppercase tracking-wider text-sm font-bold px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={handleAddToCart}
+                      onClick={handleBuyNow}
                       disabled={!product.stock || product.stock === 0}
                     >
                       {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Buy Now'}

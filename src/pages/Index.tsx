@@ -396,9 +396,13 @@ const Index = () => {
             WebkitMaskImage: 'linear-gradient(to top, black 50%, transparent 100%)'
           }}>
           {/* Mobile image */}
-          <img src="/welcome-mobile.webp" alt="" className="block md:hidden w-full h-full object-cover opacity-50" />
+          <div className="block md:hidden w-full h-full relative">
+            <img src="/welcome-mobile.webp" alt="" className="w-full h-full object-cover opacity-50" />
+            {/* Dark shade from top — mobile only. Adjust 'from-black/60' to change intensity */}
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.80) 15%, rgba(0,0,0,0.40) 30%, transparent 50%)' }} />
+          </div>
           {/* Desktop image */}
-          <img src="/welcome.webp" alt="" className="hidden md:block w-full h-full object-cover opacity-50" />
+          <img src="/welcome.webp" alt="" className="hidden md:block w-full h-full object-cover opacity-20" />
         </div>
 
         {/* Smoke background */}
