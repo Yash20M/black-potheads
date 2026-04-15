@@ -318,7 +318,7 @@ const Index = () => {
     if (!isDragging.current) return;
     const dx = e.clientX - lastPos.current.x;
     const dy = e.clientY - lastPos.current.y;
-    const sensitivity = 0.008;
+    const sensitivity = window.innerWidth < 768 ? 0.030 : 0.008;
     velY.current = dx * sensitivity;
     velX.current = dy * sensitivity;
     rotY.current += velY.current;
