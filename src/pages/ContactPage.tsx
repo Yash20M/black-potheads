@@ -239,8 +239,8 @@ const ContactPage = () => {
                 </div>
                 
                 <div className="pt-2">
-                  <a href="mailto:collab@blackpotheads.com" className="text-primary hover:underline font-semibold">
-                    collab@blackpotheads.com
+                  <a href="mailto:contact@blackpotheads.com" className="text-primary hover:underline font-semibold">
+                    contact@blackpotheads.com
                   </a>
                 </div>
                 

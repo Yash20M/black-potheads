@@ -206,8 +206,8 @@ const ShopPage = () => {
             <span className="text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-gray-400 mb-3 sm:mb-4 block">
               {activeCollab ? 'Collab Collection' : 'Browse Our'}
             </span>
-            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-white">
-              {activeCollab ? activeCollab.label : 'SHOP'}
+            <h1 className="font-display text-4xl md:text-6xl lg:text-4xl text-white">
+              {activeCollab ? activeCollab.label : 'Gateway to the Cult'}
             </h1>
             {activeCollab && (
               <p className="text-white/60 text-sm mt-3 max-w-md mx-auto">{activeCollab.description}</p>
