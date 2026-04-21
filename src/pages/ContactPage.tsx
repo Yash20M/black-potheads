@@ -197,8 +197,8 @@ const ContactPage = () => {
 
                 <div>
                   <p className="font-semibold mb-1">Email</p>
-                  <a href="mailto:support@blackpotheads.com" className="text-primary hover:underline">
-                    support@blackpotheads.com
+                  <a href="mailto:contact@blackpotheads.com" className="text-primary hover:underline">
+                    contact@blackpotheads.com
                   </a>
                 </div>
                 
@@ -239,8 +239,8 @@ const ContactPage = () => {
                 </div>
                 
                 <div className="pt-2">
-                  <a href="mailto:contact@blackpotheads.com" className="text-primary hover:underline font-semibold">
-                    contact@blackpotheads.com
+                  <a href="mailto:collab@blackpotheads.com" className="text-primary hover:underline font-semibold">
+                    collab@blackpotheads.com
                   </a>
                 </div>
                 
