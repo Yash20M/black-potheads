@@ -204,7 +204,7 @@ const ShopPage = () => {
             className="text-center"
           >
             <span className="text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-gray-400 mb-3 sm:mb-4 block">
-              {activeCollab ? 'Collab Collection' : 'Browse Our'}
+              {activeCollab ? 'Collab Collection' : 'Welcome to'}
             </span>
             <h1 className="font-display text-4xl md:text-6xl lg:text-4xl text-white">
               {activeCollab ? activeCollab.label : 'Gateway to the Cult'}
