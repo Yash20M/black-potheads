@@ -515,8 +515,16 @@ export const adminApi = {
         body: formData,
       }, true),
 
-    getAll: (page = 1, limit = 10) =>
-      apiFetch(`/api/admin/get-all-products?page=${page}&limit=${limit}`, {}, true),
+    getAll: (page = 1, limit = 10, collab?: string) => {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+      if (collab && collab.trim() !== '') {
+        params.append('collab', collab);
+      }
+      return apiFetch(`/api/admin/get-all-products?${params.toString()}`, {}, true);
+    },
 
     update: (id: string, formData: FormData) =>
       apiFetch(`/api/admin/update-product/${id}`, {

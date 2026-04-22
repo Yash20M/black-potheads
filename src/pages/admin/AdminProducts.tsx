@@ -16,10 +16,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { TableSkeleton } from '@/components/ui/loader';
 import { Pagination } from '@/components/ui/pagination';
 
-// Collab options — add new collabs here as they come
+// Collab options - use 'no-collab' as placeholder for empty string
 const COLLAB_OPTIONS = [
-  { value: 'none', label: 'None' },
-  { value: 'rakt-pipasu-records', label: 'RAKT PIPASU RECORDS' },
+  { value: 'no-collab', label: 'No Collaboration' },
+  { value: 'rakt-pipasu-records', label: 'Rakt Pipasu Records' },
 ];
 
 const CATEGORIES = ['Shiva', 'Shrooms', 'ACID', 'Chakras', 'Dark', 'Rick n Morty'];
@@ -30,7 +30,24 @@ const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
 const ProductForm = ({ product, onSubmit }: { product: any; onSubmit: (fd: FormData) => Promise<void> }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>(product?.category || '');
-  const [selectedCollab, setSelectedCollab] = useState<string>(product?.collab || 'none');
+  // Use 'no-collab' as placeholder for empty/null collab
+  const [selectedCollab, setSelectedCollab] = useState<string>(() => {
+    if (!product) return 'no-collab';
+    return product.collab && product.collab !== '' ? product.collab : 'no-collab';
+  });
+
+  // Update state when product changes (for edit mode)
+  useEffect(() => {
+    if (product) {
+      setSelectedCategory(product.category || '');
+      const collabValue = product.collab && product.collab !== '' ? product.collab : 'no-collab';
+      setSelectedCollab(collabValue);
+    } else {
+      // Reset to defaults when creating new product
+      setSelectedCategory('');
+      setSelectedCollab('no-collab');
+    }
+  }, [product]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,17 +57,25 @@ const ProductForm = ({ product, onSubmit }: { product: any; onSubmit: (fd: FormD
 
       // Inject controlled Select values (shadcn Select doesn't write to FormData natively)
       formData.set('category', selectedCategory);
-      const collabValue = selectedCollab === 'none' ? '' : selectedCollab;
+      // Convert 'no-collab' to empty string for API
+      const collabValue = selectedCollab === 'no-collab' ? '' : selectedCollab;
       formData.set('collab', collabValue);
 
       // Normalise isFeatured checkbox
       const isFeatured = formData.get('isFeatured');
       formData.set('isFeatured', isFeatured === 'on' ? 'true' : 'false');
 
-      // Debug: log what's being sent
-      console.log('Submitting product form:');
-      for (const [key, value] of formData.entries()) {
-        if (key !== 'images') console.log(` ${key}:`, value);
+      // Debug logging
+      console.log('📤 [FRONTEND] Submitting product form');
+      console.log('📤 [FRONTEND] Selected collab:', selectedCollab);
+      console.log('📤 [FRONTEND] Collab value being sent:', collabValue);
+      console.log('📤 [FRONTEND] FormData contents:');
+      for (let [key, value] of formData.entries()) {
+        if (key === 'images') {
+          console.log(`  ${key}:`, value instanceof File ? `File: ${value.name}` : value);
+        } else {
+          console.log(`  ${key}:`, value);
+        }
       }
 
       await onSubmit(formData);
@@ -113,7 +138,10 @@ const ProductForm = ({ product, onSubmit }: { product: any; onSubmit: (fd: FormD
             ))}
           </SelectContent>
         </Select>
-        <p className="text-xs text-muted-foreground mt-1">Assign this product to a collab collection</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Assign this product to a collab collection
+          <span className="ml-2 text-blue-500">Current: {COLLAB_OPTIONS.find(opt => opt.value === selectedCollab)?.label}</span>
+        </p>
       </div>
 
       {/* Sizes */}
@@ -184,18 +212,22 @@ const AdminProducts = () => {
     limit: 10, hasNextPage: false, hasPrevPage: false,
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [collabFilter, setCollabFilter] = useState('all'); // Collab filter - default to 'all'
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [viewingProduct, setViewingProduct] = useState<any>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [deleteError, setDeleteError] = useState<any>(null);
   const [isDeleteErrorDialogOpen, setIsDeleteErrorDialogOpen] = useState(false);
+  const [formKey, setFormKey] = useState(0); // Form key for forcing remount
 
-  useEffect(() => { loadProducts(); }, [page]);
+  useEffect(() => { loadProducts(); }, [page, collabFilter]); // Add collabFilter dependency
 
   const loadProducts = async () => {
     try {
-      const data: any = await adminApi.products.getAll(page, 10);
+      // Convert 'all' to empty string for API call
+      const collabParam = collabFilter === 'all' ? '' : collabFilter;
+      const data: any = await adminApi.products.getAll(page, 10, collabParam);
       setProducts(data.products || []);
       if (data.pagination) {
         setPagination(data.pagination);
@@ -261,9 +293,18 @@ const AdminProducts = () => {
           <p className="text-muted-foreground text-sm md:text-base">Manage your product catalog</p>
         </div>
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) {
+            setTimeout(() => setEditingProduct(null), 100);
+          }
+        }}>
           <DialogTrigger asChild>
-            <Button variant="hero" onClick={() => setEditingProduct(null)} className="w-full sm:w-auto">
+            <Button variant="hero" onClick={() => {
+              setEditingProduct(null);
+              setFormKey(prev => prev + 1);
+              setIsDialogOpen(true);
+            }} className="w-full sm:w-auto">
               <Plus size={18} /> Add Product
             </Button>
           </DialogTrigger>
@@ -271,7 +312,11 @@ const AdminProducts = () => {
             <DialogHeader>
               <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
             </DialogHeader>
-            <ProductForm key={editingProduct?._id || 'new'} product={editingProduct} onSubmit={handleSubmit} />
+            <ProductForm 
+              key={formKey} 
+              product={editingProduct} 
+              onSubmit={handleSubmit} 
+            />
           </DialogContent>
         </Dialog>
       </div>
