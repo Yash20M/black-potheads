@@ -24,15 +24,15 @@ export const Footer = () => {
       <div className="container mx-auto px-6 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-16 border-b border-border">
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-2">
               <img 
                 src="/logo.png" 
                 alt="Black Potheads Logo" 
                 className="w-10 h-10 md:w-12 md:h-12 object-contain"
               />
-              <h4 className="font-body font-bold uppercase tracking-wider text-2xl">BLACK POTHEADS</h4>
+              <h4 className="font-body font-bold uppercase tracking-wider text-2xl">BLACKPOTHEADS</h4>
             </div>
-            <p className="text-muted-foreground text-xl font-semibold mb-6 text-center">
+            <p className="text-muted-foreground text-sm font-medium mb-6 ml-14 text-left tracking-widest uppercase ">
               PSY Clothing
             </p>
             <div className="flex gap-4">
@@ -90,7 +90,7 @@ export const Footer = () => {
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8">
           <p className="text-muted-foreground text-sm">
-            © 2026 BLACK POTHEADS. All rights reserved.
+            © 2026 BLACKPOTHEADS. All rights reserved.
           </p>
           <div className="flex gap-6 text-muted-foreground text-sm">
             <Link to="/legal/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</Link>

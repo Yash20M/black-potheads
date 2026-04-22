@@ -76,7 +76,7 @@ const AboutPage = () => {
               className="text-white/80 text-lg md:text-xl lg:text-2xl max-w-3xl mx-auto leading-relaxed"
             >
               Every tee we drop is a canvas. Every print is a voice. 
-              Black Potheads isn't just a brand — it's a lifestyle for those who refuse to conform.
+              Blackpotheads isn't just a brand — it's a lifestyle for those who refuse to conform.
             </motion.p>
           </motion.div>
         </div>
@@ -121,7 +121,7 @@ const AboutPage = () => {
                 transition={{ delay: 0.2 }}
                 className="font-body font-bold uppercase tracking-wider text-5xl md:text-7xl lg:text-8xl mb-4 text-white"
               >
-                BLACK POTHEADS
+                BLACKPOTHEADS
               </motion.h2>
               
               <motion.div
@@ -213,7 +213,7 @@ const AboutPage = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 blur-xl" />
                 <div className="relative bg-white/5 backdrop-blur-md border border-white/10 p-10 md:p-14 rounded-2xl">
                   <p className="text-xl md:text-xl lg:text-2xl font-light italic text-white/95 leading-relaxed text-center">
-                    Black Potheads was born in the space between bass drops —
+                    Blackpotheads was born in the space between bass drops —
                     <br className="hidden md:block" />
                     <span className="block mt-3">that moment when the kick fades,</span>
                     <span className="block mt-2">the sky turns indigo,</span>
