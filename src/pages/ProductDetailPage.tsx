@@ -499,14 +499,13 @@ const ProductDetailPage = () => {
               <div className="mb-6">
                 <p className="text-sm font-medium">
                   {(() => {
-                    // If sizeInventory exists, check selected size stock
-                    if (product.sizeInventory && selectedSize) {
-                      const sizeStock = product.sizeInventory[selectedSize] ?? 0;
+                    const hasSizeInventory = product.sizeInventory && Object.keys(product.sizeInventory).length > 0;
+                    if (hasSizeInventory && selectedSize) {
+                      const sizeStock = (product.sizeInventory as Record<string, number>)[selectedSize] ?? 0;
                       return sizeStock > 0
                         ? <span className="text-green-600 dark:text-green-400">In Stock</span>
                         : <span className="text-red-600 dark:text-red-400">Out of Stock</span>;
                     }
-                    // Fallback to global stock
                     return product.stock && product.stock > 0
                       ? <span className="text-green-600 dark:text-green-400">In Stock</span>
                       : <span className="text-red-600 dark:text-red-400">Out of Stock</span>;
@@ -527,7 +526,10 @@ const ProductDetailPage = () => {
                 </div>
                 <div className="grid grid-cols-6 gap-2">
                   {product.sizes.map((size) => {
-                    const sizeStock = product.sizeInventory ? (product.sizeInventory[size] ?? 0) : (product.stock ?? 0);
+                    const hasSizeInventory = product.sizeInventory && Object.keys(product.sizeInventory).length > 0;
+                    const sizeStock = hasSizeInventory
+                      ? ((product.sizeInventory as Record<string, number>)[size] ?? 0)
+                      : (product.stock ?? 0);
                     const isOutOfStock = sizeStock === 0;
                     return (
                       <motion.button
@@ -554,8 +556,9 @@ const ProductDetailPage = () => {
               {/* Add to Cart and Buy Now Buttons */}
               <div ref={buttonsRef} className="mb-6 flex flex-row gap-2 sm:gap-3">
                 {(() => {
-                  const sizeStock = product.sizeInventory && selectedSize
-                    ? (product.sizeInventory[selectedSize] ?? 0)
+                  const hasSizeInventory = product.sizeInventory && Object.keys(product.sizeInventory).length > 0;
+                  const sizeStock = hasSizeInventory && selectedSize
+                    ? ((product.sizeInventory as Record<string, number>)[selectedSize] ?? 0)
                     : (product.stock ?? 0);
                   const isDisabled = sizeStock === 0;
                   return (
@@ -926,8 +929,9 @@ const ProductDetailPage = () => {
             {/* Mobile View - Simple buttons only */}
             <div className="lg:hidden px-4 py-3 flex gap-2">
               {(() => {
-                const sizeStock = product.sizeInventory && selectedSize
-                  ? (product.sizeInventory[selectedSize] ?? 0)
+                const hasSizeInventory = product.sizeInventory && Object.keys(product.sizeInventory).length > 0;
+                const sizeStock = hasSizeInventory && selectedSize
+                  ? ((product.sizeInventory as Record<string, number>)[selectedSize] ?? 0)
                   : (product.stock ?? 0);
                 const isDisabled = sizeStock === 0;
                 return (
@@ -982,8 +986,9 @@ const ProductDetailPage = () => {
                   {/* Right: Action Buttons */}
                   <div className="flex gap-3 flex-shrink-0">
                     {(() => {
-                      const sizeStock = product.sizeInventory && selectedSize
-                        ? (product.sizeInventory[selectedSize] ?? 0)
+                      const hasSizeInventory = product.sizeInventory && Object.keys(product.sizeInventory).length > 0;
+                      const sizeStock = hasSizeInventory && selectedSize
+                        ? ((product.sizeInventory as Record<string, number>)[selectedSize] ?? 0)
                         : (product.stock ?? 0);
                       const isDisabled = sizeStock === 0;
                       return (
