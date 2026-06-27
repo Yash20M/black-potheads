@@ -498,15 +498,19 @@ const ProductDetailPage = () => {
               {/* Stock Information */}
               <div className="mb-6">
                 <p className="text-sm font-medium">
-                  {product.stock && product.stock > 0 ? (
-                    <span className="text-green-600 dark:text-green-400">
-                      {product.stock} units in stock
-                    </span>
-                  ) : (
-                    <span className="text-red-600 dark:text-red-400">
-                      Out of stock
-                    </span>
-                  )}
+                  {(() => {
+                    // If sizeInventory exists, check selected size stock
+                    if (product.sizeInventory && selectedSize) {
+                      const sizeStock = product.sizeInventory[selectedSize] ?? 0;
+                      return sizeStock > 0
+                        ? <span className="text-green-600 dark:text-green-400">In Stock</span>
+                        : <span className="text-red-600 dark:text-red-400">Out of Stock</span>;
+                    }
+                    // Fallback to global stock
+                    return product.stock && product.stock > 0
+                      ? <span className="text-green-600 dark:text-green-400">In Stock</span>
+                      : <span className="text-red-600 dark:text-red-400">Out of Stock</span>;
+                  })()}
                 </p>
               </div>
 
@@ -522,45 +526,61 @@ const ProductDetailPage = () => {
                   </button>
                 </div>
                 <div className="grid grid-cols-6 gap-2">
-                  {product.sizes.map((size) => (
-                    <motion.button
-                      key={size}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setSelectedSize(size)}
-                      className={cn(
-                        'h-12 border-2 text-sm font-medium transition-all relative',
-                        selectedSize === size
-                          ? 'bg-white text-black border-white'
-                          : 'bg-black border-white text-white hover:bg-white hover:text-black'
-                      )}
-                    >
-                      {size}
-                    </motion.button>
-                  ))}
+                  {product.sizes.map((size) => {
+                    const sizeStock = product.sizeInventory ? (product.sizeInventory[size] ?? 0) : (product.stock ?? 0);
+                    const isOutOfStock = sizeStock === 0;
+                    return (
+                      <motion.button
+                        key={size}
+                        whileHover={{ scale: isOutOfStock ? 1 : 1.05 }}
+                        whileTap={{ scale: isOutOfStock ? 1 : 0.95 }}
+                        onClick={() => !isOutOfStock && setSelectedSize(size)}
+                        className={cn(
+                          'h-12 border-2 text-sm font-medium transition-all relative',
+                          isOutOfStock
+                            ? 'bg-black border-white/30 text-white/30 cursor-not-allowed line-through'
+                            : selectedSize === size
+                              ? 'bg-white text-black border-white'
+                              : 'bg-black border-white text-white hover:bg-white hover:text-black'
+                        )}
+                      >
+                        {size}
+                      </motion.button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Add to Cart and Buy Now Buttons */}
               <div ref={buttonsRef} className="mb-6 flex flex-row gap-2 sm:gap-3">
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="flex-1 border-2 border-white text-white hover:bg-white hover:text-black uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
-                  onClick={handleAddToCart}
-                  disabled={!product.stock || product.stock === 0}
-                >
-                  {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="flex-1 border-2 border-white text-white hover:bg-white hover:text-black uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
-                  onClick={handleBuyNow}
-                  disabled={!product.stock || product.stock === 0}
-                >
-                  {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Buy Now'}
-                </Button>
+                {(() => {
+                  const sizeStock = product.sizeInventory && selectedSize
+                    ? (product.sizeInventory[selectedSize] ?? 0)
+                    : (product.stock ?? 0);
+                  const isDisabled = sizeStock === 0;
+                  return (
+                    <>
+                      <Button 
+                        variant="outline" 
+                        size="lg" 
+                        className="flex-1 border-2 border-white text-white hover:bg-white hover:text-black uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
+                        onClick={handleAddToCart}
+                        disabled={isDisabled}
+                      >
+                        {isDisabled ? 'Out of Stock' : 'Add to Cart'}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="lg" 
+                        className="flex-1 border-2 border-white text-white hover:bg-white hover:text-black uppercase tracking-[0.15em] h-11 sm:h-14 text-xs sm:text-sm font-medium disabled:bg-muted disabled:cursor-not-allowed"
+                        onClick={handleBuyNow}
+                        disabled={isDisabled}
+                      >
+                        {isDisabled ? 'Out of Stock' : 'Buy Now'}
+                      </Button>
+                    </>
+                  );
+                })()}
               </div>
 
               {/* Info Sections */}
@@ -905,23 +925,33 @@ const ProductDetailPage = () => {
           >
             {/* Mobile View - Simple buttons only */}
             <div className="lg:hidden px-4 py-3 flex gap-2">
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="flex-1 border-2 border-white bg-black text-white hover:bg-white hover:text-black uppercase tracking-wider text-sm font-bold h-12 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleAddToCart}
-                disabled={!product.stock || product.stock === 0}
-              >
-                {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-              </Button>
-              <Button 
-                size="lg"
-                className="flex-1 bg-white text-black hover:bg-gray-200 uppercase tracking-wider text-sm font-bold h-12 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleBuyNow}
-                disabled={!product.stock || product.stock === 0}
-              >
-                {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Buy Now'}
-              </Button>
+              {(() => {
+                const sizeStock = product.sizeInventory && selectedSize
+                  ? (product.sizeInventory[selectedSize] ?? 0)
+                  : (product.stock ?? 0);
+                const isDisabled = sizeStock === 0;
+                return (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      className="flex-1 border-2 border-white bg-black text-white hover:bg-white hover:text-black uppercase tracking-wider text-sm font-bold h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={handleAddToCart}
+                      disabled={isDisabled}
+                    >
+                      {isDisabled ? 'Out of Stock' : 'Add to Cart'}
+                    </Button>
+                    <Button 
+                      size="lg"
+                      className="flex-1 bg-white text-black hover:bg-gray-200 uppercase tracking-wider text-sm font-bold h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={handleBuyNow}
+                      disabled={isDisabled}
+                    >
+                      {isDisabled ? 'Out of Stock' : 'Buy Now'}
+                    </Button>
+                  </>
+                );
+              })()}
             </div>
 
             {/* Desktop View - With product info */}
@@ -951,23 +981,33 @@ const ProductDetailPage = () => {
 
                   {/* Right: Action Buttons */}
                   <div className="flex gap-3 flex-shrink-0">
-                    <Button 
-                      variant="outline" 
-                      size="lg"
-                      className="border-2 border-white bg-black text-white hover:bg-white hover:text-black uppercase tracking-wider text-sm font-bold px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={handleAddToCart}
-                      disabled={!product.stock || product.stock === 0}
-                    >
-                      {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-                    </Button>
-                    <Button 
-                      size="lg"
-                      className="bg-white text-black hover:bg-gray-200 uppercase tracking-wider text-sm font-bold px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={handleBuyNow}
-                      disabled={!product.stock || product.stock === 0}
-                    >
-                      {!product.stock || product.stock === 0 ? 'Out of Stock' : 'Buy Now'}
-                    </Button>
+                    {(() => {
+                      const sizeStock = product.sizeInventory && selectedSize
+                        ? (product.sizeInventory[selectedSize] ?? 0)
+                        : (product.stock ?? 0);
+                      const isDisabled = sizeStock === 0;
+                      return (
+                        <>
+                          <Button 
+                            variant="outline" 
+                            size="lg"
+                            className="border-2 border-white bg-black text-white hover:bg-white hover:text-black uppercase tracking-wider text-sm font-bold px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={handleAddToCart}
+                            disabled={isDisabled}
+                          >
+                            {isDisabled ? 'Out of Stock' : 'Add to Cart'}
+                          </Button>
+                          <Button 
+                            size="lg"
+                            className="bg-white text-black hover:bg-gray-200 uppercase tracking-wider text-sm font-bold px-8 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={handleBuyNow}
+                            disabled={isDisabled}
+                          >
+                            {isDisabled ? 'Out of Stock' : 'Buy Now'}
+                          </Button>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>

@@ -396,24 +396,25 @@ const Index = () => {
             WebkitMaskImage: 'linear-gradient(to top, black 50%, transparent 100%)'
           }}>
           {/* Mobile image */}
-          <div className="block md:hidden w-full h-full relative">
+          {/* <div className="block md:hidden w-full h-full relative">
             <img src="/welcome-mobile.webp" alt="" className="w-full h-full object-cover opacity-50" />
-            {/* Dark shade from top — mobile only. Adjust 'from-black/60' to change intensity */}
+            Dark shade from top — mobile only. Adjust 'from-black/60' to change intensity 
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.80) 15%, rgba(0,0,0,0.40) 30%, transparent 50%)' }} />
-          </div>
+          </div> */}
+          
           {/* Desktop image */}
-          <img src="/welcome.webp" alt="" className="hidden md:block w-full h-full object-cover opacity-20" />
+          {/* <img src="/welcome.webp" alt="" className="hidden md:block w-full h-full object-cover opacity-20" /> */}
         </div>
 
         {/* Smoke background */}
-        <div className="absolute inset-x-0 bottom-0 pointer-events-none"
+        {/* <div className="absolute inset-x-0 bottom-0 pointer-events-none"
           style={{
             height: '50%', zIndex: 5,
             maskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)'
           }}>
           <SmokeCanvas />
-        </div>
+        </div> */}
 
         {/* Drag surface + Canvas */}
         <div
@@ -442,6 +443,23 @@ const Index = () => {
             </Suspense>
           </Canvas>
         </div>
+
+        {/* Bottom text + scroll arrow */}
+        <div className="absolute bottom-10 left-0 right-0 flex flex-col items-center gap-3 z-20 pointer-events-none">
+          <p className="text-white text-sm tracking-[0.3em] uppercase font-light">
+            Swipe up to enter the den
+          </p>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <polyline points="19 12 12 19 5 12" />
+            </svg>
+          </motion.div>
+        </div>
+
       </section>
 
       <BrandMarquee />

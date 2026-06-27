@@ -10,6 +10,7 @@ export interface ApiProduct {
   stock?: number;
   isFeatured?: boolean;
   in_wishlist?: boolean;
+  sizeInventory?: Record<string, number>;
 }
 
 // Frontend Product (normalized)
@@ -28,6 +29,7 @@ export interface Product {
   badge?: string;
   stock?: number;
   inWishlist?: boolean;
+  sizeInventory?: Record<string, number>;
 }
 
 export interface CartItem extends Product {
@@ -64,5 +66,6 @@ export const normalizeProduct = (apiProduct: ApiProduct): Product => {
     isNew: apiProduct.isFeatured,
     stock: apiProduct.stock || 0,
     inWishlist: apiProduct.in_wishlist || false,
+    sizeInventory: apiProduct.sizeInventory,
   };
 };

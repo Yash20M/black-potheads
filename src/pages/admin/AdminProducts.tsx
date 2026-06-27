@@ -36,16 +36,38 @@ const ProductForm = ({ product, onSubmit }: { product: any; onSubmit: (fd: FormD
     return product.collab && product.collab !== '' ? product.collab : 'no-collab';
   });
 
+  // Per-size inventory: { S: { enabled, qty }, M: { enabled, qty }, ... }
+  const [sizeInventory, setSizeInventory] = useState<Record<string, { enabled: boolean; qty: number }>>(() => {
+    const init: Record<string, { enabled: boolean; qty: number }> = {};
+    SIZES.forEach((size) => {
+      const enabled = product?.sizes?.includes(size) ?? true;
+      const qty = product?.sizeInventory?.[size] ?? 0;
+      init[size] = { enabled, qty };
+    });
+    return init;
+  });
+
   // Update state when product changes (for edit mode)
   useEffect(() => {
     if (product) {
       setSelectedCategory(product.category || '');
       const collabValue = product.collab && product.collab !== '' ? product.collab : 'no-collab';
       setSelectedCollab(collabValue);
+      // Reset size inventory when editing different product
+      const init: Record<string, { enabled: boolean; qty: number }> = {};
+      SIZES.forEach((size) => {
+        init[size] = {
+          enabled: product.sizes?.includes(size) ?? false,
+          qty: product.sizeInventory?.[size] ?? 0,
+        };
+      });
+      setSizeInventory(init);
     } else {
-      // Reset to defaults when creating new product
       setSelectedCategory('');
       setSelectedCollab('no-collab');
+      const init: Record<string, { enabled: boolean; qty: number }> = {};
+      SIZES.forEach((size) => { init[size] = { enabled: true, qty: 0 }; });
+      setSizeInventory(init);
     }
   }, [product]);
 
@@ -55,28 +77,26 @@ const ProductForm = ({ product, onSubmit }: { product: any; onSubmit: (fd: FormD
     try {
       const formData = new FormData(e.currentTarget);
 
-      // Inject controlled Select values (shadcn Select doesn't write to FormData natively)
       formData.set('category', selectedCategory);
-      // Convert 'no-collab' to empty string for API
       const collabValue = selectedCollab === 'no-collab' ? '' : selectedCollab;
       formData.set('collab', collabValue);
 
-      // Normalise isFeatured checkbox
       const isFeatured = formData.get('isFeatured');
       formData.set('isFeatured', isFeatured === 'on' ? 'true' : 'false');
 
-      // Debug logging
-      console.log('📤 [FRONTEND] Submitting product form');
-      console.log('📤 [FRONTEND] Selected collab:', selectedCollab);
-      console.log('📤 [FRONTEND] Collab value being sent:', collabValue);
-      console.log('📤 [FRONTEND] FormData contents:');
-      for (let [key, value] of formData.entries()) {
-        if (key === 'images') {
-          console.log(`  ${key}:`, value instanceof File ? `File: ${value.name}` : value);
-        } else {
-          console.log(`  ${key}:`, value);
-        }
-      }
+      // Build sizes array and sizeInventory from state (not checkboxes)
+      formData.delete('sizes');
+      const enabledSizes = SIZES.filter((s) => sizeInventory[s]?.enabled);
+      enabledSizes.forEach((s) => formData.append('sizes', s));
+
+      // Total stock = sum of all enabled size quantities
+      const totalStock = enabledSizes.reduce((sum, s) => sum + (sizeInventory[s]?.qty || 0), 0);
+      formData.set('stock', String(totalStock));
+
+      // Send per-size inventory as JSON string
+      const sizeInventoryData: Record<string, number> = {};
+      enabledSizes.forEach((s) => { sizeInventoryData[s] = sizeInventory[s]?.qty || 0; });
+      formData.set('sizeInventory', JSON.stringify(sizeInventoryData));
 
       await onSubmit(formData);
     } finally {
@@ -98,16 +118,10 @@ const ProductForm = ({ product, onSubmit }: { product: any; onSubmit: (fd: FormD
         <Input id="description" name="description" defaultValue={product?.description} required />
       </div>
 
-      {/* Price + Stock */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="price">Price</Label>
-          <Input id="price" name="price" type="number" defaultValue={product?.price} required />
-        </div>
-        <div>
-          <Label htmlFor="stock">Stock</Label>
-          <Input id="stock" name="stock" type="number" defaultValue={product?.stock} required />
-        </div>
+      {/* Price */}
+      <div>
+        <Label htmlFor="price">Price</Label>
+        <Input id="price" name="price" type="number" defaultValue={product?.price} required />
       </div>
 
       {/* Category */}
@@ -144,22 +158,52 @@ const ProductForm = ({ product, onSubmit }: { product: any; onSubmit: (fd: FormD
         </p>
       </div>
 
-      {/* Sizes */}
+      {/* Sizes + Per-Size Inventory */}
       <div>
-        <Label>Sizes</Label>
-        <div className="flex gap-3 mt-2 flex-wrap">
+        <Label>Sizes & Quantity</Label>
+        <div className="mt-2 space-y-2">
           {SIZES.map((size) => (
-            <label key={size} className="flex items-center gap-1.5 cursor-pointer">
+            <div key={size} className="flex items-center gap-3">
               <input
                 type="checkbox"
-                name="sizes"
-                value={size}
-                defaultChecked={product?.sizes?.includes(size) ?? true}
+                id={`size-${size}`}
+                checked={sizeInventory[size]?.enabled ?? false}
+                onChange={(e) =>
+                  setSizeInventory((prev) => ({
+                    ...prev,
+                    [size]: { ...prev[size], enabled: e.target.checked },
+                  }))
+                }
+                className="w-4 h-4 cursor-pointer"
               />
-              {size}
-            </label>
+              <label htmlFor={`size-${size}`} className="w-10 text-sm font-medium cursor-pointer select-none">
+                {size}
+              </label>
+              <Input
+                type="number"
+                min={0}
+                disabled={!sizeInventory[size]?.enabled}
+                value={sizeInventory[size]?.qty ?? 0}
+                onChange={(e) =>
+                  setSizeInventory((prev) => ({
+                    ...prev,
+                    [size]: { ...prev[size], qty: Math.max(0, parseInt(e.target.value) || 0) },
+                  }))
+                }
+                className="w-24 h-8 text-sm disabled:opacity-40"
+                placeholder="Qty"
+              />
+              {sizeInventory[size]?.enabled && (
+                <span className="text-xs text-muted-foreground">
+                  {sizeInventory[size]?.qty > 0 ? `${sizeInventory[size].qty} units` : 'Out of stock'}
+                </span>
+              )}
+            </div>
           ))}
         </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          Total stock: {SIZES.filter(s => sizeInventory[s]?.enabled).reduce((sum, s) => sum + (sizeInventory[s]?.qty || 0), 0)} units
+        </p>
       </div>
 
       {/* Images */}

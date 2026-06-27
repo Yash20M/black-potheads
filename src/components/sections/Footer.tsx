@@ -101,6 +101,14 @@ export const Footer = () => {
             <Link to="/legal/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
           </div>
         </div>
+        <div className="flex justify-center pt-4">
+          <p className="text-muted-foreground text-xs">
+            Designed and developed by{' '}
+            <a href="https://morebit.in/" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors underline underline-offset-2">
+              MoreBit
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );
