@@ -73,7 +73,16 @@ const ProductDetailPage = () => {
       const data: any = await productApi.getById(id!);
       const normalized = normalizeProduct(data.product);
       setProduct(normalized);
-      setSelectedSize(normalized.sizes[0] || '');
+
+      // Auto-select first in-stock size
+      const hasSizeInventory = normalized.sizeInventory && Object.keys(normalized.sizeInventory).length > 0;
+      const firstAvailableSize = normalized.sizes.find(size => {
+        if (hasSizeInventory) {
+          return ((normalized.sizeInventory as Record<string, number>)[size] ?? 0) > 0;
+        }
+        return true; // no sizeInventory — all sizes available
+      });
+      setSelectedSize(firstAvailableSize || normalized.sizes[0] || '');
       
       // Sync wishlist status from API
       if (data.product.in_wishlist) {
