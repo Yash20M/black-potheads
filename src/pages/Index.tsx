@@ -214,17 +214,7 @@ const SmokeCanvas = memo(({ style }: { style?: React.CSSProperties }) => {
   );
 });
 
-// ─── Loading Spinner Component ────────────────────────────────────────────────
-const LoadingSpinner = memo(() => (
-  <div className="absolute inset-0 flex items-center justify-center bg-black z-50">
-    <div className="flex flex-col items-center gap-4">
-      <div className="relative w-16 h-16">
-        <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-white border-r-white animate-spin" />
-        <div className="absolute inset-1 rounded-full border-2 border-transparent border-b-orange-500 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
-      </div>
-    </div>
-  </div>
-));
+// ─── Loading Spinner Component (removed - causes black screen) ───────────────
 
 // ─── 3D Skull Model ───────────────────────────────────────────────────────────
 // Uses Euler XYZ rotation directly on the group — no OrbitControls.
@@ -386,41 +376,11 @@ const Index = () => {
       {/* ── 3D SKULL HERO ── */}
       <section className="relative h-screen overflow-hidden flex items-center justify-center bg-black">
 
-        {skullLoading && <LoadingSpinner />}
-
-        {/* welcome.webp — sits in the bottom fog area, behind smoke */}
-        <div className="absolute inset-x-0 bottom-0 pointer-events-none"
-          style={{
-            height: '50%', zIndex: 4,
-            maskImage: 'linear-gradient(to top, black 50%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(to top, black 50%, transparent 100%)'
-          }}>
-          {/* Mobile image */}
-          {/* <div className="block md:hidden w-full h-full relative">
-            <img src="/welcome-mobile.webp" alt="" className="w-full h-full object-cover opacity-50" />
-            Dark shade from top — mobile only. Adjust 'from-black/60' to change intensity 
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.80) 15%, rgba(0,0,0,0.40) 30%, transparent 50%)' }} />
-          </div> */}
-          
-          {/* Desktop image */}
-          {/* <img src="/welcome.webp" alt="" className="hidden md:block w-full h-full object-cover opacity-20" /> */}
-        </div>
-
-        {/* Smoke background */}
-        {/* <div className="absolute inset-x-0 bottom-0 pointer-events-none"
-          style={{
-            height: '50%', zIndex: 5,
-            maskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)'
-          }}>
-          <SmokeCanvas />
-        </div> */}
-
-        {/* Drag surface + Canvas */}
+        {/* Drag surface + Canvas — fades in once skull loads */}
         <div
           ref={canvasRef}
-          className="relative w-full h-[55vh] sm:h-[65vh] md:h-[80vh]"
-          style={{ zIndex: 10, cursor: isDragging.current ? 'grabbing' : 'grab' }}
+          className="relative w-full h-[55vh] sm:h-[65vh] md:h-[80vh] transition-opacity duration-700"
+          style={{ zIndex: 10, cursor: isDragging.current ? 'grabbing' : 'grab', opacity: skullLoading ? 0 : 1 }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
