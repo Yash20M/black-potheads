@@ -39,6 +39,10 @@ export default defineConfig(({ mode }) => ({
           ],
           'state-vendor': ['zustand', '@tanstack/react-query'],
           'icons': ['lucide-react'],
+          // Three.js in its own chunk — only loaded when SkullHero is in view
+          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
+          // recharts only used in admin — keep separate
+          'charts': ['recharts'],
         },
       },
     },
