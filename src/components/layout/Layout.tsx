@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { Navbar } from '@/components/layout/Navbar';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 import { Footer } from '@/components/sections/Footer';
+import { OfferWidget } from '@/components/OfferWidget';
 
 // ── Announcement Bar ──────────────────────────────────────────────────────────
 const ANNOUNCEMENT = "10% OFF on Prepaid Orders  ✦  COD Available  ✦  Free Shipping on Orders Above ₹499  ✦  10% OFF on Prepaid Orders  ✦  COD Available  ✦  Free Shipping on Orders Above ₹499  ✦";
@@ -43,6 +44,9 @@ export const Layout = () => {
 
       {/* Footer */}
       <Footer />
+
+      {/* ₹100 Off Widget — fixed left bottom, all pages */}
+      <OfferWidget />
     </div>
   );
 };
