@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 
 export const OfferWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -15,6 +16,13 @@ export const OfferWidget = () => {
     setSubmitted(true);
   };
 
+  const handleClose = () => {
+    setIsOpen(false);
+    setIsVisible(false);
+  };
+
+  if (!isVisible) return null;
+
   return (
     <div className="fixed bottom-6 left-4 z-[999]">
       <AnimatePresence>
@@ -24,12 +32,12 @@ export const OfferWidget = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="mb-2 w-72 bg-white text-black shadow-2xl rounded-sm border border-gray-200"
+            className="mb-2 w-72 max-w-[calc(100vw-2rem)] bg-white text-black shadow-2xl rounded-sm border border-gray-200"
           >
             {/* Header */}
             <div className="flex items-start justify-between p-4 pb-2">
               <div>
-                <h3 className="font-bold text-base leading-tight">₹100.00 off entire order</h3>
+                <h3 className="font-bold text-base leading-tight">10% off entire order</h3>
                 <p className="text-gray-500 text-xs mt-1">Join our Community and avail the extra offer.</p>
               </div>
               <button
@@ -51,9 +59,10 @@ export const OfferWidget = () => {
                   required
                   className="w-full border border-gray-300 rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-black placeholder:text-gray-400"
                 />
-                <div className="flex gap-2">
-                  <div className="flex items-center gap-1 border border-gray-300 rounded-sm px-2 py-2 text-sm bg-white flex-shrink-0">
-                    <span>🇮🇳</span>
+                {/* Phone field — flag + input stay inside the box */}
+                <div className="flex items-stretch border border-gray-300 rounded-sm overflow-hidden">
+                  <div className="flex items-center gap-1 px-2 bg-gray-50 border-r border-gray-300 flex-shrink-0">
+                    <span className="text-base leading-none">🇮🇳</span>
                     <span className="text-gray-500 text-xs">+91</span>
                   </div>
                   <input
@@ -62,7 +71,7 @@ export const OfferWidget = () => {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     required
-                    className="flex-1 border border-gray-300 rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-black placeholder:text-gray-400"
+                    className="flex-1 min-w-0 px-3 py-2 text-sm focus:outline-none placeholder:text-gray-400 bg-white"
                   />
                 </div>
                 <button
@@ -80,7 +89,7 @@ export const OfferWidget = () => {
             ) : (
               <div className="px-4 pb-4 pt-2 text-center">
                 <p className="text-green-600 font-semibold text-sm">🎉 You're in!</p>
-                <p className="text-gray-500 text-xs mt-1">Your ₹100 off coupon will be shared soon.</p>
+                <p className="text-gray-500 text-xs mt-1">Your 10% off coupon will be shared soon.</p>
               </div>
             )}
           </motion.div>
@@ -94,8 +103,13 @@ export const OfferWidget = () => {
         whileTap={{ scale: 0.97 }}
         className="flex items-center gap-2 bg-white text-black border border-gray-300 shadow-lg px-4 py-2.5 text-sm font-semibold rounded-sm hover:bg-gray-50 transition-colors"
       >
-        <span>₹100 off</span>
-        <X size={13} className="text-gray-400" />
+        <span>10% off</span>
+        <button
+          onClick={(e) => { e.stopPropagation(); handleClose(); }}
+          className="text-gray-400 hover:text-black transition-colors"
+        >
+          <X size={13} />
+        </button>
       </motion.button>
     </div>
   );
