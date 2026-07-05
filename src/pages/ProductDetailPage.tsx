@@ -10,6 +10,7 @@ import { wishlistApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { ProductCard } from '@/components/products/ProductCard';
 import { FeaturesSection } from '@/components/sections/FeaturesSection';
+import { ProductReviews } from '@/components/ProductReviews';
 import { SEO } from '@/components/SEO';
 import { productApi } from '@/lib/api';
 import { Product, normalizeProduct, ApiProduct } from '@/types/product';
@@ -899,6 +900,9 @@ const ProductDetailPage = () => {
 
       {/* Features Section */}
       <FeaturesSection />
+
+      {/* Customer Reviews */}
+      <ProductReviews productId={product.id} />
 
       {relatedProducts.length > 0 && (
         <section className="py-12 sm:py-16 bg-background dark:bg-black">
