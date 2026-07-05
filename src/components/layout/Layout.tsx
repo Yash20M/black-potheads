@@ -7,7 +7,7 @@ import { Footer } from '@/components/sections/Footer';
 const ANNOUNCEMENT = "10% OFF on Prepaid Orders  ✦  COD Available  ✦  Free Shipping on Orders Above ₹499  ✦  10% OFF on Prepaid Orders  ✦  COD Available  ✦  Free Shipping on Orders Above ₹499  ✦";
 
 const AnnouncementBar = () => (
-  <div className="bg-white text-black text-xs font-medium overflow-hidden sticky top-0 z-[60]" style={{ height: '32px' }}>
+  <div className="bg-white text-black text-xs font-medium overflow-hidden relative z-[70]" style={{ height: '32px' }}>
     <div className="flex whitespace-nowrap" style={{ animation: 'marquee-scroll 20s linear infinite' }}>
       <span className="inline-block px-8 py-2">{ANNOUNCEMENT}</span>
       <span className="inline-block px-8 py-2" aria-hidden="true">{ANNOUNCEMENT}</span>

@@ -26,9 +26,10 @@ export const Navbar = () => {
 
   const { scrollY } = useScroll();
   const logoScale = useTransform(scrollY, [0, 200], [1, 0.85]);
-  // Continuous rotation: 1 full rotation (360deg) per 1000px of scroll
   const skullRotate = useTransform(scrollY, (value) => value * 0.36);
   const glowOpacity = useTransform(scrollY, [0, 200, 400], [0.2, 1, 0.2]);
+  // Navbar slides up to top-0 once announcement bar is scrolled past (32px)
+  const navbarTop = useTransform(scrollY, [0, 32], [32, 0]);
 
   // Check if we're on the home page
   const isHomePage = location.pathname === '/';
@@ -38,8 +39,8 @@ export const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
-      className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-gray-800 transition-all duration-300"
-      style={{ top: '32px' }}
+      className="fixed left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-gray-800"
+      style={{ top: navbarTop }}
     >
       <nav className="container mx-auto px-6 h-20 flex items-center justify-between">
         {/* Logo with image and animated text */}
