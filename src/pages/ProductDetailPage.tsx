@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { ProductCard } from '@/components/products/ProductCard';
 import { FeaturesSection } from '@/components/sections/FeaturesSection';
 import { ProductReviews } from '@/components/ProductReviews';
+import { ShortVideosSection } from '@/components/sections/ShortVideosSection';
 import { SEO } from '@/components/SEO';
 import { productApi } from '@/lib/api';
 import { Product, normalizeProduct, ApiProduct } from '@/types/product';
@@ -928,6 +929,9 @@ const ProductDetailPage = () => {
 
       {/* Footer reference div */}
       <div ref={footerRef} />
+
+      {/* Short Videos — below You May Also Like */}
+      <ShortVideosSection />
 
       {/* Sticky Bottom Bar - Flipkart Style */}
       <AnimatePresence>
