@@ -282,6 +282,17 @@ export const CategoriesShowcase = () => {
           </motion.button>
         ))}
       </div>
+
+      {/* Shop CTA */}
+      <Link to="/shop">
+        <motion.button
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.97 }}
+          className="px-10 py-3 border border-white/40 text-white text-sm tracking-[0.25em] uppercase font-medium hover:bg-white hover:text-black transition-colors duration-300"
+        >
+          Shop the Collection
+        </motion.button>
+      </Link>
     </section>
   );
 };
