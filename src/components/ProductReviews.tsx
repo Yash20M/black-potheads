@@ -77,12 +77,12 @@ const ReviewModal = ({ productId, productName, onClose, onSuccess }: ReviewModal
   };
 
   const handleSubmit = async () => {
-    if (!user) {
-      toast.error('Please login to submit a review');
-      return;
-    }
     if (!comment.trim()) {
       toast.error('Please write a comment');
+      return;
+    }
+    if (rating === 0) {
+      toast.error('Please select a rating');
       return;
     }
     setSubmitting(true);
@@ -91,6 +91,7 @@ const ReviewModal = ({ productId, productName, onClose, onSuccess }: ReviewModal
         productId,
         rating,
         comment: comment.trim(),
+        displayName: anonymous ? 'Anonymous' : (displayName.trim() || 'Anonymous'),
       });
       go(5);
       onSuccess();
@@ -540,10 +541,6 @@ export const ProductReviews = ({ productId, productName }: ProductReviewsProps) 
   const userHasReviewed = reviews.some((r) => r.user?._id === user?._id);
 
   const openModal = () => {
-    if (!user) {
-      toast.error('Please login to submit a review');
-      return;
-    }
     setShowModal(true);
   };
 
@@ -683,7 +680,7 @@ export const ProductReviews = ({ productId, productName }: ProductReviewsProps) 
                       <div className="flex-1">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
                           <span className="font-display text-base md:text-lg text-white uppercase tracking-wider">
-                            {review.user?.name || 'Anonymous'}
+                            {review.user?.name || review.guestName || 'Anonymous'}
                           </span>
                           {review.isVerifiedPurchase && (
                             <span className="text-xs bg-green-900/30 text-green-400 border border-green-700 px-2 md:px-3 py-1 uppercase tracking-wider font-semibold inline-block w-fit">

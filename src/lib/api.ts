@@ -452,7 +452,7 @@ export const offersApi = {
 // Reviews APIs
 export const reviewsApi = {
   // User endpoints
-  create: (data: { productId: string; rating: number; comment: string }) =>
+  create: (data: { productId: string; rating: number; comment: string; displayName?: string }) =>
     apiFetch('/api/v1/reviews', {
       method: 'POST',
       body: JSON.stringify(data),
