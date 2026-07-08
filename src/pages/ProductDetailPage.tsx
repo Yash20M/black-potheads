@@ -526,6 +526,12 @@ const ProductDetailPage = () => {
 
               {/* Size Selection */}
               <div className="mb-8">
+                {/* Model fit info */}
+                <div className="mb-4 text-xs text-zinc-400 leading-relaxed space-y-0.5">
+                  <p className="text-white font-semibold text-sm uppercase tracking-wider mb-1">Boxy Fit</p>
+                  <p>Male model is 6ft tall, wearing size <span className="text-white font-medium">XL</span></p>
+                  <p>Female model (if present) is 5'3ft, wearing size <span className="text-white font-medium">M</span></p>
+                </div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs uppercase tracking-[0.2em] text-white font-bold">Size</span>
                   <button 
