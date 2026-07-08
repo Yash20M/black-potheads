@@ -154,7 +154,7 @@ const ReviewModal = ({ productId, productName, onClose, onSuccess }: ReviewModal
         </div>
 
         {/* Step content */}
-        <div className="flex-1 overflow-hidden relative">
+        <div className="flex-1 overflow-y-auto relative min-h-0">
           <AnimatePresence custom={dir} mode="wait">
             <motion.div
               key={step}
@@ -164,7 +164,7 @@ const ReviewModal = ({ productId, productName, onClose, onSuccess }: ReviewModal
               animate="center"
               exit="exit"
               transition={{ duration: 0.22, ease: 'easeInOut' }}
-              className="absolute inset-0 overflow-y-auto px-6 py-6"
+              className="px-6 py-6 w-full"
             >
 
               {/* ── Step 1: Rate ── */}
