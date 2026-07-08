@@ -903,7 +903,7 @@ const ProductDetailPage = () => {
       <FeaturesSection />
 
       {/* Customer Reviews */}
-      <ProductReviews productId={product.id} />
+      <ProductReviews productId={product.id} productName={product.name} />
 
       {relatedProducts.length > 0 && (
         <section className="py-12 sm:py-16 bg-background dark:bg-black">
