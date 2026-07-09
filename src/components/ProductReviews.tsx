@@ -538,7 +538,8 @@ export const ProductReviews = ({ productId, productName }: ProductReviewsProps) 
     </div>
   );
 
-  const userHasReviewed = reviews.some((r) => r.user?._id === user?._id);
+  // Only hide Write Review for logged-in users who already reviewed
+  const userHasReviewed = user ? reviews.some((r) => r.user?._id === user?._id) : false;
 
   const openModal = () => {
     setShowModal(true);
