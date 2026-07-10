@@ -34,6 +34,11 @@ const CheckoutPage = () => {
   const [orderDetails, setOrderDetails] = useState<any>(null);
 
   const [formData, setFormData] = useState({
+    // Guest info (only used when not logged in)
+    name: '',
+    email: '',
+    phone: '',
+    // Address
     line1: '',
     city: '',
     state: '',
@@ -74,6 +79,13 @@ const CheckoutPage = () => {
   };
 
   const validateForm = () => {
+    // Guest validation
+    if (!user) {
+      if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
+        toast.error('Please fill in your name, email and phone');
+        return false;
+      }
+    }
     if (!formData.line1 || !formData.city || !formData.state || !formData.pincode) {
       toast.error('Please fill in all address fields');
       return false;
@@ -86,33 +98,49 @@ const CheckoutPage = () => {
 
     setLoading(true);
     try {
-      // Sync cart with backend
-      await syncWithBackend();
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      const orderData = {
-        totalAmount: finalPrice,
-        address: {
-          line1: formData.line1,
-          city: formData.city,
-          state: formData.state,
-          pincode: formData.pincode,
-          country: formData.country,
-        },
-        paymentMethod: 'COD',
+      const address = {
+        line1: formData.line1,
+        city: formData.city,
+        state: formData.state,
+        pincode: formData.pincode,
+        country: formData.country,
       };
 
-      const response: any = await orderApi.create(orderData);
-      
+      let response: any;
+
+      if (!user) {
+        // Guest order
+        response = await orderApi.createGuestOrder({
+          guestInfo: {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+          },
+          items: items.map((item) => ({
+            product: item.id,
+            category: item.category || 'T-Shirt',
+            size: item.selectedSize,
+            quantity: item.quantity,
+          })),
+          address,
+          totalAmount: finalPrice,
+          paymentMethod: 'COD',
+        });
+      } else {
+        // Logged-in order
+        await syncWithBackend();
+        await new Promise(resolve => setTimeout(resolve, 500));
+        response = await orderApi.create({ totalAmount: finalPrice, address, paymentMethod: 'COD' });
+      }
+
       setOrderPlaced(true);
       setOrderDetails(response.order);
       await clearCart();
       toast.success('Order confirmed successfully!');
       setShowSuccessModal(true);
-      navigate("/orders")
+      if (user) navigate('/orders');
     } catch (error: any) {
       toast.error(error.message || 'Failed to place order');
-      console.error('Order creation error:', error);
     } finally {
       setLoading(false);
     }
@@ -123,27 +151,36 @@ const CheckoutPage = () => {
 
     setLoading(true);
     try {
-      // Sync cart with backend
-      await syncWithBackend();
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const address = {
+        line1: formData.line1,
+        city: formData.city,
+        state: formData.state,
+        pincode: formData.pincode,
+        country: formData.country,
+      };
 
-      // Step 1: Create Razorpay order
-      const response: any = await orderApi.createRazorpayOrder({
-        totalAmount: finalPrice,
-        address: {
-          line1: formData.line1,
-          city: formData.city,
-          state: formData.state,
-          pincode: formData.pincode,
-          country: formData.country,
-        },
-      });
+      let response: any;
 
-      if (!response.success) {
-        throw new Error(response.message || 'Failed to create payment order');
+      if (!user) {
+        response = await orderApi.createGuestRazorpayOrder({
+          guestInfo: { name: formData.name, email: formData.email, phone: formData.phone },
+          items: items.map((item) => ({
+            product: item.id,
+            category: item.category || 'T-Shirt',
+            size: item.selectedSize,
+            quantity: item.quantity,
+          })),
+          address,
+          totalAmount: finalPrice,
+        });
+      } else {
+        await syncWithBackend();
+        await new Promise(resolve => setTimeout(resolve, 500));
+        response = await orderApi.createRazorpayOrder({ totalAmount: finalPrice, address });
       }
 
-      // Step 2: Initialize Razorpay checkout
+      if (!response.success) throw new Error(response.message || 'Failed to create payment order');
+
       const options = {
         key: response.key,
         amount: response.razorpayOrder.amount,
@@ -153,43 +190,37 @@ const CheckoutPage = () => {
         order_id: response.razorpayOrder.id,
         handler: async function (razorpayResponse: any) {
           try {
-            // Step 3: Verify payment
-            const verifyResponse: any = await orderApi.verifyPayment({
+            const verifyFn = user ? orderApi.verifyPayment : orderApi.verifyGuestPayment;
+            const verifyData: any = {
               razorpayOrderId: razorpayResponse.razorpay_order_id,
               razorpayPaymentId: razorpayResponse.razorpay_payment_id,
               razorpaySignature: razorpayResponse.razorpay_signature,
               orderId: response.orderId,
-            });
+            };
+            if (!user) verifyData.guestInfo = { email: formData.email };
 
+            const verifyResponse: any = await verifyFn(verifyData);
             if (verifyResponse.success) {
               setOrderPlaced(true);
               setOrderDetails(verifyResponse.order);
               await clearCart();
               toast.success('Payment successful! Order confirmed.');
               setShowSuccessModal(true);
-              navigate("/orders")
+              if (user) navigate('/orders');
             } else {
               toast.error('Payment verification failed');
             }
-          } catch (error: any) {
-            toast.error(error.message || 'Payment verification failed');
-            console.error('Payment verification error:', error);
+          } catch (err: any) {
+            toast.error(err.message || 'Payment verification failed');
           }
         },
         prefill: {
-          name: user?.name || '',
-          email: user?.email || '',
-          contact: (user as any)?.phone || '',
+          name: user?.name || formData.name,
+          email: user?.email || formData.email,
+          contact: (user as any)?.phone || formData.phone,
         },
-        theme: {
-          color: '#000000',
-        },
-        modal: {
-          ondismiss: function() {
-            setLoading(false);
-            toast.info('Payment cancelled');
-          }
-        }
+        theme: { color: '#000000' },
+        modal: { ondismiss: () => { setLoading(false); toast.info('Payment cancelled'); } }
       };
 
       const rzp = new window.Razorpay(options);
@@ -197,7 +228,6 @@ const CheckoutPage = () => {
       setLoading(false);
     } catch (error: any) {
       toast.error(error.message || 'Failed to initiate payment');
-      console.error('Payment initiation error:', error);
       setLoading(false);
     }
   };
@@ -256,21 +286,37 @@ const CheckoutPage = () => {
           CHECKOUT
         </motion.h1>
 
-        {/* Guest Checkout Option */}
+        {/* Guest info section — only for non-logged-in users */}
         {!user && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-2xl mx-auto mb-8"
           >
-            <div className="bg-secondary/50 border border-border rounded-lg p-6 text-center">
-              <h3 className="font-display text-xl mb-2">Don't have an account?</h3>
-              <p className="text-muted-foreground mb-4">
-                You can checkout as a guest with Cash on Delivery
+            <div className="bg-card border border-border p-6">
+              <h2 className="font-display text-xl sm:text-2xl mb-4">Your Details</h2>
+              <p className="text-muted-foreground text-sm mb-4">
+                No account needed. Fill in your details to place the order.
               </p>
-              <Button variant="outline" size="lg" asChild>
-                <Link to="/guest-checkout">Continue as Guest</Link>
-              </Button>
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="guest-name">Full Name *</Label>
+                  <Input id="guest-name" name="name" value={formData.name} onChange={handleChange} required placeholder="Your name" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="guest-email">Email *</Label>
+                    <Input id="guest-email" name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="you@example.com" />
+                  </div>
+                  <div>
+                    <Label htmlFor="guest-phone">Phone *</Label>
+                    <Input id="guest-phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required placeholder="+91 9999999999" />
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground bg-secondary/50 border border-border rounded p-2">
+                  📦 You can track your order using your <span className="text-foreground font-medium">email or phone number</span> on the Track Order page — no order ID needed.
+                </p>
+              </div>
             </div>
           </motion.div>
         )}
