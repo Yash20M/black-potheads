@@ -70,7 +70,7 @@ const Index = () => {
       </div>
 
       <BrandMarquee />
-      <CategoriesShowcase />
+      <CategoriesShowcase />  
       <CollabSection />
       <ScrollingText />
       <TrendingSection />

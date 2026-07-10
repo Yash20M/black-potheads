@@ -47,9 +47,9 @@ const ReviewModal = ({ productId, productName, onClose, onSuccess }: ReviewModal
   const [displayName, setDisplayName] = useState(user?.name || '');
   const [anonymous, setAnonymous] = useState(false);
 
-  // Step 4
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  // Step 4 — multiple images
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [submitting, setSubmitting] = useState(false);
@@ -60,20 +60,27 @@ const ReviewModal = ({ productId, productName, onClose, onSuccess }: ReviewModal
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    const newFiles = [...imageFiles, ...files].slice(0, 5); // max 5 images
+    setImageFiles(newFiles);
+    setImagePreviews(newFiles.map(f => URL.createObjectURL(f)));
+  };
+
+  const removeImage = (index: number) => {
+    const newFiles = imageFiles.filter((_, i) => i !== index);
+    const newPreviews = imagePreviews.filter((_, i) => i !== index);
+    setImageFiles(newFiles);
+    setImagePreviews(newPreviews);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    if (files.length === 0) return;
+    const newFiles = [...imageFiles, ...files].slice(0, 5);
+    setImageFiles(newFiles);
+    setImagePreviews(newFiles.map(f => URL.createObjectURL(f)));
   };
 
   const handleSubmit = async () => {
@@ -87,12 +94,26 @@ const ReviewModal = ({ productId, productName, onClose, onSuccess }: ReviewModal
     }
     setSubmitting(true);
     try {
-      await reviewsApi.create({
-        productId,
-        rating,
-        comment: comment.trim(),
-        displayName: anonymous ? 'Anonymous' : (displayName.trim() || 'Anonymous'),
+      const formData = new FormData();
+      formData.append('productId', productId);
+      formData.append('rating', String(rating));
+      formData.append('comment', comment.trim());
+      formData.append('displayName', anonymous ? 'Anonymous' : (displayName.trim() || 'Anonymous'));
+      imageFiles.forEach(file => formData.append('images', file));
+
+      await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/api/v1/reviews`, {
+        method: 'POST',
+        headers: (() => {
+          const token = localStorage.getItem('token');
+          return token ? { Authorization: `Bearer ${token}` } : {};
+        })(),
+        body: formData,
+      }).then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to submit review');
+        return data;
       });
+
       go(5);
       onSuccess();
     } catch (error: any) {
@@ -304,49 +325,55 @@ const ReviewModal = ({ productId, productName, onClose, onSuccess }: ReviewModal
                 <div className="flex flex-col gap-6">
                   <div>
                     <h2 className="font-display text-2xl text-white uppercase tracking-wider mb-2">
-                      Share a picture
+                      Share pictures
                     </h2>
                     <p className="text-zinc-400 text-sm">
-                      Upload a photo to support your review. (Optional)
+                      Upload up to 5 photos to support your review. (Optional)
                     </p>
                   </div>
 
+                  {/* Upload area */}
                   <div
                     onClick={() => fileInputRef.current?.click()}
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={handleDrop}
-                    className="border-2 border-dashed border-zinc-700 hover:border-zinc-400 transition-colors rounded-lg p-8 flex flex-col items-center gap-3 cursor-pointer"
+                    className="border-2 border-dashed border-zinc-700 hover:border-zinc-400 transition-colors rounded-lg p-6 flex flex-col items-center gap-3 cursor-pointer"
                   >
-                    {imagePreview ? (
-                      <img
-                        src={imagePreview}
-                        alt="Preview"
-                        className="max-h-48 object-contain rounded"
-                      />
-                    ) : (
-                      <>
-                        <Upload size={36} className="text-zinc-500" />
-                        <p className="text-sm text-zinc-400 text-center">
-                          Click to upload or drag and drop
-                        </p>
-                      </>
-                    )}
+                    <Upload size={32} className="text-zinc-500" />
+                    <p className="text-sm text-zinc-400 text-center">
+                      Click to upload or drag and drop<br />
+                      <span className="text-zinc-600 text-xs">{imageFiles.length}/5 images added</span>
+                    </p>
                   </div>
                   <input
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
+                    multiple
                     className="hidden"
                     onChange={handleImageChange}
                   />
-                  {imageFile && (
-                    <button
-                      type="button"
-                      onClick={() => { setImageFile(null); setImagePreview(null); }}
-                      className="text-xs text-zinc-500 hover:text-white transition-colors self-start"
-                    >
-                      Remove image
-                    </button>
+
+                  {/* Image previews grid */}
+                  {imagePreviews.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2">
+                      {imagePreviews.map((preview, index) => (
+                        <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-zinc-800">
+                          <img
+                            src={preview}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 flex items-center justify-center text-white hover:bg-red-600 transition-colors"
+                          >
+                            <X size={10} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               )}
@@ -722,6 +749,20 @@ export const ProductReviews = ({ productId, productName }: ProductReviewsProps) 
                     <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
                       {review.comment}
                     </p>
+                    {/* Review images */}
+                    {review.images && review.images.length > 0 && (
+                      <div className="flex gap-2 mt-3 flex-wrap">
+                        {review.images.map((img: string, idx: number) => (
+                          <img
+                            key={idx}
+                            src={img}
+                            alt={`Review image ${idx + 1}`}
+                            className="w-20 h-20 object-cover rounded-lg border border-border cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={() => window.open(img, '_blank')}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </>
                 )}
               </div>
