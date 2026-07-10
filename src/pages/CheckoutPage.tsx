@@ -286,41 +286,6 @@ const CheckoutPage = () => {
           CHECKOUT
         </motion.h1>
 
-        {/* Guest info section — only for non-logged-in users */}
-        {!user && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-2xl mx-auto mb-8"
-          >
-            <div className="bg-card border border-border p-6">
-              <h2 className="font-display text-xl sm:text-2xl mb-4">Your Details</h2>
-              <p className="text-muted-foreground text-sm mb-4">
-                No account needed. Fill in your details to place the order.
-              </p>
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="guest-name">Full Name *</Label>
-                  <Input id="guest-name" name="name" value={formData.name} onChange={handleChange} required placeholder="Your name" />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="guest-email">Email *</Label>
-                    <Input id="guest-email" name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="you@example.com" />
-                  </div>
-                  <div>
-                    <Label htmlFor="guest-phone">Phone *</Label>
-                    <Input id="guest-phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required placeholder="+91 9999999999" />
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground bg-secondary/50 border border-border rounded p-2">
-                  📦 You can track your order using your <span className="text-foreground font-medium">email or phone number</span> on the Track Order page — no order ID needed.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           {/* Checkout Form */}
           <motion.div
