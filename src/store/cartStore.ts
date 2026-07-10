@@ -18,6 +18,7 @@ interface CartStore {
   closeCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  getDiscountInfo: () => { discountPct: number; discountAmt: number; finalPrice: number; label: string | null };
 }
 
 export const useCartStore = create<CartStore>()(
@@ -201,6 +202,25 @@ export const useCartStore = create<CartStore>()(
           (total, item) => total + item.price * item.quantity,
           0
         );
+      },
+
+      getDiscountInfo: () => {
+        const totalItems = get().getTotalItems();
+        const subtotal = get().getTotalPrice();
+        let discountPct = 0;
+        let label: string | null = null;
+
+        if (totalItems >= 3) {
+          discountPct = 15;
+          label = 'Buy 3, Get 15% Off applied!';
+        } else if (totalItems >= 2) {
+          discountPct = 10;
+          label = 'Buy 2, Get 10% Off applied!';
+        }
+
+        const discountAmt = Math.round(subtotal * discountPct / 100);
+        const finalPrice = subtotal - discountAmt;
+        return { discountPct, discountAmt, finalPrice, label };
       },
     }),
     {

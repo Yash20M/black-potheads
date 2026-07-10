@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 export const CartDrawer = () => {
-  const { isOpen, closeCart, items, removeItem, updateQuantity, getTotalPrice } = useCartStore();
+  const { isOpen, closeCart, items, removeItem, updateQuantity, getTotalPrice, getDiscountInfo } = useCartStore();
   const navigate = useNavigate();
 
   const handleCheckout = () => {
@@ -145,15 +145,53 @@ export const CartDrawer = () => {
                 animate={{ y: 0, opacity: 1 }}
                 className="p-6 border-t border-border space-y-4"
               >
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground uppercase tracking-wider text-sm">
-                    Subtotal
-                  </span>
-                  <span className="font-display text-2xl">₹{getTotalPrice().toFixed(2)}</span>
-                </div>
-                <Button 
-                  variant="hero" 
-                  size="lg" 
+                {/* Volume discount banner */}
+                {(() => {
+                  const { discountPct, discountAmt, finalPrice, label } = getDiscountInfo();
+                  const totalItems = items.reduce((s, i) => s + i.quantity, 0);
+                  return (
+                    <>
+                      {/* Upsell nudge */}
+                      {totalItems === 1 && (
+                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded p-2 text-center text-xs text-yellow-400">
+                          Add 1 more item → get <span className="font-bold">10% OFF</span>
+                        </div>
+                      )}
+                      {totalItems === 2 && (
+                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded p-2 text-center text-xs text-yellow-400">
+                          Add 1 more item → get <span className="font-bold">15% OFF</span>
+                        </div>
+                      )}
+                      {/* Applied discount */}
+                      {discountPct > 0 && (
+                        <div className="bg-green-500/10 border border-green-500/30 rounded p-2 text-center text-xs text-green-400 font-semibold">
+                          🎉 {label}
+                        </div>
+                      )}
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground uppercase tracking-wider text-sm">Subtotal</span>
+                        <span className={discountPct > 0 ? 'line-through text-muted-foreground text-sm' : 'font-display text-2xl'}>
+                          ₹{getTotalPrice().toFixed(0)}
+                        </span>
+                      </div>
+                      {discountPct > 0 && (
+                        <>
+                          <div className="flex justify-between items-center text-green-400 text-sm">
+                            <span>Discount ({discountPct}%)</span>
+                            <span>-₹{discountAmt}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="uppercase tracking-wider text-sm font-bold">Total</span>
+                            <span className="font-display text-2xl">₹{finalPrice.toFixed(0)}</span>
+                          </div>
+                        </>
+                      )}
+                    </>
+                  );
+                })()}
+                <Button
+                  variant="hero"
+                  size="lg"
                   className="w-full"
                   onClick={handleCheckout}
                 >

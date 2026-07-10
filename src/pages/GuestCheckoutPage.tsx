@@ -18,7 +18,7 @@ declare global {
 
 const GuestCheckoutPage = () => {
   const navigate = useNavigate();
-  const { items, getTotalPrice } = useCartStore();
+  const { items, getTotalPrice, getDiscountInfo } = useCartStore();
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'COD' | 'Online'>('COD');
 
@@ -117,7 +117,7 @@ const GuestCheckoutPage = () => {
         pincode: formData.pincode,
         country: formData.country,
       },
-      totalAmount: getTotalPrice(),
+      totalAmount: finalPrice,
       paymentMethod: 'COD',
     };
 
@@ -163,7 +163,7 @@ const GuestCheckoutPage = () => {
         pincode: formData.pincode,
         country: formData.country,
       },
-      totalAmount: getTotalPrice(),
+      totalAmount: finalPrice,
     };
 
     try {
@@ -260,7 +260,8 @@ const GuestCheckoutPage = () => {
     setLoading(false);
   };
 
-  const totalPrice = getTotalPrice();
+  const { discountPct, discountAmt, finalPrice, label } = getDiscountInfo();
+  const totalPrice = finalPrice;
 
   return (
     <div className="min-h-screen pt-20 bg-background">
@@ -549,15 +550,21 @@ const GuestCheckoutPage = () => {
               <div className="border-t border-border pt-4 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>₹{totalPrice}</span>
+                  <span className={discountPct > 0 ? 'line-through text-muted-foreground' : ''}>₹{getTotalPrice().toFixed(0)}</span>
                 </div>
+                {discountPct > 0 && (
+                  <div className="flex justify-between text-sm text-green-500">
+                    <span>{label}</span>
+                    <span>-₹{discountAmt}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
                   <span>Free</span>
                 </div>
                 <div className="flex justify-between font-display text-xl pt-2 border-t border-border">
                   <span>Total</span>
-                  <span>₹{totalPrice}</span>
+                  <span>₹{totalPrice.toFixed(0)}</span>
                 </div>
               </div>
             </div>

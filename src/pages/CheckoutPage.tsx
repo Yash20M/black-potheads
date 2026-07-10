@@ -26,7 +26,7 @@ declare global {
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
-  const { items, getTotalPrice, clearCart, syncWithBackend } = useCartStore();
+  const { items, getTotalPrice, getDiscountInfo, clearCart, syncWithBackend } = useCartStore();
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -91,7 +91,7 @@ const CheckoutPage = () => {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       const orderData = {
-        totalAmount: getTotalPrice(),
+        totalAmount: finalPrice,
         address: {
           line1: formData.line1,
           city: formData.city,
@@ -129,7 +129,7 @@ const CheckoutPage = () => {
 
       // Step 1: Create Razorpay order
       const response: any = await orderApi.createRazorpayOrder({
-        totalAmount: getTotalPrice(),
+        totalAmount: finalPrice,
         address: {
           line1: formData.line1,
           city: formData.city,
@@ -212,7 +212,8 @@ const CheckoutPage = () => {
     }
   };
 
-  const totalPrice = getTotalPrice();
+  const { discountPct, discountAmt, finalPrice, label } = getDiscountInfo();
+  const totalPrice = finalPrice;
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
@@ -445,15 +446,21 @@ const CheckoutPage = () => {
               <div className="border-t border-border pt-4 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>₹{totalPrice}</span>
+                  <span className={discountPct > 0 ? 'line-through text-muted-foreground' : ''}>₹{getTotalPrice().toFixed(0)}</span>
                 </div>
+                {discountPct > 0 && (
+                  <div className="flex justify-between text-sm text-green-500">
+                    <span>{label}</span>
+                    <span>-₹{discountAmt}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
                   <span>Free</span>
                 </div>
                 <div className="flex justify-between font-display text-xl pt-2 border-t border-border">
                   <span>Total</span>
-                  <span>₹{totalPrice}</span>
+                  <span>₹{totalPrice.toFixed(0)}</span>
                 </div>
               </div>
             </div>
