@@ -329,6 +329,33 @@ const CheckoutPage = () => {
             transition={{ delay: 0.1 }}
           >
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+
+              {/* Guest Details — only shown when not logged in */}
+              {!user && (
+                <div className="bg-card border border-border p-4 sm:p-6">
+                  <h2 className="font-display text-xl sm:text-2xl mb-4 sm:mb-6">Your Details</h2>
+                  <div className="space-y-3 sm:space-y-4">
+                    <div>
+                      <Label htmlFor="guest-name" className="text-sm">Full Name *</Label>
+                      <Input id="guest-name" name="name" value={formData.name} onChange={handleChange} required placeholder="Your name" className="text-sm sm:text-base" />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                      <div>
+                        <Label htmlFor="guest-email" className="text-sm">Email *</Label>
+                        <Input id="guest-email" name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="you@example.com" className="text-sm sm:text-base" />
+                      </div>
+                      <div>
+                        <Label htmlFor="guest-phone" className="text-sm">Phone *</Label>
+                        <Input id="guest-phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required placeholder="+91 9999999999" className="text-sm sm:text-base" />
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground bg-secondary/50 border border-border rounded p-2">
+                      📦 You can track your order using your <span className="text-foreground font-medium">email or phone number</span> on the Track Order page — no order ID needed.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="bg-card border border-border p-4 sm:p-6">
                 <h2 className="font-display text-xl sm:text-2xl mb-4 sm:mb-6 flex items-center gap-2">
                   <Truck size={20} className="sm:w-6 sm:h-6" />
