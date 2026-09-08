@@ -62,7 +62,7 @@ export const useCartStore = create<CartStore>()(
             };
           });
 
-          toast.success('Added to cart', { duration: 2000 });
+          toast.success('Added to cart', { duration: 1000 });
         } catch (error: any) {
           console.error('Failed to add to cart:', error);
           const errorMessage = error.response?.data?.message || error.message || 'Failed to add to cart';
@@ -210,12 +210,18 @@ export const useCartStore = create<CartStore>()(
         let discountPct = 0;
         let label: string | null = null;
 
-        if (totalItems >= 3) {
+        if (totalItems >= 5) {
+          discountPct = 20;
+          label = 'Buy 5+, Get 20% Off applied!';
+        } else if (totalItems >= 4) {
           discountPct = 15;
-          label = 'Buy 3, Get 15% Off applied!';
-        } else if (totalItems >= 2) {
+          label = 'Buy 4, Get 15% Off applied!';
+        } else if (totalItems >= 3) {
           discountPct = 10;
-          label = 'Buy 2, Get 10% Off applied!';
+          label = 'Buy 3, Get 10% Off applied!';
+        } else if (totalItems >= 2) {
+          discountPct = 5;
+          label = 'Buy 2, Get 5% Off applied!';
         }
 
         const discountAmt = Math.round(subtotal * discountPct / 100);

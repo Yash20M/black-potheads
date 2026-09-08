@@ -135,7 +135,7 @@ const AdminOrders = () => {
   };
 
   const statuses = ['Pending', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'];
-  const categories = ['Shiva', 'Shrooms', 'ACID', 'Chakras', 'Dark', 'Rick n Morty'];
+  const categories = ['Shiva', 'Shrooms', 'ACID', 'Chakras', 'Dark', 'Psyence'];
 
   return (
     <div>
@@ -223,7 +223,7 @@ const AdminOrders = () => {
                     order.status === 'Pending' ? 'bg-yellow-500/10' : ''
                   }`}>
                     <td className="p-4 font-mono text-sm">
-                      {order._id.slice(-8)}
+                      {order.orderNumber || order._id.slice(-8)}
                     </td>
                     <td className="p-4">
                       <div>

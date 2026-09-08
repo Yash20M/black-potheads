@@ -275,7 +275,7 @@ const OrdersPage = () => {
                       <div className="flex items-start justify-between mb-4">
                         <div>
                           <p className="text-sm text-muted-foreground">
-                            Order #{order._id.slice(-8)}
+                            Order #{order.orderNumber || order._id.slice(-8)}
                           </p>
                           <p className="text-sm text-muted-foreground">
                             {new Date(order.createdAt).toLocaleDateString('en-US', {

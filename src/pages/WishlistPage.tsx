@@ -20,7 +20,7 @@ const WishlistPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
-  const categories = ['all', 'Shiva', 'Shrooms', 'ACID', 'Chakras', 'Dark', 'Rick n Morty'];
+  const categories = ['all', 'Shiva', 'Shrooms', 'ACID', 'Chakras', 'Dark', 'Psyence'];
 
   useEffect(() => {
     if (!user) {

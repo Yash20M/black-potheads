@@ -748,6 +748,36 @@ export const adminApi = {
         method: 'DELETE',
       }, true),
   },
+
+  // Blog Management
+  blogs: {
+    getAll: (page = 1, limit = 20) =>
+      apiFetch(`/api/admin/blogs?page=${page}&limit=${limit}`, {}, true),
+
+    getById: (id: string) =>
+      apiFetch(`/api/admin/blogs/${id}`, {}, true),
+
+    create: (formData: FormData) =>
+      apiFetch('/api/admin/blogs', { method: 'POST', body: formData }, true),
+
+    update: (id: string, formData: FormData) =>
+      apiFetch(`/api/admin/blogs/${id}`, { method: 'PUT', body: formData }, true),
+
+    delete: (id: string) =>
+      apiFetch(`/api/admin/blogs/${id}`, { method: 'DELETE' }, true),
+
+    toggle: (id: string) =>
+      apiFetch(`/api/admin/blogs/${id}/toggle`, { method: 'PATCH' }, true),
+  },
+};
+
+// Blog APIs (public)
+export const blogApi = {
+  getAll: (page = 1, limit = 9) =>
+    apiFetch(`/api/v1/blogs?page=${page}&limit=${limit}`),
+
+  getBySlug: (slug: string) =>
+    apiFetch(`/api/v1/blogs/${slug}`),
 };
 
 // Video APIs

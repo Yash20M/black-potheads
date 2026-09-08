@@ -105,7 +105,7 @@ const TrackOrderPage = () => {
         {/* Order Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-6 border-b border-border">
           <div>
-            <h3 className="font-display text-xl mb-1">Order #{order._id.slice(-8)}</h3>
+            <h3 className="font-display text-xl mb-1">Order #{order.orderNumber || order._id.slice(-8)}</h3>
             <p className="text-sm text-muted-foreground flex items-center gap-2">
               <Calendar size={14} />
               {new Date(order.createdAt).toLocaleDateString('en-IN', {

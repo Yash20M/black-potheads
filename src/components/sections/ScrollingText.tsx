@@ -7,7 +7,7 @@ const categories = [
   { name: 'ACID', image: '/LSD.webp', path: '/shop?collection=ACID' },
   { name: 'CHAKRAS', image: '/Chakras.webp', path: '/shop?collection=Chakras' },
   { name: 'DARK', image: '/dark (2).webp', path: '/shop?collection=Dark' },
-  { name: 'RICK N MORTY', image: '/Rick-N-Morty.webp', path: '/shop?collection=Rick n Morty' },
+  { name: 'Psyence', image: '/Rick-N-Morty.webp', path: '/shop?collection=Psyence' },
 ];
 
 export const ScrollingText = () => {

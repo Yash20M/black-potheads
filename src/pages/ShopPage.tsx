@@ -17,7 +17,7 @@ const categories = [
   { id: 'ACID', label: 'ACID' },
   { id: 'Chakras', label: 'Chakras' },
   { id: 'Dark', label: 'Dark' },
-  { id: 'Rick n Morty', label: 'Rick n Morty' },
+  { id: 'Psyence', label: 'Psyence' },
 ];
 
 // Collab config — add new collabs here as they come
@@ -60,8 +60,8 @@ const collectionDetails = {
     description: 'Embrace the darkness within with our most mysterious and edgy collection. The Dark collection features gothic aesthetics, occult symbolism, and shadow-inspired designs that celebrate the beauty of the night. From skulls and ravens to mystical symbols and dark cosmic patterns, these pieces are for those who find power in the shadows and beauty in the darkness.',
     highlights: ['Gothic Aesthetics', 'Occult Symbolism', 'Dark Color Schemes', 'Edgy Street Style'],
   },
-  'Rick n Morty': {
-    title: 'Rick n Morty',
+  'Psyence': {
+    title: 'Psyence',
     subtitle: 'Wubba Lubba',
     description: 'Get schwifty with our interdimensional Rick and Morty collection! Featuring iconic characters, memorable quotes, and scenes from across the multiverse. From portal guns to Pickle Rick, these designs capture the chaotic genius and dark humor of the show. Perfect for fans who appreciate science, sarcasm, and interdimensional adventures. Wubba lubba dub dub!',
     highlights: ['Official-Style Artwork', 'Iconic Characters', 'Multiverse Designs', 'Fan Favorite Quotes'],
@@ -263,6 +263,32 @@ const ShopPage = () => {
           >
             {productsCountText}
           </motion.p>
+
+          {/* Bulk Offer Strip */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mb-8 overflow-x-auto scrollbar-hide"
+          >
+            <div className="flex gap-2 sm:gap-3 justify-start sm:justify-center min-w-max sm:min-w-0 px-1">
+              {[
+                { qty: 2, pct: 5 },
+                { qty: 3, pct: 10 },
+                { qty: 4, pct: 15 },
+                { qty: 5, pct: 20 },
+              ].map(({ qty, pct }) => (
+                <div
+                  key={qty}
+                  className="flex items-center gap-1.5 border border-yellow-500/40 bg-yellow-500/5 px-3 py-1.5 text-yellow-400 text-xs whitespace-nowrap"
+                >
+                  <span className="font-bold">Buy {qty}</span>
+                  <span className="text-yellow-500/60">→</span>
+                  <span className="font-bold">{pct}% OFF</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
 
           {/* Products Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">

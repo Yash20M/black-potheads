@@ -57,6 +57,10 @@ const AdminCollabs = lazy(() => import("./pages/admin/AdminCollabs"));
 const InventoryOverview = lazy(() => import("./pages/admin/inventory/InventoryOverview"));
 const InventoryAlerts = lazy(() => import("./pages/admin/inventory/InventoryAlerts"));
 const InventoryReports = lazy(() => import("./pages/admin/inventory/InventoryReports"));
+const BlogPage = lazy(() => import("./pages/BlogPage"));
+const BlogDetailPage = lazy(() => import("./pages/BlogDetailPage"));
+const AdminBlogs = lazy(() => import("./pages/admin/AdminBlogs"));
+const AdminBlogForm = lazy(() => import("./pages/admin/AdminBlogForm"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -105,6 +109,10 @@ const App = () => (
               <Route path="/test-offers" element={<TestOffersPage />} />
               <Route path="/faq" element={<FAQPage />} />
               
+              {/* Blog Routes */}
+              <Route path="/blogs" element={<BlogPage />} />
+              <Route path="/blogs/:slug" element={<BlogDetailPage />} />
+              
               {/* Legal Routes */}
               <Route path="/legal/terms" element={<TermsPage />} />
               <Route path="/legal/privacy-policy" element={<PrivacyPage />} />
@@ -129,6 +137,10 @@ const App = () => (
               <Route path="inventory/overview" element={<InventoryOverview />} />
               <Route path="inventory/alerts" element={<InventoryAlerts />} />
               <Route path="inventory/reports" element={<InventoryReports />} />
+              {/* Blog admin routes — hidden */}
+              <Route path="bp-7x4" element={<AdminBlogs />} />
+              <Route path="bp-7x4/create" element={<AdminBlogForm />} />
+              <Route path="bp-7x4/edit/:id" element={<AdminBlogForm />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

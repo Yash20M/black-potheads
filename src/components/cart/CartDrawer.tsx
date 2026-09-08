@@ -154,12 +154,22 @@ export const CartDrawer = () => {
                       {/* Upsell nudge */}
                       {totalItems === 1 && (
                         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded p-2 text-center text-xs text-yellow-400">
-                          Add 1 more item → get <span className="font-bold">10% OFF</span>
+                          Add 1 more item → get <span className="font-bold">5% OFF</span>
                         </div>
                       )}
                       {totalItems === 2 && (
                         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded p-2 text-center text-xs text-yellow-400">
+                          Add 1 more item → get <span className="font-bold">10% OFF</span>
+                        </div>
+                      )}
+                      {totalItems === 3 && (
+                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded p-2 text-center text-xs text-yellow-400">
                           Add 1 more item → get <span className="font-bold">15% OFF</span>
+                        </div>
+                      )}
+                      {totalItems === 4 && (
+                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded p-2 text-center text-xs text-yellow-400">
+                          Add 1 more item → get <span className="font-bold">20% OFF</span>
                         </div>
                       )}
                       {/* Applied discount */}

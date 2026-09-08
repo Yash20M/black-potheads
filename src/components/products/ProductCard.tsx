@@ -172,6 +172,10 @@ const ProductCardComponent = ({ product, index }: ProductCardProps) => {
               </span>
             )}
           </div>
+          {/* Bulk offer hint */}
+          <p className="text-yellow-500 text-[10px] font-medium tracking-wide">
+            Buy 2 Get 5% · Buy 3 Get 10% · Buy 4 Get 15% · Buy 5 Get 20%
+          </p>
           {/* Stock Status */}
           {product.stock !== undefined && (
             <div className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold">

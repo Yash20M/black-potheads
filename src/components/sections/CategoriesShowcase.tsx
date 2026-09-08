@@ -9,7 +9,7 @@ const categories = [
   { name: 'ACID', image: '/LSD.webp', slug: 'ACID' },
   { name: 'CHAKRAS', image: '/Chakras.webp', slug: 'Chakras' },
   { name: 'DARK', image: '/dark (2).webp', slug: 'Dark' },
-  { name: 'RICK N MORTY', image: '/Rick-N-Morty.webp', slug: 'Rick n Morty' },
+  { name: 'Psyence', image: '/Rick-N-Morty.webp', slug: 'Psyence' },
 ];
 
 // Positions: -1 = left behind, 0 = center front, 1 = right behind
@@ -183,7 +183,7 @@ export const CategoriesShowcase = () => {
                     className={`w-full h-full ${
                       category.slug === 'Shiva'
                         ? 'object-contain'
-                        : category.slug === 'Rick n Morty' || category.slug === 'Dark' || category.slug ==='Shrooms'
+                        : category.slug === 'Psyence' || category.slug === 'Dark' || category.slug ==='Shrooms'
                         ? 'object-contain scale-75'
                         : 'object-contain'
                     }`}

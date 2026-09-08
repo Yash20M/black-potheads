@@ -38,10 +38,10 @@ export interface CartItem extends Product {
 }
 
 // API Categories
-export type ApiCategory = 'Shiva' | 'Shrooms' | 'ACID' | 'Chakras' | 'Dark' | 'Rick n Morty';
+export type ApiCategory = 'Shiva' | 'Shrooms' | 'ACID' | 'Chakras' | 'Dark' | 'Psyence';
 
 // Frontend Categories
-export type Category = 'all' | 'Shiva' | 'Shrooms' | 'ACID' | 'Chakras' | 'Dark' | 'Rick n Morty';
+export type Category = 'all' | 'Shiva' | 'Shrooms' | 'ACID' | 'Chakras' | 'Dark' | 'Psyence';
 
 // Helper to normalize API product to frontend format
 export const normalizeProduct = (apiProduct: ApiProduct): Product => {

@@ -7,7 +7,7 @@ const collections = [
   { name: 'ACID', slug: 'ACID' },
   { name: 'CHAKRAS', slug: 'Chakras' },
   { name: 'DARK', slug: 'Dark' },
-  { name: 'RICK N MORTY', slug: 'Rick n Morty' },
+  { name: 'Psyence', slug: 'Psyence' },
 ];
 
 export const BrandMarquee = () => {

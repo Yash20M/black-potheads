@@ -60,16 +60,15 @@ const CheckoutPage = () => {
   }, []);
 
   useEffect(() => {
-    // Don't redirect if order was just placed
-    if (orderPlaced) return;
+    // Don't redirect if order was just placed or is being placed
+    if (orderPlaced || loading) return;
 
-    // Allow guest checkout - don't force login
     if (items.length === 0) {
       toast.error('Your cart is empty');
       navigate('/shop');
       return;
     }
-  }, [items, navigate, orderPlaced]);
+  }, [items, navigate, orderPlaced, loading]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -126,6 +125,9 @@ const CheckoutPage = () => {
           totalAmount: finalPrice,
           paymentMethod: 'COD',
         });
+        // Save guest info for confirmation page
+        localStorage.setItem('guestOrderEmail', formData.email);
+        localStorage.setItem('guestOrderId', response.order._id);
       } else {
         // Logged-in order
         await syncWithBackend();
@@ -135,10 +137,11 @@ const CheckoutPage = () => {
 
       setOrderPlaced(true);
       setOrderDetails(response.order);
+      setShowSuccessModal(true);
       await clearCart();
       toast.success('Order confirmed successfully!');
-      setShowSuccessModal(true);
-      if (user) navigate('/orders');
+      console.log('Order placed:', response.order);
+      // Don't navigate immediately — let success modal show first
     } catch (error: any) {
       toast.error(error.message || 'Failed to place order');
     } finally {
@@ -203,10 +206,10 @@ const CheckoutPage = () => {
             if (verifyResponse.success) {
               setOrderPlaced(true);
               setOrderDetails(verifyResponse.order);
+              setShowSuccessModal(true);
               await clearCart();
               toast.success('Payment successful! Order confirmed.');
-              setShowSuccessModal(true);
-              if (user) navigate('/orders');
+              // Don't navigate immediately — let success modal show first
             } else {
               toast.error('Payment verification failed');
             }
@@ -247,21 +250,23 @@ const CheckoutPage = () => {
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    // Redirect to specific order details page if order ID exists
-    if (orderDetails?._id) {
+    if (!user && orderDetails?._id) {
+      // Guest → full confirmation page with all details
+      navigate(`/guest-order-confirmation/${orderDetails._id}`);
+    } else if (user && orderDetails?._id) {
+      // Logged-in → order detail page
       navigate(`/orders/${orderDetails._id}`);
     } else {
-      navigate('/orders');
+      navigate('/shop');
     }
   };
 
-  // Auto-redirect to orders page after 5 seconds
+  // Auto-redirect to orders page after 8 seconds (only for logged-in users)
   useEffect(() => {
-    if (showSuccessModal) {
+    if (showSuccessModal && user) {
       const timer = setTimeout(() => {
         handleCloseSuccessModal();
-      }, 8000); // 8 seconds
-
+      }, 8000);
       return () => clearTimeout(timer);
     }
   }, [showSuccessModal]);
@@ -311,7 +316,7 @@ const CheckoutPage = () => {
                       </div>
                       <div>
                         <Label htmlFor="guest-phone" className="text-sm">Phone *</Label>
-                        <Input id="guest-phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required placeholder="+91 9999999999" className="text-sm sm:text-base" />
+                        <Input id="guest-phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required placeholder="9999999999" maxLength={10} className="text-sm sm:text-base" />
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground bg-secondary/50 border border-border rounded p-2">
@@ -379,6 +384,7 @@ const CheckoutPage = () => {
                         onChange={handleChange}
                         required
                         placeholder="400001"
+                        maxLength={6}
                       />
                     </div>
 
@@ -534,14 +540,16 @@ const CheckoutPage = () => {
                   Thank you for your purchase
                 </p>
                 <p className="text-xs text-muted-foreground mb-6">
-                  Redirecting to your orders in a few seconds...
+                  {user ? 'Redirecting to your orders in a few seconds...' : 'Click below to see your complete order details'}
                 </p>
 
                 {orderDetails && (
                   <div className="bg-secondary/50 rounded-lg p-4 mb-6 text-left space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Order ID:</span>
-                      <span className="font-mono text-xs">#{orderDetails._id?.slice(-8)}</span>
+                      <span className="font-mono font-bold text-foreground">
+                        {orderDetails.orderNumber || `#${orderDetails._id?.slice(-8)}`}
+                      </span>
                     </div>
                     
                     <div className="flex justify-between text-sm">
@@ -599,7 +607,7 @@ const CheckoutPage = () => {
                     onClick={handleCloseSuccessModal}
                   >
                     <Package className="mr-2" size={18} />
-                    View Order Details Now
+                    {user ? 'View Order Details' : 'View Full Order Details'}
                   </Button>
                 </div>
               </motion.div>

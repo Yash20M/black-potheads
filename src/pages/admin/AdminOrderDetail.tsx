@@ -99,7 +99,7 @@ const AdminOrderDetail = () => {
             <span className="text-sm uppercase tracking-wider">Back to Orders</span>
           </Link>
           <h1 className="font-display text-3xl md:text-4xl">Order Details</h1>
-          <p className="text-muted-foreground">Order #{order._id.slice(-8)}</p>
+          <p className="text-muted-foreground">Order #{order.orderNumber || order._id.slice(-8)}</p>
           {order.status === 'Pending' && (
             <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-yellow-500/20 border border-yellow-500/50 rounded text-yellow-500 text-sm font-medium">
               ⚠️ Pending Order - Requires Action

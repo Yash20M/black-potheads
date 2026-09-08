@@ -15,7 +15,8 @@ const footerLinks = {
   ],
   company: [
     { label: 'Our Story', path: '/about' },
-    { label: 'Contact Us', path: '/contact'}
+    { label: 'Contact Us', path: '/contact'},
+    { label: 'Blog', path: '/blogs' },
   ],
 };
 
@@ -45,7 +46,7 @@ export const Footer = () => {
                 className="w-10 h-10 border border-border flex items-center justify-center hover:border-primary hover:text-primary transition-colors"
               >
                 <Instagram size={18} />
-              </motion.a>C BN  
+              </motion.a>
             </div>
             <p className="text-muted-foreground text-xs leading-relaxed mt-4">
               Plot no. 39, Wildlife Sanctuary Sajjangarh Road, Udaipur, Rajasthan 313001

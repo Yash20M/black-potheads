@@ -166,12 +166,18 @@ const GuestOrderConfirmationPage = () => {
 
             <div className="space-y-4">
               <div className="flex justify-between items-center pb-3 border-b border-border">
+                <span className="text-sm uppercase tracking-wider text-muted-foreground">Order ID</span>
+                <span className="font-mono font-bold text-foreground">
+                  {order.orderNumber || order._id?.slice(-8)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center pb-3 border-b border-border">
                 <span className="text-sm uppercase tracking-wider text-muted-foreground">Status</span>
                 <span className="font-semibold uppercase tracking-wide">{order.status}</span>
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-border">
                 <span className="text-sm uppercase tracking-wider text-muted-foreground">Payment</span>
-                <span className="font-semibold">{order.paymentMethod}</span>
+                <span className="font-semibold">{order.paymentMethod === 'COD' ? 'Cash on Delivery' : order.paymentMethod}</span>
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-border">
                 <span className="text-sm uppercase tracking-wider text-muted-foreground">Order Date</span>

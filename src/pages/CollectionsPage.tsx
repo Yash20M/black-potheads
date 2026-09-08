@@ -44,8 +44,8 @@ const collections = [
     image: '/dark (2).webp',
   },
   {
-    id: 'Rick n Morty',
-    title: 'Rick n Morty',
+    id: 'Psyence',
+    title: 'Psyence',
     subtitle: 'Wubba Lubba',
     description: 'Get schwifty with our interdimensional Rick and Morty collection! Featuring iconic characters, memorable quotes, and scenes from across the multiverse. From portal guns to Pickle Rick, these designs capture the chaotic genius and dark humor of the show. Perfect for fans who appreciate science, sarcasm, and interdimensional adventures.',
     features: ['Official-Style Art', 'Iconic Characters', 'Multiverse Designs', 'Fan Favorites'],

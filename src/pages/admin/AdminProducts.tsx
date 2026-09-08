@@ -22,7 +22,7 @@ const COLLAB_OPTIONS = [
   { value: 'rakt-pipasu-records', label: 'Rakt Pipasu Records' },
 ];
 
-const CATEGORIES = ['Shiva', 'Shrooms', 'ACID', 'Chakras', 'Dark', 'Rick n Morty'];
+const CATEGORIES = ['Shiva', 'Shrooms', 'ACID', 'Chakras', 'Dark', 'Psyence'];
 const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
 
 // ─── Product Form ────────────────────────────────────────────────────────────

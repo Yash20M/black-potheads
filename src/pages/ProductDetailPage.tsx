@@ -200,13 +200,15 @@ const ProductDetailPage = () => {
 
   const handlePrevImage = () => {
     if (!product) return;
-    setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+    const imgs = product.images?.length ? product.images : [product.image];
+    setSelectedImage((prev) => (prev === 0 ? imgs.length - 1 : prev - 1));
     setImageError(false);
   };
 
   const handleNextImage = () => {
     if (!product) return;
-    setSelectedImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+    const imgs = product.images?.length ? product.images : [product.image];
+    setSelectedImage((prev) => (prev === imgs.length - 1 ? 0 : prev + 1));
     setImageError(false);
   };
 
@@ -236,9 +238,11 @@ const ProductDetailPage = () => {
     setTouchEnd(0);
   };
 
+  const productImages = product?.images?.length ? product.images : (product?.image ? [product.image] : ['https://via.placeholder.com/400x500?text=No+Image']);
+
   const currentImageSrc = imageError 
     ? 'https://via.placeholder.com/400x500?text=No+Image' 
-    : (product?.images[selectedImage] || product?.image || 'https://via.placeholder.com/400x500?text=No+Image');
+    : (productImages[selectedImage] || productImages[0] || 'https://via.placeholder.com/400x500?text=No+Image');
 
   return (
     <div className="min-h-screen pt-20 bg-background">
@@ -255,7 +259,7 @@ const ProductDetailPage = () => {
             "@type": "Product",
             "name": product.name,
             "description": product.description || `Premium ${product.name}`,
-            "image": product.images || [product.image],
+            "image": productImages,
             "brand": {
               "@type": "Brand",
               "name": "BLACK POTHEADS"
@@ -309,7 +313,7 @@ const ProductDetailPage = () => {
                   <AnimatePresence mode="wait">
                     <motion.img
                       key={selectedImage}
-                      src={product.images[selectedImage] || product.image}
+                      src={productImages[selectedImage] || productImages[0]}
                       alt={`${product.name} ${selectedImage + 1}`}
                       initial={{ opacity: 0, x: 100 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -331,7 +335,7 @@ const ProductDetailPage = () => {
                   )}
 
                   {/* Navigation Arrows */}
-                  {product.images.length > 1 && (
+                  {productImages.length > 1 && (
                     <>
                       <button
                         onClick={handlePrevImage}
@@ -349,9 +353,9 @@ const ProductDetailPage = () => {
                   )}
 
                   {/* Dots Indicator */}
-                  {product.images.length > 1 && (
+                  {productImages.length > 1 && (
                     <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 z-10">
-                      {product.images.map((_, idx) => (
+                      {productImages.map((_, idx) => (
                         <button
                           key={idx}
                           onClick={() => {
@@ -371,9 +375,9 @@ const ProductDetailPage = () => {
                 </div>
 
                 {/* Thumbnail Preview */}
-                {product.images.length > 1 && (
+                {productImages.length > 1 && (
                   <div className="flex gap-2 mt-3 sm:mt-4 overflow-x-auto scrollbar-hide px-1">
-                    {product.images.map((img, idx) => (
+                    {productImages.map((img, idx) => (
                       <button
                         key={idx}
                         onClick={() => {
@@ -413,17 +417,17 @@ const ProductDetailPage = () => {
               )}>
                 <div className={cn(
                   "grid gap-4",
-                  product.images.length === 1 ? "grid-cols-1 max-w-xl mx-auto" : "grid-cols-1 lg:grid-cols-2"
+                  productImages.length === 1 ? "grid-cols-1 max-w-xl mx-auto" : "grid-cols-1 lg:grid-cols-2"
                 )}>
                   {/* First image - Fixed on left */}
-                  {product.images[0] && (
+                  {productImages[0] && (
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.4 }}
                       className={cn(
                         "relative aspect-[3/4] bg-muted dark:bg-black/50 overflow-hidden group cursor-zoom-in",
-                        product.images.length === 1 ? "lg:col-span-1" : "lg:col-span-1"
+                        productImages.length === 1 ? "lg:col-span-1" : "lg:col-span-1"
                       )}
                       onClick={() => {
                         setSelectedImage(0);
@@ -431,7 +435,7 @@ const ProductDetailPage = () => {
                       }}
                     >
                       <motion.img 
-                        src={product.images[0]}
+                        src={productImages[0]}
                         alt={`${product.name} 1`}
                         onError={(e) => {
                           e.currentTarget.src = 'https://via.placeholder.com/400x500?text=No+Image';
@@ -451,9 +455,9 @@ const ProductDetailPage = () => {
                   )}
 
                   {/* Remaining images - Scrolling vertically on right */}
-                  {product.images.length > 1 && (
+                  {productImages.length > 1 && (
                     <div className="space-y-4 max-h-[600px] lg:max-h-[calc(100vh-120px)] overflow-y-auto pr-2 lg:col-span-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                      {product.images.slice(1).map((img, index) => (
+                      {productImages.slice(1).map((img, index) => (
                         <motion.div
                           key={index + 1}
                           initial={{ opacity: 0, y: 20 }}
@@ -504,6 +508,25 @@ const ProductDetailPage = () => {
                 {product.originalPrice && (
                   <span className="text-muted-foreground line-through text-lg">₹{product.originalPrice.toLocaleString()}</span>
                 )}
+              </div>
+
+              {/* Bulk offer strip */}
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {[
+                  { qty: 2, pct: 5 },
+                  { qty: 3, pct: 10 },
+                  { qty: 4, pct: 15 },
+                  { qty: 5, pct: 20 },
+                ].map(({ qty, pct }) => (
+                  <div
+                    key={qty}
+                    className="flex items-center gap-1 border border-yellow-500/40 bg-yellow-500/5 px-2 py-1 text-yellow-400 text-[10px] whitespace-nowrap"
+                  >
+                    <span className="font-bold">Buy {qty}</span>
+                    <span className="text-yellow-500/60">→</span>
+                    <span className="font-bold">{pct}% OFF</span>
+                  </div>
+                ))}
               </div>
               
               {/* Stock Information */}
@@ -672,7 +695,7 @@ const ProductDetailPage = () => {
             </motion.button>
 
             {/* Navigation Arrows */}
-            {product.images.length > 1 && (
+            {productImages.length > 1 && (
               <>
                 <motion.button
                   initial={{ opacity: 0, x: -20 }}
@@ -716,9 +739,9 @@ const ProductDetailPage = () => {
                   e.currentTarget.src = 'https://via.placeholder.com/400x500?text=No+Image';
                 }}
               />
-              {product.images.length > 1 && (
+              {productImages.length > 1 && (
                 <div className="flex justify-center gap-2 mt-4">
-                  {product.images.map((_, idx) => (
+                  {productImages.map((_, idx) => (
                     <button
                       key={idx}
                       onClick={() => {
