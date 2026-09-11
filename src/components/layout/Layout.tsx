@@ -50,7 +50,7 @@ export const Layout = () => {
 
       {/* WhatsApp Button — fixed right bottom, all pages */}
       <a
-        href="https://wa.me/919929337714?text=Hi%20BlackPotheads!%20I%20wanted%20to%20know%20more%20about%20your%20products%20and%20brand.%20Can%20you%20help%20me%3F"
+        href="https://wa.me/919261825098?text=Hi%20BlackPotheads!%20I%20wanted%20to%20know%20more%20about%20your%20products%20and%20brand.%20Can%20you%20help%20me%3F"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-4 z-[999] w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-lg hover:bg-[#20bd5a] transition-colors"

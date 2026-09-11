@@ -192,13 +192,22 @@ const ContactPage = () => {
                 
                 <div>
                   <p className="font-semibold mb-1">Mobile No</p>
-                    +91 8949331335
+                  <a href="tel:+919261825098" className="text-primary hover:underline">
+                    +91 92618 25098
+                  </a>
                 </div>
 
                 <div>
                   <p className="font-semibold mb-1">Email</p>
                   <a href="mailto:contact@blackpotheads.com" className="text-primary hover:underline">
                     contact@blackpotheads.com
+                  </a>
+                </div>
+
+                <div>
+                  <p className="font-semibold mb-1">WhatsApp</p>
+                  <a href="https://wa.me/919261825098" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                    +91 92618 25098
                   </a>
                 </div>
                 

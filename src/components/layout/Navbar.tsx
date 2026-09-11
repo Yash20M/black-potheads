@@ -11,8 +11,8 @@ const navLinks = [
   { label: 'Shop', href: '/shop' },
   { label: 'Collections', href: '/collections' },
   { label: 'Collab', href: '/collab' },
-  { label: 'Blog', href: '/blogs' },
   { label: 'Our Story', href: '/our-story' },
+  { label: 'Blog', href: '/blogs' },
   { label: 'Contact Us', href: '/contact' },
 ];
 
